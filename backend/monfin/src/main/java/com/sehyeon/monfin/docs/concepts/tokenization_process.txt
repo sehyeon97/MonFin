@@ -1,0 +1,3 @@
+1. User enrolls card to merchant by entering card information. This includes pan, cvv and last4.
+2. Tokenization provider requests the issuer of the card (the bank) for the tokenized pan.
+3. 

@@ -1,0 +1,7 @@
+                            \\\\\\\\\\\\ DESCRIPTION ////////////
+
+The card_details table is only for the "bank" database. It does not relate to the payment processing platform.
+However, the same user id field will be used. The reason for this is that I do not want to create two separate programs.
+In the real world, the bank and the payment processing platform would be two separate entities.
+
+                            \\\\\\\\\\\\ FIELDS ////////////

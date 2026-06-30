@@ -1,0 +1,12 @@
+There exists Controller, Service, Repository, and End-to-End Tests.
+
+The Controller tests usually use MockMVC, SpringBootTest, and Containers.
+
+The Service tests are conducted using Unit Tests with MockitoExtension.
+Here, each @Autowired fields are @Mock -ed,
+and the service itself is annotated with @InjectMocks.
+
+The Repository tests utilize @DataJpaTest and Testcontainers.
+
+End-to-End tests are also known as Integration Tests.
+This tests the final product using real components.

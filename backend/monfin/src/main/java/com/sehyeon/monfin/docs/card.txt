@@ -1,0 +1,18 @@
+Cards have three IDs as their properties. The first ID is the card ID itself, which identifies the unique card.
+The second ID is the user's ID that states who this card belongs to. The third ID is the bank account ID. This
+third ID is the most important of the IDs. This is where money basically "lives." The money does not live in
+the card, since when the card needs replacement, it is much easier to replace a card in the bank account rather
+than having to reconstruct the whole schema for an account. Think of it as a node tree, where the root parent
+is the bank, then there are the bank accounts as the bank's children, and each bank account has a user attached
+to it (or two if joint-account), and each account has 1+ card(s).
+
+Cards never store Primary Account Numbers. This number may be generated in code once but is soon discarded.
+The PAN is first generated to create a tokenization of the first 12 numbers. This token + the last 4 digits
+are what will be used to transfer money. The PAN is a highly sensitive information and will never be stored
+within the database. As such, this should be in its own class, and not within the Card object. A service is
+required, such that a card can be issued. This will generate the token along with the last 4 numbers as a 
+String. But first, this CardIssuance class will need to determine that the user and the user's bank account
+exists. After validating ownership and generating an identifier, it will create the Card (which means Cards
+are initially created in this class only) and persist it in the database. 
+
+**Personal Note** Make sure to divide each "work" into its own class file!

@@ -1,0 +1,5 @@
+The purpose of this folder is to talk about what each table represent in relation to banking only.
+Therefore, each folder will be named after the table name for easier lookup and readability.
+It will not follow Java folder naming conventions, since docs are purely for me and the reader.
+
+Some folders/files will be named about the logic or concepts behind the development.

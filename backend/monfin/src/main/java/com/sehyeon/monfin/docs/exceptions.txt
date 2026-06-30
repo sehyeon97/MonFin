@@ -1,0 +1,18 @@
+Runtime Exceptions do not require throws, therefore can pass unchecked (no throws declaration or try catch). 
+Most business exceptions will extend Runtime Exceptions for this reason. 
+
+This helps in simplifying each layer. 
+Services strictly talk about business logic. 
+Repositories strictly interact with databases. 
+Controllers strictly respond to incoming requests. 
+None of these layers will catch the error if thrown. 
+None of these layers should contain a method to declare throws for errors. 
+
+The errors should instead be caught at the API layer, where the error is translated to a corresponding error. 
+Not only does this simplify every layer, but it also allows error-catching to happen in one final, global place. 
+
+Only the controllers will be communicating with the global exception handler class. 
+Every exception and its matching responses should be recorded here. 
+When the controllers receive an exception, the @RestControllerAdvice kicks in and responds accordingly. 
+
+Pretty cool!

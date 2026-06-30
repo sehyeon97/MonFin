@@ -1,0 +1,38 @@
+A One-Time-Passcode (OTP) is sent to the user for several reasons.
+In my case, at least for now, there is one use case.
+
+As a customer, when I want to buy a product from a merchant, I can use a credit/debit card to pay for the transaction.
+As a payment processor, when the customer chooses one of their saved payment methods to buy a product,
+    I will forward the transaction details to the bank for approval before the merchant receives the payment.
+As a bank, when the payment processor charges a client for a product,
+    I will need to make sure the transaction can safely happen according to the transaction rules and Fraud Prevention policies.
+
+This process starts from the merchant's frontend. For my case, it will start at the payment processor's frontend.
+The payment processor gets the selected card token and sends a request to the issuer's (customer's) bank.
+The bank runs through its transaction rules. Once they all pass, it runs its Fraud Prevention (FP) algorithms.
+Once the transaction is allowed, there are 3 things that can happen based on the score given by the FP service.
+
+If the FP service returns a score less than or equal to 30, 
+the transaction is approved and the authorization code is sent to the payment processor.
+
+If the FP service returns a score: ||| 30 < score <= 70 |||,
+the transaction requires an OTP from the customer.
+
+If the FP service returns a score higher than 70,
+the transaction is declined and the card is frozen until the customer resolves the issue.
+
+When an OTP is required, we need one extra request field from the Payment Processor.
+We need a callback processor URL to tell us where we can redirect the customer to,
+once the OTP validation is completed. 
+
+This is because when the payment processor receives that "OTP REQUIRED" response,
+it redirects the user to the bank's frontend page that lets the customer enter their OTP.
+This means that the CARD_AUTHORIZATION_RESPONSE must also include a "bank_callback_url" link.
+
+The Customer will feel like they never leave the webpage, but in fact, there is a server-to-server
+communication happening between the payment processor and the bank.
+
+Once the customer enters an OTP, the bank's backend will validate it.
+The results will be forwarded to the Payment Processor's backend.
+Afterwards, the customer will be redirected to the Payment Processor's callback Url.
+The customer will see the result of their transaction on the Payment Processor's frontend.

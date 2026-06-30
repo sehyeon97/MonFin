@@ -1,0 +1,26 @@
+JPA tests are often written parameter-less. 
+Tests become self-contained, easier to debug, and has a clear arrange, act, assert process. 
+
+For Service and Repository tests, testing some cases may seem redundant. 
+Therefore, when the following apply, there is no need to create a Service test for said method(s): 
+(1) When the Service has a one or two liner that forwards the task to the Repository. 
+(2) The data does not branch off, does not need validating, and is not updated. 
+(3) A simple creation (i.g. .save())
+
+Exceptions to the above rule are when: 
+(1) Service throws an exception that is part of the project's logic. 
+(2) Validations / invariants 
+(3) A @Transactional that calls the repository multiple times. 
+(4) The order of the database calls matter (typically in a Transactional)
+
+As long as the test does fit in the rule in paragraph 2, 
+it can most likely have its own Service Tests. 
+
+There are many ways to go about implementing the test layer. 
+Some may write Service Tests and skip meaningless Repository tests. 
+Some may write Controller Tests that directly involve simple Repository tests. 
+In my case, I will test the Repositories and skip testing relevant, redundant Service methods. 
+
+However, repositories that do what JpaRepository does will not be tested. 
+That is testing Spring Boot and has nothing to do with my logic. 
+Repositories that include my own logic will have tests. 

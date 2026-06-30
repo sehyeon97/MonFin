@@ -1,0 +1,25 @@
+The core function of this program is not about banking principles. 
+The purpose is a double-ledger payment processing platform. 
+Therefore, money is not directly involved, ruling out a need for banks and card issuance.
+
+However, I've decided to add this feature, but not go overboard and off-topic with it. 
+The Banks and CardIssuance will serve to state whether a customer has enough funds or balance to pay a merchant. 
+In relation to my project, only necessary topics will be implemented. 
+
+The necessary components to execute this functionality is 
+(1) to have the bank issue a card for a user that has a bank account with the said bank, 
+(2) store in table name = "bank" the bank account id, user id, and the list of cards they have with the bank by card ID, and 
+(3) another table name = "bank_cards" with card id and card amount. The difference between credit and debit should also show. 
+
+Then this ~~BankService~~ will be the one to approve or reject the charge on the customer. 
+If it is approved, the charge is transferred from the customer's card to the merchant's card, 
+and both parties' balances will be reflected in the bank_cards table.
+
+Edit: BankService will be renamed to CardAuthorizationService. 
+Reason for edit: BankService sounds like a core banking principle is being implemented. 
+CardAuthorizationService seems more fit to describe exactly our purpose of the service: 
+To approve or reject charges and reflect funds or balances. 
+Perhaps the latter could be further separated into its own service and named CardAmountService.
+
+None of these will be interacting with the frontend, and solely exists in the backend.
+The only exception is when the user wants to create or delete a card.

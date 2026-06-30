@@ -1,0 +1,39 @@
+////////////////// ** CHANGES TO THE TRANSACTION PROCESS ** \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+1. Customer enters Card Details to Merchant's Frontend Page,
+ through the Payment Processor hosted card details form.
+
+2. The Payment Processor form contains an iframe that is owned by the Bank / TSP.
+
+3. Upon form submission, the Bank / TSP receives the card details immediately.
+ The Bank / TSP will then generate a TokenizedCardInfo object which holds:
+ { String cardToken, String last4, String expMonth, String expYear }
+
+4. Upon receiving the TokenizedCardInfo response, the Payment Processor's Frontend
+ sends a Request to the Payment Processor's backend to save the object to their database,
+ along with the device ID. This device ID comes from its own table of user ID <-> device ID.
+
+WHAT CHANGED?
+The transaction process no longer includes the Wallet. The Wallet folder serves no purpose.
+
+WHY THE CHANGE?
+The project is a full-stack web application.
+This means the Wallet app (which resides in a mobile device) is irrelevant to the scope of the project.
+
+HOW DOES THIS EFFECT THE FLOW OF MONEY BETWEEN THE MERCHANT AND THE CUSTOMER?
+1. After saving the card for future use (Steps 1-4 above),
+ when the customer wants to buy a shirt for $20,
+ they select a card that they have saved.
+ The saved card is shown on the Merchant's frontend through the Payment Processor's frontend.
+
+2. The Payment Processor's backend receives the card through it's own frontend.
+ It also receives the amount, merchant ID, timestamp via the Merchant's frontend.
+ With the complete transaction details, it tokenizes the transaction details,
+ and sends the card token and the tokenized transaction details to the Bank / TSP.
+
+3. The Bank / TSP reads the card token and pulls up the bank account associated with the card.
+ First, it verifies the tokenized transaction details are legit.
+ Next, it checks that the card exists and has sufficient funds.
+ Finally, it responds back to the Payment Processor one of two responses:
+  A. Happy Path - Authorization Code, Success Message
+  B. Failed Path - Invalid Code, Transaction Declined Message

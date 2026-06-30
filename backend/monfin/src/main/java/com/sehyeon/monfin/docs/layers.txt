@@ -1,0 +1,8 @@
+Service layers are for business logic.
+
+Repository layers (repos) are for database logic + interactions.
+
+Each layer can interact with one another or an adjacent layer. Controllers are what talks directly with the frontend.
+Controllers also talk with services. Services talk among themselves but also talk to repositories. Repositories can
+talk with another and with the database. However, Spring Boot allows interactions with the database much easier,
+by using Spring Data JPA. It will perform the basic CRUD operations with almost no code.

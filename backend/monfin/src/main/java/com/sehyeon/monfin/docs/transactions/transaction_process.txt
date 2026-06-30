@@ -1,0 +1,220 @@
+THIS FILE EXPLAINS THE **MVP** VERSION OF THE PROGRAM
+AFTER THE MVP, THERE WILL BE ANOTHER TEXT FILE THAT WILL DETAIL THE CONCEPTS IN DEPTH
+
+Different organizations present in the transaction process:
+
+1. Merchant
+2. Merchant's Bank
+3. Customer
+4. Issuer's Bank
+5. Payment Processor (Used as middleware between Merchants and TSP)
+6. Token Service Provider (TSP: used as middleware between payment gateways and banks)
+7. Payment Credential Provider (Used as middleware between Customers and TSP)
+
+In my project, the Bank will handle the different types of banks (Chase, US, etc).
+In addition, the bank will also handle the Token Service Provider's responsibility.
+Therefore, the organizations present in my project can be simplified to:
+
+1. Merchant
+2. Customer
+3. Merchant's and Customer's Bank + TSP
+4. Payment Processor
+5. Payment Credential Provider (in our example: Apple Pay / Wallet)
+
+Responsibilities in order of how they happen:
+* Note: Customer and Merchant will be concepts part of frontend
+
+1. Customer - Inputs Basic Card Info (BCI for short)
+which includes Primary Account Number (PAN), expiry date (expMonth, expYear),
+full name of the cardholder, and the security code to let's say Apple Pay.
+
+2. Payment Credential Provider (PCP) sends this information to the TSP layer.
+
+3. The TSP will first verify if this card exists by checking with the issuer's bank.
+Once verified, it will tokenize the PAN and store the token (as key) with its PAN (as value).
+It will also store the Secret Key as value.
+
+*Note: In my project, this tokenization process will be the same for the Bank and the TSP for DB interactions.
+The TSP will then return the token + Secret Key to the PCP (Secure Element pr SecureElement.java),
+along with the last 4 digits, the Bank (Chase, US, etc),
+Card Network (VISA, MasterCard, etc), and display information (Wallet Display Data).
+
+*Note: The Secret Key serves as a unique identifier for the selected Device. For example,
+if the User is using a Computer, the Secret Key is composed of the Computer + VISA Card.
+If the User is using an iPhone, the Secret Key is composed of iPhone + VISA Card. 
+If the User is using a different iPhone, the Secret Key is composed of different iPhone + VISA Card.
+The VISA Card remains the same, but the devices changed, so the Secret Keys also change.
+This is why when you download an app from the app store, sometimes it says it is going to use your 
+Analytics, that includes Identifiers which include user ID and **device ID**.
+
+
+4. The PCP stores the Secure Element as Payment Data.
+It stores the Card Network, Bank Name, Card Art, and Last 4 Digits as Display Data (for frontend).
+For the PCP, the Secure Element is stored but it can only retrieve the token.
+
+When a charge is initiated, the PCP calls the Secure Element to run a cryptographic algorithm.
+This algorithm is one way, kind of like a hashed password.
+It runs something like: SecureElement.getCryptogram() with the parameters being:
+A. Amount
+The field of Secure Element will contain the secret key that the crypto algorithm will utilize.
+
+The PCP will store this in one object, and send the object over to the Merchant, which includes:
+A. Card Token
+B. Cryptogram
+C. Amount
+D. Timestamp
+
+5. The Merchant forwards the information to the Payment Processor (PP).
+
+6. The PP 
+
+//////////////////////////////////////// SIMPLIFIED \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ happy path
+
+///////////// **STORAGE OF PAYMENT INFORMATION OF THE CUSTOMER** \\\\\\\\\\\\\\\\\\
+
+1. Customer enters Card Data
+
+2. Apple Pay sends Card Data to TSP.
+
+3. TSP returns Secure Element (which has the token and Secret Key). Only the Token has a getter.
+It also returns the Card Network, Bank Name, and Card Art.
+TSP stores the token with values of Secret Key, PAN, and Bank Name.
+Edit: Secure Element is a secured hardware within a device that Apple Pay is downloaded on.
+
+4. Wallet stores Secure Element as Payment Data.
+It stores Card Network, Bank Name, Card Art, and last 4 digits as Display Data.
+
+///////////// **STORAGE OF PAYMENT INFORMATION OF THE CUSTOMER** \\\\\\\\\\\\\\\\\\
+
+///////////// **STORAGE OF PAYMENT INFORMATION OF THE MERCHANT** \\\\\\\\\\\\\\\\\\
+
+1. Merchant signs up with the Payment Processing Platform.
+It provides:
+A. Business Name
+B. Business Address
+C. Contact Information (Business Phone Number)
+D. Bank Account Number
+E. Bank Routing Number
+
+2. Payment Processor stores:
+A. Merchant ID (Generated upon creation)
+B. Business Name
+C. Account Number (tokenized)
+D. Routing Number (tokenized)
+For the MVP, these two numbers will be raw numbers (which realistically is against the rules).
+
+The Business Address and Contact Information is used for verification to see if the Business is legitimate.
+
+///////////// **STORAGE OF PAYMENT INFORMATION OF THE MERCHANT** \\\\\\\\\\\\\\\\\\
+
+////////// **ACTUAL TRANSACTION PROCESS** \\\\\\\\\\\\\\\\\\\\
+1. Customer attempts to buy a $20 T-Shirt.
+
+2. Apple Pay tells the Secure Element to create a cryptogram for the transaction.
+The Secure Element will accept Amount as its method parameter (not the constructor).
+It will use a combination of the Amount, Timestamp (Instant.now()), Card Token, and Secret Key
+to generate a cryptogram.
+
+Apple Pay then sends as one Object that holds:
+A. Card Token
+B. Cryptogram
+C. Amount
+D. Timestamp
+to the Merchant.
+
+3. The Merchant packages the the payment request to the Payment Processor.
+
+4. Payment Processor receives:
+A. Merchant ID
+B. Card Token
+C. Cryptogram
+D. Amount
+E. Timestamp
+
+The processor will do basic checks to validate that none of the required fields are null or empty.
+It will also check that the Merchant is Active.
+Furthermore, it will perform fraud or risk checks, such as:
+A. Repeated Transactions submitted by Merchant?
+B. Amount is suspisciously large?
+
+Payment Processor will ask the TSP which Bank owns the specific Token in its request.
+
+5. The TSP will tell the Payment Processor the associated Bank Name.
+
+6. The Payment Processor routes to the corresponding Bank.
+
+7. The (Issuer's) Bank now receives:
+A. Card Token
+B. Cryptogram
+C. Amount
+D. Timestamp
+E. Merchant ID
+It also keeps a Transaction ID that it generates.
+
+The Bank uses the token to pull up the associated Bank Account.
+
+The Bank verifies the cryptogram using the same algorithm
+to verify that the payment request came from a legitimate Wallet (Apple Pay).
+
+The Bank will reject a Timestamp that is over 24 hours old (a number I set for my project).
+The Bank will reject a Timestamp that is within two minutes of a previous Timestamp with the same Card Token.
+(Within 2 minutes is also a fraud prevention rule I made)
+
+Merchant ID may be used to block a Merchant from making a transaction request in the future.
+Merchant ID will be stored with the transaction for record keeping purposes.
+
+The Bank will check that the Bank Account is Active, Not Frozen, passes Fraud Prevention Rules, and has enough funds.
+
+The Bank stores the transaction details in its database along with the Decision.
+A. Approved - Sends the Payment Processor "Approved" Message with an Authorization Code.
+B. Declined - Sends the Payment Processor "Declined" Message.
+
+The Transaction Details stored in the database include:
+A. Transaction ID
+B. Bank Account ID
+C. Authorization Code
+D. Amount
+E. Timestamp
+
+The charge of $20 is now pending and the $20 is reserved. 
+The money is still in the Bank, but the Bank Account balance will show -$20.
+
+8. Payment Processor forwards to the Merchant either "Payment Successful" or "Card Declined" Message.
+
+The Payment Processor will store the Merchant ID, Merchant Balance, and Authorization Code received from the Bank.
+This Merchant Balance at this point will have $20 stored
+because the charge for the $20 T-Shirt has been approved by the Customer's / Issuer's Bank.
+
+At the end of the day, the Payment Processor does two things:
+A. Request the Customer's Bank to send the money via the Authorization Code.
+B. Requests the Merchant Bank via the stored Merchant ID to
+accept the day's accumulated total Merchant Balance.
+
+After receiving a success message from the Merchant Bank, the Merchant Balance is reset to zero.
+
+9. Customer's Bank sends the $20 to the Payment Processor.
+
+10. Merchant's Bank receives from the Payment Processor:
+A. Merchant Account Number
+B. Amount
+
+The Merchant Bank checks if the Bank Account exists using the Bank Account Number.
+It also checks if the account is Active and can receive deposits.
+It will also check if the Payment Processor is authorized by the Merchant to deposit money.
+
+Once all 3 of those checks pass, the Merchant Bank deposits the amount to the Merchant's Bank Account.
+
+11. Merchant receives one of the two responses:
+A. "Payment Successful"
+B. "Card Declined"
+
+**Keep in mind that Merchant and Customer Banks are one Bank in my project
+and that the Bank is also acting as the Token Service Provider.
+
+////////// **ACTUAL TRANSACTION PROCESS** \\\\\\\\\\\\\\\\\\\\
+
+folder name   | platform                        |   
+bank          | Bank + TSP                      |   
+payment       | Payment Processor               |   
+wallet        | Payment Credential Provider     |   Secure Element is part of the Device using Apple Pay, but
+                                                    in my case, it will be part of the wallet folder
