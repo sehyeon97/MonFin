@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -178,21 +179,10 @@ public class TransactionService {
             String params = 
                 merchantID + "|" + timestamp.toString() + "|" + Integer.toString(amount);
             byte[] hmac = mac.doFinal(params.getBytes(StandardCharsets.UTF_8));
-
-            return bytestoHexString(hmac);
+            return HexFormat.of().formatHex(hmac);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             return "";
         }
-    }
-
-    private String bytestoHexString(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-
-        for (byte b : bytes) {
-            sb.append(String.format("%02x", b));
-        }
-
-        return sb.toString();
     }
 
     // Returns a negative number if transaction timestamp is BEFORE the card expire date

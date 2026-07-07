@@ -1,0 +1,14 @@
+Anything capitalized is an Entity
+
+1. Customer creates an account (new Customer)
+2. Customer logs in
+3. Customer selects Merchant (later add multiple merchants; atm only one)
+4. Customer views Merchant's Products
+5. Customer adds items to Cart
+6. On checkout, select Card (payment method) and view list of Product(s) added to Cart
+7. Payment processor compiles and creates Transaction Details, including the card token and cryptogram
+8. Payment processor sends a post request to Customer's bank
+(The communication process is written in Monfin docs)
+9. Shows Transaction Result on the result page
+10. Order is reflected on Merchant's and Customer's Order History pages respectively
+11. Customer's purchased item is visually seen in Customer's Owned Items page

@@ -1,0 +1,32 @@
+When a Customer checks out their cart, a list of Transactions are made.
+
+Each Transaction holds a unique Merchant distinguished by their Merchant ID.
+Each Transaction is identified by their Transaction ID.
+
+The happy path is when the Transactions are all approved.
+Nothing to say there.
+
+However, when the bank responds with OTP required or Declined,
+extra steps need to be taken.
+
+First, let's state the cases:
+1. All Transactions require OTP or are declined.
+2. Some Transactions are approved, but some are declined or require OTP.
+
+Because of the nature of the cases, we need to create a scalable method that
+works with one or more Transaction(s) that require OTP or are declined.
+For this to work, the bank's code also needs to be modified,
+to return a response that includes an array of CardAuthorizationResponses.
+The CardAuthorizationResponses.java should also include transactionID.
+
+Should the OTP be different for each Transaction requiring OTP?
+I believe that's a low quality user experience.
+Perhaps OneTimePasscode.java requires a universal Transaction ID that
+combines the various independent Transaction IDs with the same OTP string.
+This Universal Transaction ID can be created by the Bank and exist only within the Bank.
+
+If the preceeding Transaction requires OTP or is declined,
+that does not justify the succeeding Transactions to have the same result.
+
+Each Transaction in the List of Transactions must be handled separately.
+Perhaps the Transactions can be ordered by the Amount in Descending order.

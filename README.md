@@ -20,15 +20,14 @@
 ### JUnit ###
 ### Mockito ###
 ### Integration testing ###
+### Jest ###
 ### Card tokenization ###
 ### Payment authorization ###
 ### Transaction processing ###
 ### Fraud detection with risk scores and One-Time-Passcode verifications ###
 ### Secure payment workflows ###
 ### Object-Oriented-Programming (OOP) ###
-### Layered Architecture (bank backend) ###
-### MVC Architecture (payment processor backend) ###
-### Microservices ###
+### Layered Architecture ###
 ### Generate cryptograms using Hash-based Message Authentication Code ###
 ### Service-to-service communication ###
 ### Asynchronous event handling ###
