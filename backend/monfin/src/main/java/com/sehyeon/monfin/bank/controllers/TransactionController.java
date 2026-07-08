@@ -1,5 +1,7 @@
 package com.sehyeon.monfin.bank.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sehyeon.monfin.bank.dto.requests.CardAuthorizationRequest;
 import com.sehyeon.monfin.bank.dto.requests.VerifyOTPRequest;
-import com.sehyeon.monfin.bank.dto.responses.CardAuthorizationResponse;
+import com.sehyeon.monfin.bank.dto.responses.TransactionResponse;
 import com.sehyeon.monfin.bank.dto.responses.VerifyOTPResponse;
 import com.sehyeon.monfin.bank.services.transactions.OTPValidatorService;
 import com.sehyeon.monfin.bank.services.transactions.TransactionService;
@@ -33,10 +35,9 @@ public class TransactionController {
     public TransactionController() {}
 
     @PostMapping("/authorize")
-    public ResponseEntity<String> authorizeTransaction(@Valid @RequestBody CardAuthorizationRequest req) {
-        CardAuthorizationResponse res = transactionService.createCardAuthorizationResponse(req);
-        return res.authorized() ? ResponseEntity.ok(res.authorizationCode()) 
-            : ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res.declineReason());
+    public ResponseEntity<List<TransactionResponse>> authorizeTransaction(@Valid @RequestBody List<CardAuthorizationRequest> req) {
+        List<TransactionResponse> res = transactionService.createCardAuthorizationResponses(req);
+        return ResponseEntity.ok(res);
     }
 
     @PostMapping("/verify-otp")

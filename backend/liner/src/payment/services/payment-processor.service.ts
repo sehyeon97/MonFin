@@ -128,11 +128,9 @@ export class PaymentProcessorService {
     ///////////////////////// ### *** PROCESSOR *** ### /////////////////////////
     public async compileTransaction(
         req: TransactionRequest,
-    ): Promise<TransactionResponse> {
-        // MODIFY THIS TO REMOVE [0] LATER
-        // RIGHT NOW IT HANDLES ONE TRANSACTION ONLY
-        // BECAUSE MY BANK SPRING BOOT ONLY ACCEPTS ONE TRANSACTION
-        const transactionData = this.combineAllTransactions(req)[0];
+    ): Promise<TransactionResponse[]> {
+        let otpRequired = false;
+        const transactionData = this.combineAllTransactions(req);
 
         // make a post request to bank/tsp backend (TransactionController.java)
         const response = await fetch(
@@ -147,26 +145,34 @@ export class PaymentProcessorService {
                 }),
             },
         );
-        const bankResponse = (await response.json()) as BankTransactionResponse;
+        const bankResponse =
+            (await response.json()) as BankTransactionResponse[];
 
-        const transactionResponse: TransactionResponse =
-            new TransactionResponse();
+        const transactionResponses: TransactionResponse[] = [];
 
-        // This transaction ID will likely be an overall, unified ID, unless
-        // OTP is required, then it will specifically be transaction IDs that need verification
-        transactionResponse.transactionID = transactionData.transactionID;
-        if (bankResponse.authorized) {
-            // transaction approved
-            transactionResponse.status = TRANSACTION_STATUS.APPROVED;
-        } else if (bankResponse.declineReason == 'OTP Required.') {
-            // otp required: use bank's callback url
-            transactionResponse.status = TRANSACTION_STATUS.PENDING;
-        } else {
-            // fraud detected: decline transaction
-            transactionResponse.status = TRANSACTION_STATUS.DECLINED;
+        bankResponse.forEach((res) => {
+            const transactionResponse: TransactionResponse =
+                new TransactionResponse();
+
+            transactionResponse.transactionID = res.transactionID;
+            if (res.authorized) {
+                // transaction approved
+                transactionResponse.status = TRANSACTION_STATUS.APPROVED;
+            } else if (res.declineReason == 'OTP Required.') {
+                // otp required: use bank's callback url
+                transactionResponse.status = TRANSACTION_STATUS.PENDING;
+                otpRequired = true;
+            } else {
+                // fraud detected: decline transaction
+                transactionResponse.status = TRANSACTION_STATUS.DECLINED;
+            }
+        });
+
+        if (otpRequired) {
+            // do something
         }
 
-        return transactionResponse;
+        return transactionResponses;
     }
 
     // This assumes that a merchant can only own one business
@@ -179,7 +185,7 @@ export class PaymentProcessorService {
         let amountSum = 0;
         products.forEach((product) => {
             const currMerchantID = product.merchantID;
-            amountSum += product.price;
+            amountSum += product.price * product.count;
             if (merchantID != currMerchantID) {
                 const timestamp: string = new Date().toISOString();
                 const cryptogram: string = this.generateCryptogram(
@@ -192,12 +198,13 @@ export class PaymentProcessorService {
                 // what the payment processor stores
                 const transaction: Transaction = new Transaction();
                 transaction.cardToken = data.cardToken;
+                transaction.customerID = data.customerID;
                 transaction.merchantID = merchantID;
                 transaction.businessName = product.businessName;
                 transaction.timestamp = timestamp;
                 transaction.price = amountSum;
-                transaction.cryptogram = cryptogram;
-                transaction.callbackUrl = PaymentProcessorService.callbackUrl;
+                transaction.itemName = product.productName;
+                transaction.quantity = product.count;
 
                 // what the bank is given
                 const req: TransactionDetailsRequest =

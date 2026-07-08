@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { TRANSACTION_STATUS } from '../enums/transaction-status.enum';
 
 @Entity('transaction')
 export class Transaction {
@@ -7,6 +8,9 @@ export class Transaction {
 
     @Column()
     cardToken!: string;
+
+    @Column()
+    customerID!: string;
 
     @Column()
     merchantID!: string;
@@ -23,9 +27,21 @@ export class Transaction {
     price!: number;
 
     @Column()
-    cryptogram!: string;
+    itemName!: string;
 
-    // bank calls back this frontend url after sending transaction result to processor's backend
     @Column()
-    callbackUrl!: string;
+    brand!: string;
+
+    @Column()
+    quantity!: number;
+
+    @Column()
+    status!: TRANSACTION_STATUS;
+
+    // @Column()
+    // cryptogram!: string;
+
+    // // bank calls back this frontend url after sending transaction result to processor's backend
+    // @Column()
+    // callbackUrl!: string;
 }

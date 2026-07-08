@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.sehyeon.monfin.bank.domainobjs.FraudDetectionResult;
 import com.sehyeon.monfin.bank.model.entity.bank.Card;
-import com.sehyeon.monfin.bank.model.entity.bank.Transaction;
+import com.sehyeon.monfin.bank.model.entity.transactions.Transaction;
 
 /**
  *  | FRAUD RULES (passing them will increase the riskScore which may freeze a card) |

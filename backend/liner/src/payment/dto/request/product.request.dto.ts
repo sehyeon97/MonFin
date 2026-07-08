@@ -24,4 +24,8 @@ export class ProductRequest {
     @IsNotEmpty()
     @IsNumber()
     count!: number;
+
+    @IsNotEmpty()
+    @IsString()
+    productName!: string;
 }

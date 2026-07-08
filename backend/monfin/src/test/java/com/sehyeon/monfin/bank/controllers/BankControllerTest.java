@@ -100,7 +100,8 @@ public class BankControllerTest {
         cardRepository.deleteAll();
         bankRepository.deleteAll();
 
-        this.savedJohnDoe = bankRepository.save(new BankAccount("John", "Doe", "John Doe", "9096773328"));
+        this.savedJohnDoe = bankRepository.save(
+            new BankAccount("John", "Doe", "John Doe", "9096773328"));
     }
 
     @Test
@@ -116,8 +117,6 @@ public class BankControllerTest {
             .expectStatus().isOk()
             .expectBody(UUID.class)
             .value(body -> {
-                System.out.println("RESPONSE BODY = " + body);
-                System.out.println("SAVED BODY = " + savedJohnDoe.getBankAccountID());
                 assertThat(body).isEqualTo(savedJohnDoe.getBankAccountID());
             });
     }

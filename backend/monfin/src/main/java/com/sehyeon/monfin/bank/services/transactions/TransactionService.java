@@ -6,9 +6,11 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -19,14 +21,15 @@ import org.springframework.stereotype.Service;
 import com.sehyeon.monfin.bank.domainobjs.FraudDetectionResult;
 import com.sehyeon.monfin.bank.dto.requests.CardAuthorizationRequest;
 import com.sehyeon.monfin.bank.dto.responses.CardAuthorizationResponse;
+import com.sehyeon.monfin.bank.dto.responses.TransactionResponse;
 import com.sehyeon.monfin.bank.model.card.basic.BasicCardInfo;
 import com.sehyeon.monfin.bank.model.card.status.CardStatus;
 import com.sehyeon.monfin.bank.model.entity.bank.Card;
-import com.sehyeon.monfin.bank.model.entity.bank.Transaction;
+import com.sehyeon.monfin.bank.model.entity.transactions.Transaction;
 import com.sehyeon.monfin.bank.model.entity.tsp.CardToken;
 import com.sehyeon.monfin.bank.model.limits.SpendingLimits;
 import com.sehyeon.monfin.bank.repos.CardTokenRepository;
-import com.sehyeon.monfin.bank.repos.TransactionRepository;
+import com.sehyeon.monfin.bank.repos.transactions.TransactionRepository;
 import com.sehyeon.monfin.bank.services.bank.BankInboxService;
 import com.sehyeon.monfin.bank.services.bank.CardService;
 
@@ -96,78 +99,133 @@ public class TransactionService {
 
     public TransactionService() {}
 
-    public CardAuthorizationResponse createCardAuthorizationResponse(CardAuthorizationRequest req) {
-        // validate card token by checking that a card is mapped to this token
-        Optional<CardToken> cardTokenData = tokenRepository.findByCardToken(req.cardToken());
-        if (cardTokenData.isEmpty()) { // invalid card token
-            return new CardAuthorizationResponse(false, "", "Invalid card token.", "");
-        }
+    // public List<CardAuthorizationResponse> createCardAuthorizationResponses(List<CardAuthorizationRequest> requests) {
+    //     List<CardAuthorizationResponse> responses = new ArrayList<>();
+    //     for (CardAuthorizationRequest req : requests) {
+    //         responses.add(createCardAuthorizationResponse(req));
+    //     }
+    //     return responses;
+    // }
 
-        Optional<Card> cardData = cardService.getCardByID(cardTokenData.get().getCardID());
-        Card card = cardData.get();
-        CardToken cardToken = cardTokenData.get();
-
-        // validate cryptogram using HMAC (assume the cryptogram in request also used HMAC)
-        String expectedCryptogram = generateCryptogram(req.cardToken(), req.merchantID().toString(), req.timestamp(), req.amount());
-        if (!expectedCryptogram.equalsIgnoreCase(req.cryptogram())) {
-            return new CardAuthorizationResponse(false, "", "Invalid request.", "");
-        }
-
-        // validate card status is ACTIVE
-        if (card.getCardStatus() != CardStatus.ACTIVE) {
-            return new CardAuthorizationResponse(false, "", "Card is not active.", "");
-        }
-
-        // confirm transaction date is before the card's expire month & year
-        BasicCardInfo cardInfo = card.getBasicCardInfo();
-        int comparedValue = compare(
-            req.timestamp(), Integer.parseInt(cardInfo.getExpMonth()), Integer.parseInt(cardInfo.getExpYear()));
-        
-        if (comparedValue > 0) {
-            return new CardAuthorizationResponse(false, "", "Invalid transaction date.", "");
-        }
-
-        // check that amount is within the daily and monthly spending limits
-        int dailyLimit = card.getDailyLimit();
-        int monthlyLimit = card.getMonthlyLimit();
-        List<Transaction> thisMonthTransactions = getThisMonthTransactions(cardToken.getCardToken());
-        SpendingLimits totalExpenses = calculateTotalTransactionAmount(cardToken.getCardToken(), thisMonthTransactions);
-
-        if (hasCardReachedSpendingLimit(totalExpenses, dailyLimit, monthlyLimit, req.amount())) {
-            return new CardAuthorizationResponse(false, "", "Daily or monthly limit reached.", "");
-        }
-
-        // Ensure enough funds are present
-        if (!hasEnoughAvailableBalance(card, req.amount())) {
-            return new CardAuthorizationResponse(false, "", "Not enough funds.", "");
-        }
-
-        // Run Transaction against Fraud Prevention Rules
-        ZonedDateTime timestampZDT = convertInstantToZonedDateTime(req.timestamp());
-        Transaction transaction = new Transaction(
-            req.transactionID(), card.getCardID(), card.getBankAccountID(), cardToken.getCardToken(),
-            intToStr(timestampZDT.getDayOfMonth()), intToStr(timestampZDT.getMonthValue()), intToStr(timestampZDT.getYear()),
-            req.merchantName(), req.merchantID(), req.amount(), req.timestamp(), "");
-        FraudDetectionResult result = fraudDetectionService.evaluate(thisMonthTransactions, transaction, card);
-
-        int fraudScore = result.riskScore();
-        if (fraudScore <= 30) { // approved
-            card.setRiskScore(card.getRiskScore() - DECREASE_RISK_SCORE_ON_APPROVE);
-            return new CardAuthorizationResponse(true, "authorized", "", "");
-        } else if (fraudScore > RISK_SCORE_LOWER_LIMIT && fraudScore <= RISK_SCORE_UPPER_LIMIT) {
-            String otp = otpService.storeOTP(transaction.getID(), req.callbackUrl());
-            bankInboxService.sendOTP(card.getBankAccountID(), otp);
-            return new CardAuthorizationResponse(
-                false, "", "OTP Required.", BANK_CALLBACK_URL);
-        } else { // declined
-            int cardRiskScore = card.getRiskScore();
-            card.setRiskScore(cardRiskScore + INCREASE_RISK_SCORE_ON_DECLINE);
-            if (cardRiskScore >= HIGH_RISK_SCORE_FREEZE_CARD) {
-                card.setCardStatus(CardStatus.FROZEN);
-                bankInboxService.sendCardStatus(card.getBankAccountID(), card.getCardStatus().toString(), transaction);
+    public List<TransactionResponse> createCardAuthorizationResponses(List<CardAuthorizationRequest> requests) {
+        List<TransactionResponse> transactionResponses = new ArrayList<>();
+        UUID otpID = null;
+        Card card = null;
+        for (CardAuthorizationRequest req :  requests) {
+            UUID transactionID = req.transactionID();
+            // validate card token by checking that a card is mapped to this token
+            Optional<CardToken> cardTokenData = tokenRepository.findByCardToken(req.cardToken());
+            if (cardTokenData.isEmpty()) { // invalid card token
+                CardAuthorizationResponse caRes = new CardAuthorizationResponse(
+                    false, "", "Invalid card token.", "");
+                TransactionResponse res = new TransactionResponse(transactionID, caRes);
+                transactionResponses.add(res);
+                continue;
             }
-            return new CardAuthorizationResponse(false, "", "Fraud detected.", "");
+
+            Optional<Card> cardData = cardService.getCardByID(cardTokenData.get().getCardID());
+            card = cardData.get();
+            CardToken cardToken = cardTokenData.get();
+
+            // validate cryptogram using HMAC (assume the cryptogram in request also used HMAC)
+            String expectedCryptogram = generateCryptogram(req.cardToken(), req.merchantID().toString(), req.timestamp(), req.amount());
+            if (!expectedCryptogram.equalsIgnoreCase(req.cryptogram())) {
+                CardAuthorizationResponse caRes = new CardAuthorizationResponse(
+                    false, "", "Invalid request.", "");
+                TransactionResponse res = new TransactionResponse(transactionID, caRes);
+                transactionResponses.add(res);
+                continue;
+            }
+
+            // validate card status is ACTIVE
+            if (card.getCardStatus() != CardStatus.ACTIVE) {
+                CardAuthorizationResponse caRes = new CardAuthorizationResponse(
+                    false, "", "Card is not active.", "");
+                TransactionResponse res = new TransactionResponse(transactionID, caRes);
+                transactionResponses.add(res);
+                continue;
+            }
+
+            // confirm transaction date is before the card's expire month & year
+            BasicCardInfo cardInfo = card.getBasicCardInfo();
+            int comparedValue = compare(
+                req.timestamp(), Integer.parseInt(cardInfo.getExpMonth()), Integer.parseInt(cardInfo.getExpYear()));
+            
+            if (comparedValue > 0) {
+                CardAuthorizationResponse caRes = new CardAuthorizationResponse(
+                    false, "", "Invalid transaction date.", "");
+                TransactionResponse res = new TransactionResponse(transactionID, caRes);
+                transactionResponses.add(res);
+                continue;
+            }
+
+            // check that amount is within the daily and monthly spending limits
+            int dailyLimit = card.getDailyLimit();
+            int monthlyLimit = card.getMonthlyLimit();
+            List<Transaction> thisMonthTransactions = getThisMonthTransactions(cardToken.getCardToken());
+            SpendingLimits totalExpenses = calculateTotalTransactionAmount(cardToken.getCardToken(), thisMonthTransactions);
+
+            if (hasCardReachedSpendingLimit(totalExpenses, dailyLimit, monthlyLimit, req.amount())) {
+                CardAuthorizationResponse caRes = new CardAuthorizationResponse(
+                    false, "", "Daily or monthly limit reached.", "");
+                TransactionResponse res = new TransactionResponse(transactionID, caRes);
+                transactionResponses.add(res);
+                continue;
+            }
+
+            // Ensure enough funds are present
+            if (!hasEnoughAvailableBalance(card, req.amount())) {
+                CardAuthorizationResponse caRes = new CardAuthorizationResponse(
+                    false, "", "Not enough funds.", "");
+                TransactionResponse res = new TransactionResponse(transactionID, caRes);
+                transactionResponses.add(res);
+                continue;
+            }
+
+            // Run Transaction against Fraud Prevention Rules
+            ZonedDateTime timestampZDT = convertInstantToZonedDateTime(req.timestamp());
+            Transaction transaction = new Transaction(
+                transactionID, card.getCardID(), card.getBankAccountID(), cardToken.getCardToken(),
+                intToStr(timestampZDT.getDayOfMonth()), intToStr(timestampZDT.getMonthValue()), intToStr(timestampZDT.getYear()),
+                req.merchantName(), req.merchantID(), req.amount(), req.timestamp(), "");
+            FraudDetectionResult result = fraudDetectionService.evaluate(thisMonthTransactions, transaction, card);
+
+            int fraudScore = result.riskScore();
+            if (fraudScore <= 30) { // approved
+                card.setRiskScore(card.getRiskScore() - DECREASE_RISK_SCORE_ON_APPROVE);
+                CardAuthorizationResponse caRes = new CardAuthorizationResponse(
+                    true, "authorized", "", "");
+                TransactionResponse res = new TransactionResponse(transactionID, caRes);
+                transactionResponses.add(res);
+            // } else if (fraudScore <= 30) { IF YOU WANT INTEGRATION TESTING TO RETURN OTP REQUIRED & set above to <= 0
+            } else if (fraudScore > RISK_SCORE_LOWER_LIMIT && fraudScore <= RISK_SCORE_UPPER_LIMIT) {
+                if (otpID == null) {
+                    otpID = otpService.storeOTP(transaction.getID(), req.callbackUrl());
+                } else {
+                    otpService.addTransactionToOTP(otpID, transactionID);
+                }
+                CardAuthorizationResponse caRes = new CardAuthorizationResponse(
+                    false, "", "OTP Required.", BANK_CALLBACK_URL + "/" + otpID);
+                TransactionResponse res = new TransactionResponse(transactionID, caRes);
+                transactionResponses.add(res);
+            } else { // declined
+                int cardRiskScore = card.getRiskScore();
+                card.setRiskScore(cardRiskScore + INCREASE_RISK_SCORE_ON_DECLINE);
+                if (cardRiskScore >= HIGH_RISK_SCORE_FREEZE_CARD) {
+                    card.setCardStatus(CardStatus.FROZEN);
+                    bankInboxService.sendCardStatus(card.getBankAccountID(), card.getCardStatus().toString(), transaction);
+                }
+                CardAuthorizationResponse caRes = new CardAuthorizationResponse(
+                    false, "", "Fraud detected.", "");
+                TransactionResponse res = new TransactionResponse(transactionID, caRes);
+                transactionResponses.add(res);
+            }
         }
+        
+        if (otpID != null) {
+            bankInboxService.sendOTP(card.getBankAccountID(), otpService.getOTPStringByID(otpID));
+        }
+        return transactionResponses;
     }
 
     private String generateCryptogram(String cardToken, String merchantID, Instant timestamp, int amount) {

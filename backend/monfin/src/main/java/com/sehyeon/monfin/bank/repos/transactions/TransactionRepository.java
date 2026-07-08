@@ -1,4 +1,4 @@
-package com.sehyeon.monfin.bank.repos;
+package com.sehyeon.monfin.bank.repos.transactions;
 
 import java.time.Instant;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.sehyeon.monfin.bank.model.entity.bank.Transaction;
+import com.sehyeon.monfin.bank.model.entity.transactions.Transaction;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {

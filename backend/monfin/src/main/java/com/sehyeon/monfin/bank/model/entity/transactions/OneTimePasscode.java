@@ -1,4 +1,4 @@
-package com.sehyeon.monfin.bank.model.entity.bank;
+package com.sehyeon.monfin.bank.model.entity.transactions;
 
 import java.util.UUID;
 
@@ -16,24 +16,19 @@ public class OneTimePasscode {
     @GeneratedValue
     private UUID otpID;
 
-    private UUID transactionID;
+    // private UUID transactionID; Refactored to new Entity called TransactionOTP
     private String otp;
     private String ppCallbackUrl;
 
     protected OneTimePasscode() {}
 
-    public OneTimePasscode(UUID transactionID, String otp, String ppCallbackUrl) {
-        this.transactionID = transactionID;
+    public OneTimePasscode(String otp, String ppCallbackUrl) {
         this.otp = otp;
         this.ppCallbackUrl = ppCallbackUrl;
     }
 
     public UUID getOtpID() {
         return otpID;
-    }
-
-    public UUID getTransactionID() {
-        return transactionID;
     }
 
     public String getOTP() {

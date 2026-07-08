@@ -18,6 +18,7 @@ works with one or more Transaction(s) that require OTP or are declined.
 For this to work, the bank's code also needs to be modified,
 to return a response that includes an array of CardAuthorizationResponses.
 The CardAuthorizationResponses.java should also include transactionID.
+BankTransactionResponse.ts should change accordingly.
 
 Should the OTP be different for each Transaction requiring OTP?
 I believe that's a low quality user experience.
@@ -30,3 +31,17 @@ that does not justify the succeeding Transactions to have the same result.
 
 Each Transaction in the List of Transactions must be handled separately.
 Perhaps the Transactions can be ordered by the Amount in Descending order.
+
+All Transactions that have been approved should be compiled together.
+All Transactions requiring OTP should be compiled together.
+All Transactions that have been declined should be compiled together.
+
+Should the Payment Processor automatically try to make new attempts when a Transaction is declined?
+Yes, once a day up to 3 days. After the 3rd day, change the Transaction_status to Declined.
+However, I will not include this as part of MVP.
+For MVP, whatever is declined stays declined.
+
+Edit: Everything part of MVP EXCEPT lines 25-27 are implemented.
+      I'm thinking if lines 25-27 can actually be implemented within the payment processor.
+      Line 33 should be implemented in the frontend.
+      The frontend will insert in the right order.

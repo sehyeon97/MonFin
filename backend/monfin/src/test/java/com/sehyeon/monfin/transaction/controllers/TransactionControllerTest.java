@@ -4,11 +4,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ import com.sehyeon.monfin.bank.controllers.TransactionController;
 import com.sehyeon.monfin.bank.dto.requests.CardAuthorizationRequest;
 import com.sehyeon.monfin.bank.dto.requests.VerifyOTPRequest;
 import com.sehyeon.monfin.bank.dto.responses.CardAuthorizationResponse;
+import com.sehyeon.monfin.bank.dto.responses.TransactionResponse;
 import com.sehyeon.monfin.bank.dto.responses.VerifyOTPResponse;
 import com.sehyeon.monfin.bank.services.transactions.OTPValidatorService;
 import com.sehyeon.monfin.bank.services.transactions.TransactionService;
@@ -48,15 +50,16 @@ public class TransactionControllerTest {
     @Autowired
     private ObjectMapper objMapper;
 
-    private CardAuthorizationRequest req;
+    private List<CardAuthorizationRequest> req;
     private VerifyOTPRequest otpReq;
     private UUID transactionID;
 
     @BeforeEach
     public void setup() {
-        req = new CardAuthorizationRequest(
+        req = new ArrayList<>();
+        req.add(new CardAuthorizationRequest(
             UUID.randomUUID(), UUID.randomUUID().toString(), UUID.randomUUID(), "Amazon",
-            Instant.now(), 100, "cryptogram", "link");
+            Instant.now(), 100, "cryptogram", "link"));
         
         transactionID = UUID.randomUUID();
         otpReq = new VerifyOTPRequest(transactionID, "123456");
@@ -65,11 +68,14 @@ public class TransactionControllerTest {
     @Test
     public void shouldAuthorizeTransaction() throws Exception {
         // Arrange
-        CardAuthorizationResponse resApproved = new CardAuthorizationResponse(
+        List<TransactionResponse> resApproved = new ArrayList<>();
+        CardAuthorizationResponse caRes = new CardAuthorizationResponse(
             true, "authorized", "", "");
+        TransactionResponse transactionResponse = new TransactionResponse(transactionID, caRes);
+        resApproved.add(transactionResponse);
 
         // Act
-        when(transactionService.createCardAuthorizationResponse(req))
+        when(transactionService.createCardAuthorizationResponses(req))
             .thenReturn(resApproved);
 
         ResultActions result = mockMvc.perform(post(REQUEST_MAPPING_ENDPOINT + AUTHORIZE_TRANSACTION_ENDPOINT)
@@ -77,19 +83,26 @@ public class TransactionControllerTest {
             .content(objMapper.writeValueAsString(req)));
         
         // Assert
-        verify(transactionService).createCardAuthorizationResponse(req);
+        verify(transactionService).createCardAuthorizationResponses(req);
         result.andExpect(status().isOk());
-        result.andExpect(content().string("authorized"));
+        result.andExpect(jsonPath("$[0].transactionID").value(transactionID.toString()))
+            .andExpect(jsonPath("$[0].resData.authorized").value(true))
+            .andExpect(jsonPath("$[0].resData.authorizationCode").value("authorized"))
+            .andExpect(jsonPath("$[0].resData.declineReason").value(""))
+            .andExpect(jsonPath("$[0].resData.bankCallbackUrl").value(""));
     }
 
     @Test
     public void shouldDeclineTransaction() throws Exception {
         // Arrange
-        CardAuthorizationResponse resDeclined = new CardAuthorizationResponse(
+        List<TransactionResponse> resDeclined = new ArrayList<>();
+        CardAuthorizationResponse caRes = new CardAuthorizationResponse(
             false, "", "OTP Required.", "bank_callback_url");
+        TransactionResponse transactionResponse = new TransactionResponse(transactionID, caRes);
+        resDeclined.add(transactionResponse);
 
         // Act
-        when(transactionService.createCardAuthorizationResponse(req))
+        when(transactionService.createCardAuthorizationResponses(req))
             .thenReturn(resDeclined);
 
         ResultActions result = mockMvc.perform(post(REQUEST_MAPPING_ENDPOINT + AUTHORIZE_TRANSACTION_ENDPOINT)
@@ -97,9 +110,13 @@ public class TransactionControllerTest {
             .content(objMapper.writeValueAsString(req)));
 
         // Assert
-        verify(transactionService).createCardAuthorizationResponse(req);
-        result.andExpect(status().isBadRequest());
-        result.andExpect(content().string("OTP Required."));
+        verify(transactionService).createCardAuthorizationResponses(req);
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$[0].transactionID").value(transactionID.toString()))
+            .andExpect(jsonPath("$[0].resData.authorized").value(false))
+            .andExpect(jsonPath("$[0].resData.authorizationCode").value(""))
+            .andExpect(jsonPath("$[0].resData.declineReason").value("OTP Required."))
+            .andExpect(jsonPath("$[0].resData.bankCallbackUrl").value("bank_callback_url"));
     }
 
     @Test

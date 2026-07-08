@@ -19,7 +19,7 @@ import com.sehyeon.monfin.bank.model.card.network.CardNetwork;
 import com.sehyeon.monfin.bank.model.card.status.CardStatus;
 import com.sehyeon.monfin.bank.model.card.types.CardType;
 import com.sehyeon.monfin.bank.model.entity.bank.Card;
-import com.sehyeon.monfin.bank.model.entity.bank.Transaction;
+import com.sehyeon.monfin.bank.model.entity.transactions.Transaction;
 import com.sehyeon.monfin.bank.services.transactions.FraudDetectionService;
 
 /**

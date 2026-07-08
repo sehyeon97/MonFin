@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sehyeon.monfin.bank.model.entity.bank.BankAccountInbox;
-import com.sehyeon.monfin.bank.model.entity.bank.Transaction;
+import com.sehyeon.monfin.bank.model.entity.transactions.Transaction;
 import com.sehyeon.monfin.bank.repos.BankAccountInboxRepository;
 
 import jakarta.transaction.Transactional;

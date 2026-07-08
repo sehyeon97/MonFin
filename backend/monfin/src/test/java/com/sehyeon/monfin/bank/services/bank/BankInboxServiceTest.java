@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.Rollback;
 
 import com.sehyeon.monfin.bank.model.entity.bank.BankAccountInbox;
-import com.sehyeon.monfin.bank.model.entity.bank.Transaction;
+import com.sehyeon.monfin.bank.model.entity.transactions.Transaction;
 import com.sehyeon.monfin.bank.repos.BankAccountInboxRepository;
 
 @ExtendWith(MockitoExtension.class)

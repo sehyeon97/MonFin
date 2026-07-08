@@ -1,4 +1,4 @@
-package com.sehyeon.monfin.bank.model.entity.bank;
+package com.sehyeon.monfin.bank.model.entity.transactions;
 
 import java.time.Instant;
 import java.util.UUID;
