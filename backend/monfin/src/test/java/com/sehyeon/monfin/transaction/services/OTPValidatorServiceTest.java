@@ -8,6 +8,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,7 +20,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.Rollback;
 
-import com.sehyeon.monfin.bank.dto.responses.VerifyOTPResponse;
+import com.sehyeon.monfin.bank.dto.responses.TransactionData;
+import com.sehyeon.monfin.bank.dto.responses.TransactionResponse;
 import com.sehyeon.monfin.bank.model.entity.transactions.OneTimePasscode;
 import com.sehyeon.monfin.bank.repos.transactions.OTPRepository;
 import com.sehyeon.monfin.bank.repos.transactions.TransactionOTPRepository;
@@ -47,20 +50,22 @@ public class OTPValidatorServiceTest {
     private static final String WRONG_OTP = "000000";
     private static final String PAYMENT_PROCESSOR_CALLBACK_URL = "www.hello-world.com";
 
+    private static final TransactionData META_DATA = new TransactionData(
+        UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID().toString(), UUID.randomUUID(), "Merchant",
+        "Brand", "Product name", Instant.now(), 100);
+
     @Test
     @Rollback(true)
     public void shouldDeclineInvalidOTP() {
         // Arrange
-        UUID transactionID = UUID.randomUUID();
         OneTimePasscode otp = new OneTimePasscode(CORRECT_OTP, PAYMENT_PROCESSOR_CALLBACK_URL);
 
         // Act
         otpRepository.saveAndFlush(otp);
-        VerifyOTPResponse res = otpService.validateOTP(transactionID, WRONG_OTP);
+        List<TransactionResponse> res = otpService.validateOTP(META_DATA.transactionID(), WRONG_OTP, META_DATA);
 
         // Assert
-        assertFalse(res.verified());
-        assertEquals("", res.authorizationCode());
+        assertTrue(res.isEmpty());
     }
 
     @Test
@@ -71,11 +76,10 @@ public class OTPValidatorServiceTest {
 
         // Act
         otpRepository.saveAndFlush(otp);
-        VerifyOTPResponse res = otpService.validateOTP(UUID.randomUUID(), CORRECT_OTP);
+        List<TransactionResponse> res = otpService.validateOTP(UUID.randomUUID(), CORRECT_OTP, META_DATA);
 
         // Assert
-        assertFalse(res.verified());
-        assertEquals("", res.authorizationCode());
+        assertFalse(res.isEmpty());
     }
 
     /**
@@ -97,7 +101,7 @@ public class OTPValidatorServiceTest {
 
         // Act
         when(otpRepository.findById(any())).thenReturn(Optional.of(otp));
-        VerifyOTPResponse res = otpService.validateOTP(transactionID, CORRECT_OTP);
+        List<TransactionResponse> res = otpService.validateOTP(transactionID, CORRECT_OTP, META_DATA);
 
         // Check that result went from an empty string to Pending
         // assertTrue(transactionRepository.findById(transactionID).get().getResult().equalsIgnoreCase("Pending"));
@@ -105,9 +109,10 @@ public class OTPValidatorServiceTest {
         verify(callbackService).notifyPaymentProcessor(any(), any());
         // Otp repository is called once to delete current OTP from table
         verify(otpRepository, times(1)).delete(otp);
-        // Ensure VerifyOTPResponse has correct arguments
-        assertTrue(res.verified());
-        assertEquals("authorized", res.authorizationCode());
+        // Ensure TransactionResponse has correct arguments
+        TransactionResponse response = res.get(0);
+        assertEquals(100, response.transactionData().amount());
+        assertEquals("authorized", response.resData().authorizationCode());
     }
 
     // THIS REQUIRES INTEGRATION TESTING AND CANNOT BE DONE WITH MOCKS

@@ -1,5 +1,4 @@
-export class BankTransactionResponse {
-    transactionID!: string;
+export class BankResponseData {
     authorized!: boolean;
     authorizationCode!: string;
     declineReason!: string;

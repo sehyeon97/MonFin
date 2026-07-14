@@ -1,0 +1,15 @@
+The files named:
+1. transaction-data.dto.ts (Payment Processor folder)
+2. sales-history.dto.ts (Merchant folder)
+3. order-history.dto.ts (Customer folder)
+
+have the exact same fields. The reason they are the same but existing in different folders
+is to show that merchant, customer, and payment processor is independent of each other.
+The purpose of having it separated is to demonstrate Microservices Architecture concept,
+without actually creating multiple projects for each service.
+
+The same goes for the entities that revolve around these DTOs.
+Customer, Merchant, and Payment Processor have their own tables, but not separate databases.
+Therefore, fields will overlap and may seem redundant, and that is intentional.
+Although not the exact way microservices are supposed to be implemented,
+to minimize my personal cpu load and resources, everything is handled in one, with microservices logic.

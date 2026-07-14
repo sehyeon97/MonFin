@@ -8,6 +8,9 @@ import { AddPaymentMethodRequest } from '../dto/request/customer-payment-method.
 import { PaymentProcessorService } from '../services/payment-processor.service';
 import { AddMerchantDebitCardRequest } from '../dto/request/merchant-card.request.dto';
 import { MerchantCardResponse } from '../dto/response/merchant-card.response.dto';
+import { BankOTPTransactionResult } from '../dto/request/bank-otp-result.request.dto';
+import { TransactionRequest } from '../dto/request/transaction.request.dto';
+import { TransactionResponse } from '../dto/response/transaction.response.dto';
 
 @Controller('payment-processor')
 export class PaymentProcessorController {
@@ -41,4 +44,19 @@ export class PaymentProcessorController {
     ///////////////////////// ### *** CUSTOMER *** ### /////////////////////////
 
     ///////////////////////// ### *** PROCESSOR *** ### /////////////////////////
+    @Post('checkout')
+    public async createTransaction(
+        @Body() req: TransactionRequest,
+    ): Promise<TransactionResponse[]> {
+        return await this.paymentProcessorService.compileTransaction(req);
+    }
+
+    @Post('bank-otp')
+    public async saveTransactionResults(
+        @Body() transactionResults: BankOTPTransactionResult[],
+    ): Promise<void> {
+        await this.paymentProcessorService.finalizeTransactions(
+            transactionResults,
+        );
+    }
 }

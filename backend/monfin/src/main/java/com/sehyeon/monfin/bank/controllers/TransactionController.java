@@ -3,7 +3,6 @@ package com.sehyeon.monfin.bank.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sehyeon.monfin.bank.dto.requests.CardAuthorizationRequest;
 import com.sehyeon.monfin.bank.dto.requests.VerifyOTPRequest;
 import com.sehyeon.monfin.bank.dto.responses.TransactionResponse;
-import com.sehyeon.monfin.bank.dto.responses.VerifyOTPResponse;
 import com.sehyeon.monfin.bank.services.transactions.OTPValidatorService;
 import com.sehyeon.monfin.bank.services.transactions.TransactionService;
 
@@ -41,9 +39,9 @@ public class TransactionController {
     }
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<VerifyOTPResponse> verifyOTP(@RequestBody VerifyOTPRequest req) {
-        VerifyOTPResponse res = otpValidatorService.validateOTP(req.transactionID(), req.otp());
-        return res.verified() ? ResponseEntity.ok(res) : ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
+    public ResponseEntity<List<TransactionResponse>> verifyOTP(@RequestBody VerifyOTPRequest req) {
+        List<TransactionResponse> res = otpValidatorService.validateOTP(req.otpID(), req.otp(), req.metaData());
+        return ResponseEntity.ok(res);
     }
     
 }

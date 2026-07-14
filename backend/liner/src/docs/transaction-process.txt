@@ -45,3 +45,61 @@ Edit: Everything part of MVP EXCEPT lines 25-27 are implemented.
       I'm thinking if lines 25-27 can actually be implemented within the payment processor.
       Line 33 should be implemented in the frontend.
       The frontend will insert in the right order.
+
+Edit: Lines 25-27 are good to go
+I may have made changes on a whiteboard, so I will write what I wrote on the whiteboard here
+
+Customer can buy from MULTIPLE Merchants.
+Each Customer - Merchant relationship is a unique Transaction.
+Each unique Transaction is mapped to One overall Checkout.
+This Checkout composed of multiple unique Transactions are compiled by the Payment Processor.
+
+Each Transaction Checkout request made by the Payment Processor has these fields:
+1. Transaction ID
+2. Merchant ID
+3. Card Token
+4. Amount
+5. Timestamp
+6. Cryptogram
+7. Payment Processor Callback Url
+8. Merchant Name
+
+When the Payment Processor makes a request to the bank with the compiled Transaction Checkout,
+the Bank responds with a list of TransactionResponses
+It states:
+    1. transactionID
+    2. CardAuthorizationResponses
+        where, this response includes:
+        boolean authorized, string authorization code, string decline reason, and string bank callback url.
+
+With this Bank Response, the Payment Processor does the following:
+1. On Approve status, save Transaction to Repository with Transaction_Status = PROCESSING
+    This part is not implemented yet, but create a TransactionAuthorizationRepository.
+    It will have the columns: authorization id, transaction id, authorization code.
+    The merchant requests for payment within 3 days or so. They should send either the 
+    transaction or authorization id. I'm not sure yet which would be more realistic.
+    Upon receiving the id, payment processor requests the bank with authorization code,
+    bank verifies the code and withdraws money from customer's bank account, and then
+    sends the money to the payment processor, which then forwards it to the merchant's bank account.
+
+2. On Decline, save Transaction to Repository with Transaction_Status = DECLINED
+
+On approve and declines only, direct the user to the checkout results page.
+
+3. On OTP-Required: Send customer to bank callback url.
+    The bank should verify otp and redirect user to payment processor callback url
+    which will show the customer's checkout result page with the verified transaction results (approved / declined)
+
+In payment processor, if there exists at least one otp required transaction,
+redirect user to bank callback.
+If none require otp, show checkout results page.
+
+Therefore, the Response DTO that the payment processor backend sends the payment processor frontend is:
+status: string (pass or otp)
+callback_url: string (will be empty if none require otp)
+
+Bank callback url will need to include "/{otp_id}"
+This way, the bank knows exactly which otp string to compare the incoming otp with.
+
+Payment processor callback url will need to include "/{customer_id}"
+This way, the checkout results page would automatically show all approved and all declined transactions for the right customer.

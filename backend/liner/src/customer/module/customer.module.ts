@@ -8,10 +8,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Customer } from '../entity/customer.entity.user';
 import { CustomerAccountService } from '../services/customer-account.service';
 import { CardVault } from '../../payment/entity/payment.entity.card.vault';
-import { PurchasedItem } from '../entity/customer.entity.purchased-item';
+import { Order } from '../entity/customer.entity.order';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Customer, CardVault, PurchasedItem])],
+    imports: [TypeOrmModule.forFeature([Customer, CardVault, Order])],
     controllers: [CustomerController],
     providers: [CustomerAccountService],
 })

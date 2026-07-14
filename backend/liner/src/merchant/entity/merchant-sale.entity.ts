@@ -5,8 +5,8 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('purchased-item')
-export class PurchasedItem {
+@Entity('merchant-sale')
+export class SaleHistory {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
@@ -24,4 +24,25 @@ export class PurchasedItem {
 
     @CreateDateColumn()
     boughtAt!: string;
+
+    @Column()
+    transactionID!: string;
+
+    @Column()
+    merchantName!: string;
+
+    @Column()
+    productName!: string;
+
+    @Column()
+    itemCount!: number;
+
+    @Column()
+    totalPrice!: number;
+
+    @Column()
+    brand!: string;
+
+    @Column()
+    isApproved!: boolean;
 }

@@ -85,8 +85,8 @@ public class TransactionServiceTest {
         this.card.setCardStatus(CardStatus.ACTIVE);
         this.cardToken = new CardToken("card-token", card);
         this.req.add(new CardAuthorizationRequest(
-            UUID.randomUUID(), cardToken.getCardToken(), UUID.randomUUID(), "Amazon", Instant.now(),
-            10000, "cryptogram", "url"));
+            UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), UUID.randomUUID(), "Amazon",
+            "Brand", "ProductName", Instant.now(), 10000, "cryptogram", "url"));
     }
 
     @Test
@@ -111,7 +111,8 @@ public class TransactionServiceTest {
         // Arrange
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
-            UUID.randomUUID(), cardToken.getCardToken(), UUID.randomUUID(), "Amazon",
+            UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), UUID.randomUUID(), "Amazon",
+            "Brand", "product name",
             Instant.now().minus(Duration.ofDays(1)), // diff timestamp yields diff cryptogram
             10000, "cryptogram", "url"));
 
@@ -140,8 +141,8 @@ public class TransactionServiceTest {
         String cryptogram = generateCryptogram(cardToken.getCardToken(), merchantID.toString(), timestamp, amount);
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
-            UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
-            timestamp, amount, cryptogram, "url"));
+            UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
+            "brand", "name", timestamp, amount, cryptogram, "url"));
 
         // Act
         when(cardTokenRepository.findByCardToken(req.get(0).cardToken()))
@@ -160,8 +161,10 @@ public class TransactionServiceTest {
 
     @Test
     public void shouldDeclineTransactionDatePastCardExpiry() {
-        BasicCardInfo info = new BasicCardInfo("1234123412341234", "5", "2026", "dough", "123");
-        Card otherCard = new Card(100, 0, info, null, null, null, Instant.now(), 1000, 10000);
+        BasicCardInfo info = new BasicCardInfo(
+            "1234123412341234", "5", "2026", "dough", "123");
+        Card otherCard = new Card(
+            100, 0, info, null, null, null, Instant.now(), 1000, 10000);
         otherCard.setCardStatus(CardStatus.ACTIVE);
         CardToken otherCardToken = new CardToken("token", otherCard);
 
@@ -171,8 +174,8 @@ public class TransactionServiceTest {
         String cryptogram = generateCryptogram(otherCardToken.getCardToken(), merchantID.toString(), timestamp, amount);
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
-            UUID.randomUUID(), otherCardToken.getCardToken(), merchantID, "Amazon",
-            timestamp, amount, cryptogram, "url"));
+            UUID.randomUUID(), UUID.randomUUID(), otherCardToken.getCardToken(), merchantID, "Amazon",
+            "brand", "product name", timestamp, amount, cryptogram, "url"));
 
         when(cardTokenRepository.findByCardToken(req.get(0).cardToken()))
             .thenReturn(Optional.of(otherCardToken));
@@ -211,15 +214,15 @@ public class TransactionServiceTest {
         String lowCryptogram = generateCryptogram(otherCardToken.getCardToken(), merchantID.toString(), lastMonthTimestamp, lowAmount);
         List<CardAuthorizationRequest> reqLow = new ArrayList<>();
         reqLow.add(new CardAuthorizationRequest(
-            UUID.randomUUID(), otherCardToken.getCardToken(), merchantID, "Amazon",
-            lastMonthTimestamp, lowAmount, lowCryptogram, "url"));
+            UUID.randomUUID(), UUID.randomUUID(), otherCardToken.getCardToken(), merchantID, "Amazon",
+            "brand", "product name", lastMonthTimestamp, lowAmount, lowCryptogram, "url"));
 
         // higher than monthly limit request (should decline)
         String highCryptogram = generateCryptogram(otherCardToken.getCardToken(), merchantID.toString(), lastMonthTimestamp, highAmount);
         List<CardAuthorizationRequest> reqHigh = new ArrayList<>();
         reqHigh.add(new CardAuthorizationRequest(
-            UUID.randomUUID(), otherCardToken.getCardToken(), merchantID, "Amazon",
-            lastMonthTimestamp, highAmount, highCryptogram, "url"));
+            UUID.randomUUID(), UUID.randomUUID(), otherCardToken.getCardToken(), merchantID, "Amazon",
+            "brand", "product name", lastMonthTimestamp, highAmount, highCryptogram, "url"));
 
         when(cardTokenRepository.findByCardToken(reqLow.get(0).cardToken()))
             .thenReturn(Optional.of(otherCardToken));
@@ -255,8 +258,8 @@ public class TransactionServiceTest {
         String cryptogram = generateCryptogram(cardToken.getCardToken(), merchantID.toString(), timestamp, amount);
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
-            UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
-            timestamp, amount, cryptogram, "url"));
+            UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
+            "brand", "product name", timestamp, amount, cryptogram, "url"));
 
         // Act
         when(cardTokenRepository.findByCardToken(req.get(0).cardToken()))
@@ -284,8 +287,8 @@ public class TransactionServiceTest {
         String cryptogram = generateCryptogram(cardToken.getCardToken(), merchantID.toString(), timestamp, amount);
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
-            UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
-            timestamp, amount, cryptogram, "url"));
+            UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
+            "brand", "product name", timestamp, amount, cryptogram, "url"));
 
         // Act
         when(cardTokenRepository.findByCardToken(req.get(0).cardToken()))
@@ -315,8 +318,8 @@ public class TransactionServiceTest {
         String cryptogram = generateCryptogram(cardToken.getCardToken(), merchantID.toString(), timestamp, amount);
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
-            UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
-            timestamp, amount, cryptogram, "url"));
+            UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
+            "brand", "product name", timestamp, amount, cryptogram, "url"));
 
         // Act
         when(cardTokenRepository.findByCardToken(req.get(0).cardToken()))
@@ -346,8 +349,8 @@ public class TransactionServiceTest {
         String cryptogram = generateCryptogram(cardToken.getCardToken(), merchantID.toString(), timestamp, amount);
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
-            UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
-            timestamp, amount, cryptogram, "url"));
+            UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
+            "brand", "product name", timestamp, amount, cryptogram, "url"));
 
         // Act
         when(cardTokenRepository.findByCardToken(req.get(0).cardToken()))

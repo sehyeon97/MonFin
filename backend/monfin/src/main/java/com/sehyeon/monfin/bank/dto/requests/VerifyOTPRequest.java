@@ -2,4 +2,6 @@ package com.sehyeon.monfin.bank.dto.requests;
 
 import java.util.UUID;
 
-public record VerifyOTPRequest(UUID transactionID, String otp) {}
+import com.sehyeon.monfin.bank.dto.responses.TransactionData;
+
+public record VerifyOTPRequest(UUID otpID, String otp, TransactionData metaData) {}

@@ -89,6 +89,7 @@ public class TransactionIntegrationTest {
     @Autowired
     private BankRepository bankAccountRepository;
 
+    private static final UUID customerID = UUID.randomUUID();
     private static final UUID merchantID = UUID.randomUUID();
     private static final String merchantName = "Amazon";
     private static final String expMonth = "12";
@@ -187,8 +188,9 @@ public class TransactionIntegrationTest {
             System.out.println("For Transaction " + i + 1 + ": Amount = " + amount);
 
             CardAuthorizationRequest request = new CardAuthorizationRequest(
-                transactionID, cardTokenFromPaymentProcessor, merchantID,
-                merchantName, aPreviousDay, amount, cryptogram, "payment_processor_callback/{customerID}");
+                transactionID, customerID, cardTokenFromPaymentProcessor, merchantID, merchantName,
+                "Brand", "ProductName", aPreviousDay, amount, cryptogram,
+                "payment_processor_callback/{customerID}");
             requests.add(request);
         }
         System.out.println("--------------------------------------------------------");

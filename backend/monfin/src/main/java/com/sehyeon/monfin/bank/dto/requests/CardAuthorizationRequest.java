@@ -11,5 +11,5 @@ import java.util.UUID;
  * Transaction ID is shared between Payment Processor and the Bank
  */
 public record CardAuthorizationRequest(
-    UUID transactionID, String cardToken, UUID merchantID, String merchantName,
-    Instant timestamp, int amount, String cryptogram, String callbackUrl) {}
+    UUID transactionID, UUID customerID, String cardToken, UUID merchantID, String merchantName,
+    String brand, String productName, Instant timestamp, int amount, String cryptogram, String callbackUrl) {}

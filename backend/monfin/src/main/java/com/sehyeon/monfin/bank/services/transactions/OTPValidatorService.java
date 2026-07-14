@@ -1,6 +1,7 @@
 package com.sehyeon.monfin.bank.services.transactions;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sehyeon.monfin.bank.dto.requests.ProcessorOTPCallbackRequest;
-import com.sehyeon.monfin.bank.dto.responses.VerifyOTPResponse;
+import com.sehyeon.monfin.bank.dto.responses.CardAuthorizationResponse;
+import com.sehyeon.monfin.bank.dto.responses.TransactionData;
+import com.sehyeon.monfin.bank.dto.responses.TransactionResponse;
 import com.sehyeon.monfin.bank.model.entity.transactions.OneTimePasscode;
 import com.sehyeon.monfin.bank.model.entity.transactions.TransactionOTP;
 import com.sehyeon.monfin.bank.repos.transactions.OTPRepository;
@@ -26,9 +29,6 @@ public class OTPValidatorService {
     @Autowired
     private TransactionOTPRepository transactionOTPRepository;
 
-    // @Autowired
-    // private TransactionRepository transactionRepository;
-
     // messenger for payment processor backend
     @Autowired
     private PPCallbackService callbackService;
@@ -37,20 +37,13 @@ public class OTPValidatorService {
 
     public OTPValidatorService() {}
 
-    public VerifyOTPResponse validateOTP(UUID otpID, String userOTP) {
+    // TODO: In the future, implement a feature so that not every verified transaction is approved
+    // for example, what if the customer doesn't have enough funds? it should be declined, not approved
+    public List<TransactionResponse> validateOTP(UUID otpID, String userOTP, TransactionData data) {
         Optional<OneTimePasscode> otpData = otpRepository.findById(otpID);
         if (otpData.isEmpty() || !otpData.get().getOTP().equals(userOTP)) {
-            return new VerifyOTPResponse(false, "");
+            return new ArrayList<TransactionResponse>();
         }
-
-        // Optional<Transaction> transactionData = transactionRepository.findById(transactionID);
-        // if (transactionData.isEmpty()) {
-        //     return new VerifyOTPResponse(false, "");
-        // }
-
-        // // set the transaction to approved in transaction repository
-        // transactionData.get().setResultToPending();
-        // transactionRepository.flush();
 
         // send the validation results to the payment processor's backend (server-to-server communication)
         OneTimePasscode otp = otpData.get();
@@ -59,10 +52,19 @@ public class OTPValidatorService {
             new ProcessorOTPCallbackRequest(transactionIDs, "APPROVED", "authorized");
         callbackService.notifyPaymentProcessor(otp.getPPCallbackUrl(), req);
 
+        // Create response
+        List<TransactionResponse> response = new ArrayList<>();
+        for (int i = 0; i < transactionIDs.size(); i++) {
+            CardAuthorizationResponse caRes = new CardAuthorizationResponse(
+                true, "authorized", "", "");
+            TransactionResponse tRes = new TransactionResponse(data, caRes);
+            response.add(tRes);
+        }
+
         // remove this transaction from otp repository
         otpRepository.delete(otp);
         otpRepository.flush(); // makes the deletion immediate
-        return new VerifyOTPResponse(true, "authorized");
+        return response;
     }
 
     @Transactional

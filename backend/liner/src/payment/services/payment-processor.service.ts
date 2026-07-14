@@ -2,10 +2,10 @@
 https://docs.nestjs.com/providers#services
 */
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from '../entity/payment.entity.transaction';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CardVault } from '../entity/payment.entity.card.vault';
 import { AddMerchantDebitCardRequest } from '../dto/request/merchant-card.request.dto';
 import { AddDebitCardResponse } from '../dto/response/debit-card.response.dto';
@@ -14,12 +14,15 @@ import { AddPaymentMethodRequest } from '../dto/request/customer-payment-method.
 import { CustomerSavedPaymentMethodResponse } from '../dto/response/customer-payment-method.response.dto';
 import { TransactionRequest } from '../dto/request/transaction.request.dto';
 import { TransactionResponse } from '../dto/response/transaction.response.dto';
-import { MerchantService } from '../../merchant/services/merchant.service';
-import { CustomerAccountService } from '../../customer/services/customer-account.service';
 import { createHmac } from 'crypto';
 import { TransactionDetailsRequest } from '../dto/request/transaction.request.tobank.dto';
-import { BankTransactionResponse } from '../dto/response/bank-transaction.response.dto';
+import { BankTransactionResponse } from '../dto/response/transaction/bank-transaction.response.dto';
 import { TRANSACTION_STATUS } from '../enums/transaction-status.enum';
+import { BankOTPTransactionResult } from '../dto/request/bank-otp-result.request.dto';
+import { ClientProxy } from '@nestjs/microservices';
+import { BankResponseData } from '../dto/bank-response-data.dto';
+import { TransactionData } from '../dto/transaction-data.dto';
+import { CardAuthorizationResponse } from '../dto/response/transaction/bank-card-authorization.response.dto';
 
 @Injectable()
 export class PaymentProcessorService {
@@ -39,8 +42,8 @@ export class PaymentProcessorService {
         private readonly cardVaultRepo: Repository<CardVault>,
         @InjectRepository(Transaction)
         private readonly transactionRepository: Repository<Transaction>,
-        private readonly merchantService: MerchantService,
-        private readonly customerService: CustomerAccountService,
+        @Inject('PAYMENT_EVENTS')
+        private readonly client: ClientProxy,
     ) {}
 
     ///////////////////////// ### *** MERCHANT *** ### /////////////////////////
@@ -154,13 +157,16 @@ export class PaymentProcessorService {
             const transactionResponse: TransactionResponse =
                 new TransactionResponse();
 
-            transactionResponse.transactionID = res.transactionID;
-            if (res.authorized) {
+            // const transactionData: TransactionData = res.transactionData;
+            const cardAuthorizationData: CardAuthorizationResponse =
+                res.authorizationData;
+
+            if (cardAuthorizationData.authorized) {
                 // transaction approved
                 transactionResponse.status = TRANSACTION_STATUS.APPROVED;
-            } else if (res.declineReason == 'OTP Required.') {
+            } else if (cardAuthorizationData.declineReason == 'OTP Required.') {
                 // otp required: use bank's callback url
-                transactionResponse.status = TRANSACTION_STATUS.PENDING;
+                transactionResponse.status = TRANSACTION_STATUS.PENDING_OTP;
                 otpRequired = true;
             } else {
                 // fraud detected: decline transaction
@@ -239,5 +245,63 @@ export class PaymentProcessorService {
             .update(param, 'utf-8')
             .digest('hex'); // automatically converts to hex string
         return hmac;
+    }
+
+    // This would never be called if OTP id was invalid (not otp string)
+    public async finalizeTransactions(
+        req: BankOTPTransactionResult[],
+    ): Promise<void> {
+        // key: transaction id | value: transaction details
+        const approvedTransactions: TransactionData[] = [];
+        const declinedTransactions: TransactionData[] = [];
+        for (const request of req) {
+            const transactionData: TransactionData = request.transactionData;
+            const bankResponse: BankResponseData = request.bankResData;
+            const oTPApproved: boolean = bankResponse.authorized;
+
+            if (oTPApproved) {
+                approvedTransactions.push(transactionData);
+            } else {
+                declinedTransactions.push(transactionData);
+            }
+        }
+
+        // change approved transactions' statuses to processing
+        // emit payment approved event
+        if (approvedTransactions.length > 0) {
+            await this.transactionRepository.update(
+                {
+                    id: In(
+                        approvedTransactions.map(
+                            (transaction) => transaction.transactionID,
+                        ),
+                    ),
+                },
+                {
+                    status: TRANSACTION_STATUS.PROCESSING,
+                },
+            );
+
+            this.client.emit('payment.approved', approvedTransactions);
+        }
+
+        // change declined transactions' statuses to declined
+        // emit payment declined event
+        if (declinedTransactions.length > 0) {
+            await this.transactionRepository.update(
+                {
+                    id: In(
+                        declinedTransactions.map(
+                            (transaction) => transaction.transactionID,
+                        ),
+                    ),
+                },
+                {
+                    status: TRANSACTION_STATUS.DECLINED,
+                },
+            );
+
+            this.client.emit('payment.declined', declinedTransactions);
+        }
     }
 }
