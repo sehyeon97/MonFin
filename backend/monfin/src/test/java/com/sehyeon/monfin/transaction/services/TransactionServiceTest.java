@@ -86,7 +86,7 @@ public class TransactionServiceTest {
         this.cardToken = new CardToken("card-token", card);
         this.req.add(new CardAuthorizationRequest(
             UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), UUID.randomUUID(), "Amazon",
-            "Brand", "ProductName", Instant.now(), 10000, "cryptogram", "url"));
+            "Brand", "ProductName", Instant.now(), 10000, "cryptogram", "", ""));
     }
 
     @Test
@@ -103,7 +103,7 @@ public class TransactionServiceTest {
         assertFalse(element.authorized());
         assertSame("", element.authorizationCode());
         assertEquals("Invalid card token.", element.declineReason());
-        assertSame("", element.bankCallbackUrl());
+        assertSame("", element.url());
     }
 
     @Test
@@ -114,7 +114,7 @@ public class TransactionServiceTest {
             UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), UUID.randomUUID(), "Amazon",
             "Brand", "product name",
             Instant.now().minus(Duration.ofDays(1)), // diff timestamp yields diff cryptogram
-            10000, "cryptogram", "url"));
+            10000, "cryptogram", "", ""));
 
         // Act
         when(cardTokenRepository.findByCardToken(any()))
@@ -128,7 +128,7 @@ public class TransactionServiceTest {
         assertFalse(element.authorized());
         assertSame("", element.authorizationCode());
         assertEquals("Invalid request.", element.declineReason());
-        assertSame("", element.bankCallbackUrl());
+        assertSame("", element.url());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class TransactionServiceTest {
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
             UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
-            "brand", "name", timestamp, amount, cryptogram, "url"));
+            "brand", "name", timestamp, amount, cryptogram, "", ""));
 
         // Act
         when(cardTokenRepository.findByCardToken(req.get(0).cardToken()))
@@ -156,7 +156,7 @@ public class TransactionServiceTest {
         assertFalse(element.authorized());
         assertSame("", element.authorizationCode());
         assertEquals("Card is not active.", element.declineReason());
-        assertSame("", element.bankCallbackUrl());
+        assertSame("", element.url());
     }
 
     @Test
@@ -175,7 +175,7 @@ public class TransactionServiceTest {
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
             UUID.randomUUID(), UUID.randomUUID(), otherCardToken.getCardToken(), merchantID, "Amazon",
-            "brand", "product name", timestamp, amount, cryptogram, "url"));
+            "brand", "product name", timestamp, amount, cryptogram, "", ""));
 
         when(cardTokenRepository.findByCardToken(req.get(0).cardToken()))
             .thenReturn(Optional.of(otherCardToken));
@@ -190,7 +190,7 @@ public class TransactionServiceTest {
         assertFalse(element.authorized());
         assertSame("", element.authorizationCode());
         assertEquals("Invalid transaction date.", element.declineReason());
-        assertSame("", element.bankCallbackUrl());
+        assertSame("", element.url());
     }
 
     @Test
@@ -215,14 +215,14 @@ public class TransactionServiceTest {
         List<CardAuthorizationRequest> reqLow = new ArrayList<>();
         reqLow.add(new CardAuthorizationRequest(
             UUID.randomUUID(), UUID.randomUUID(), otherCardToken.getCardToken(), merchantID, "Amazon",
-            "brand", "product name", lastMonthTimestamp, lowAmount, lowCryptogram, "url"));
+            "brand", "product name", lastMonthTimestamp, lowAmount, lowCryptogram, "", ""));
 
         // higher than monthly limit request (should decline)
         String highCryptogram = generateCryptogram(otherCardToken.getCardToken(), merchantID.toString(), lastMonthTimestamp, highAmount);
         List<CardAuthorizationRequest> reqHigh = new ArrayList<>();
         reqHigh.add(new CardAuthorizationRequest(
             UUID.randomUUID(), UUID.randomUUID(), otherCardToken.getCardToken(), merchantID, "Amazon",
-            "brand", "product name", lastMonthTimestamp, highAmount, highCryptogram, "url"));
+            "brand", "product name", lastMonthTimestamp, highAmount, highCryptogram, "", ""));
 
         when(cardTokenRepository.findByCardToken(reqLow.get(0).cardToken()))
             .thenReturn(Optional.of(otherCardToken));
@@ -241,12 +241,12 @@ public class TransactionServiceTest {
         assertFalse(resLowElement.authorized());
         assertSame("", resLowElement.authorizationCode());
         assertEquals("Daily or monthly limit reached.", resLowElement.declineReason());
-        assertSame("", resLowElement.bankCallbackUrl());
+        assertSame("", resLowElement.url());
 
         assertFalse(resHighElement.authorized());
         assertSame("", resHighElement.authorizationCode());
         assertEquals("Daily or monthly limit reached.", resHighElement.declineReason());
-        assertSame("", resHighElement.bankCallbackUrl());
+        assertSame("", resHighElement.url());
     }
 
     @Test
@@ -259,7 +259,7 @@ public class TransactionServiceTest {
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
             UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
-            "brand", "product name", timestamp, amount, cryptogram, "url"));
+            "brand", "product name", timestamp, amount, cryptogram, "", ""));
 
         // Act
         when(cardTokenRepository.findByCardToken(req.get(0).cardToken()))
@@ -273,7 +273,7 @@ public class TransactionServiceTest {
         assertFalse(element.authorized());
         assertSame("", element.authorizationCode());
         assertEquals("Not enough funds.", element.declineReason());
-        assertSame("", element.bankCallbackUrl());
+        assertSame("", element.url());
     }
 
     @Test
@@ -288,7 +288,7 @@ public class TransactionServiceTest {
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
             UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
-            "brand", "product name", timestamp, amount, cryptogram, "url"));
+            "brand", "product name", timestamp, amount, cryptogram, "", ""));
 
         // Act
         when(cardTokenRepository.findByCardToken(req.get(0).cardToken()))
@@ -304,7 +304,7 @@ public class TransactionServiceTest {
         assertTrue(element.authorized());
         assertEquals("authorized", element.authorizationCode());
         assertSame("", element.declineReason());
-        assertSame("", element.bankCallbackUrl());
+        assertSame("", element.url());
     }
 
     @Test
@@ -319,7 +319,7 @@ public class TransactionServiceTest {
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
             UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
-            "brand", "product name", timestamp, amount, cryptogram, "url"));
+            "brand", "product name", timestamp, amount, cryptogram, "", ""));
 
         // Act
         when(cardTokenRepository.findByCardToken(req.get(0).cardToken()))
@@ -350,7 +350,7 @@ public class TransactionServiceTest {
         List<CardAuthorizationRequest> req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
             UUID.randomUUID(), UUID.randomUUID(), cardToken.getCardToken(), merchantID, "Amazon",
-            "brand", "product name", timestamp, amount, cryptogram, "url"));
+            "brand", "product name", timestamp, amount, cryptogram, "", ""));
 
         // Act
         when(cardTokenRepository.findByCardToken(req.get(0).cardToken()))
@@ -366,7 +366,7 @@ public class TransactionServiceTest {
         assertFalse(element.authorized());
         assertSame("", element.authorizationCode());
         assertEquals("Fraud detected.", element.declineReason());
-        assertSame("", element.bankCallbackUrl());
+        assertSame("", element.url());
     }
 
     private String generateCryptogram(String cardToken, String merchantID, Instant timestamp, int amount) {

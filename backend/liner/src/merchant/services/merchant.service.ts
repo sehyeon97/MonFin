@@ -11,6 +11,7 @@ import { ProductRequest } from '../dto/requests/product.request.dto';
 import { Product } from '../entity/merchant.product.entity';
 import { ProductResponse } from '../dto/responses/product.response.dto';
 import { ProductsResponse } from '../dto/responses/list.products.response.dto';
+import { SignInMerchantRequest } from '../dto/requests/sign-in-merchant.request.dto';
 
 @Injectable()
 export class MerchantService {
@@ -27,6 +28,16 @@ export class MerchantService {
         const merchant: Merchant = this.merchantRepository.create(newMerchant);
         merchant.verified = false;
         await this.merchantRepository.save(merchant);
+    }
+
+    public async signIn(req: SignInMerchantRequest): Promise<string> {
+        const merchant: Merchant | null = await this.merchantRepository.findOne(
+            {
+                where: { email: req.email, password: req.password },
+            },
+        );
+
+        return merchant ? merchant.id : '';
     }
 
     public async addProduct(req: ProductRequest): Promise<ProductResponse> {

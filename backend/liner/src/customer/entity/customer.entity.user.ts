@@ -17,6 +17,9 @@ export class Customer {
     password!: string;
 
     @Column()
+    verified!: boolean;
+
+    @Column()
     billingAddress!: string;
 
     @Column()

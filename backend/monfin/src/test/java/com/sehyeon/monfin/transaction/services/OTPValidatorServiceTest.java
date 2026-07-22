@@ -48,7 +48,8 @@ public class OTPValidatorServiceTest {
 
     private static final String CORRECT_OTP = "123456";
     private static final String WRONG_OTP = "000000";
-    private static final String PAYMENT_PROCESSOR_CALLBACK_URL = "www.hello-world.com";
+    private static final String PAYMENT_PROCESSOR_REDIRECT_URL = "www.hello-world.com";
+    private static final String PAYMENT_PROCESSOR_SERVER_URL = "www.hello-world.com";
 
     private static final TransactionData META_DATA = new TransactionData(
         UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID().toString(), UUID.randomUUID(), "Merchant",
@@ -58,7 +59,7 @@ public class OTPValidatorServiceTest {
     @Rollback(true)
     public void shouldDeclineInvalidOTP() {
         // Arrange
-        OneTimePasscode otp = new OneTimePasscode(CORRECT_OTP, PAYMENT_PROCESSOR_CALLBACK_URL);
+        OneTimePasscode otp = new OneTimePasscode(CORRECT_OTP, PAYMENT_PROCESSOR_REDIRECT_URL, PAYMENT_PROCESSOR_SERVER_URL);
 
         // Act
         otpRepository.saveAndFlush(otp);
@@ -72,7 +73,7 @@ public class OTPValidatorServiceTest {
     @Rollback(true)
     public void shouldDeclineInvalidTransaction() {
         // Arrange
-        OneTimePasscode otp = new OneTimePasscode(CORRECT_OTP, PAYMENT_PROCESSOR_CALLBACK_URL);
+        OneTimePasscode otp = new OneTimePasscode(CORRECT_OTP, PAYMENT_PROCESSOR_REDIRECT_URL, PAYMENT_PROCESSOR_SERVER_URL);
 
         // Act
         otpRepository.saveAndFlush(otp);
@@ -97,7 +98,7 @@ public class OTPValidatorServiceTest {
         //     transactionID, UUID.randomUUID(), UUID.randomUUID(),
         //     UUID.randomUUID().toString(), "30", "6", "2026",
         //     "Amazon", UUID.randomUUID(), 100, Instant.now(), "");
-        OneTimePasscode otp = new OneTimePasscode(CORRECT_OTP, PAYMENT_PROCESSOR_CALLBACK_URL);
+        OneTimePasscode otp = new OneTimePasscode(CORRECT_OTP, PAYMENT_PROCESSOR_REDIRECT_URL, PAYMENT_PROCESSOR_SERVER_URL);
 
         // Act
         when(otpRepository.findById(any())).thenReturn(Optional.of(otp));

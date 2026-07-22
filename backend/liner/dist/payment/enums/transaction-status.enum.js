@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TRANSACTION_STATUS = void 0;
+var TRANSACTION_STATUS;
+(function (TRANSACTION_STATUS) {
+    TRANSACTION_STATUS["CREATED"] = "CREATED";
+    TRANSACTION_STATUS["PENDING_OTP"] = "PENDING-OTP";
+    TRANSACTION_STATUS["PROCESSING"] = "PROCESSING";
+    TRANSACTION_STATUS["APPROVED"] = "APPROVED";
+    TRANSACTION_STATUS["DECLINED"] = "DECLINED";
+})(TRANSACTION_STATUS || (exports.TRANSACTION_STATUS = TRANSACTION_STATUS = {}));
+//# sourceMappingURL=transaction-status.enum.js.map

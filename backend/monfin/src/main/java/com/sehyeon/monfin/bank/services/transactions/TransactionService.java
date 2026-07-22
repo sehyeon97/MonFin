@@ -120,7 +120,7 @@ public class TransactionService {
             Optional<CardToken> cardTokenData = tokenRepository.findByCardToken(req.cardToken());
             if (cardTokenData.isEmpty()) { // invalid card token
                 CardAuthorizationResponse caRes = new CardAuthorizationResponse(
-                    false, "", "Invalid card token.", "");
+                    false, "", "Invalid card token.", "", null);
                 TransactionResponse res = new TransactionResponse(transactionData, caRes);
                 transactionResponses.add(res);
                 continue;
@@ -134,7 +134,7 @@ public class TransactionService {
             String expectedCryptogram = generateCryptogram(req.cardToken(), req.merchantID().toString(), req.timestamp(), req.amount());
             if (!expectedCryptogram.equalsIgnoreCase(req.cryptogram())) {
                 CardAuthorizationResponse caRes = new CardAuthorizationResponse(
-                    false, "", "Invalid request.", "");
+                    false, "", "Invalid request.", "", null);
                 TransactionResponse res = new TransactionResponse(transactionData, caRes);
                 transactionResponses.add(res);
                 continue;
@@ -143,7 +143,7 @@ public class TransactionService {
             // validate card status is ACTIVE
             if (card.getCardStatus() != CardStatus.ACTIVE) {
                 CardAuthorizationResponse caRes = new CardAuthorizationResponse(
-                    false, "", "Card is not active.", "");
+                    false, "", "Card is not active.", "", null);
                 TransactionResponse res = new TransactionResponse(transactionData, caRes);
                 transactionResponses.add(res);
                 continue;
@@ -156,7 +156,7 @@ public class TransactionService {
             
             if (comparedValue > 0) {
                 CardAuthorizationResponse caRes = new CardAuthorizationResponse(
-                    false, "", "Invalid transaction date.", "");
+                    false, "", "Invalid transaction date.", "", null);
                 TransactionResponse res = new TransactionResponse(transactionData, caRes);
                 transactionResponses.add(res);
                 continue;
@@ -170,7 +170,7 @@ public class TransactionService {
 
             if (hasCardReachedSpendingLimit(totalExpenses, dailyLimit, monthlyLimit, req.amount())) {
                 CardAuthorizationResponse caRes = new CardAuthorizationResponse(
-                    false, "", "Daily or monthly limit reached.", "");
+                    false, "", "Daily or monthly limit reached.", "", null);
                 TransactionResponse res = new TransactionResponse(transactionData, caRes);
                 transactionResponses.add(res);
                 continue;
@@ -179,7 +179,7 @@ public class TransactionService {
             // Ensure enough funds are present
             if (!hasEnoughAvailableBalance(card, req.amount())) {
                 CardAuthorizationResponse caRes = new CardAuthorizationResponse(
-                    false, "", "Not enough funds.", "");
+                    false, "", "Not enough funds.", "", null);
                 TransactionResponse res = new TransactionResponse(transactionData, caRes);
                 transactionResponses.add(res);
                 continue;
@@ -197,18 +197,18 @@ public class TransactionService {
             if (fraudScore <= 30) { // approved
                 card.setRiskScore(card.getRiskScore() - DECREASE_RISK_SCORE_ON_APPROVE);
                 CardAuthorizationResponse caRes = new CardAuthorizationResponse(
-                    true, "authorized", "", "");
+                    true, "authorized", "", "", null);
                 TransactionResponse res = new TransactionResponse(transactionData, caRes);
                 transactionResponses.add(res);
             // } else if (fraudScore <= 30) { IF YOU WANT INTEGRATION TESTING TO RETURN OTP REQUIRED & set above to <= 0
             } else if (fraudScore > RISK_SCORE_LOWER_LIMIT && fraudScore <= RISK_SCORE_UPPER_LIMIT) {
                 if (otpID == null) {
-                    otpID = otpService.storeOTP(transaction.getID(), req.callbackUrl());
+                    otpID = otpService.storeOTP(transaction.getID(), req.redirectUrl(), req.serverUrl());
                 } else {
                     otpService.addTransactionToOTP(otpID, req.transactionID());
                 }
                 CardAuthorizationResponse caRes = new CardAuthorizationResponse(
-                    false, "", "OTP Required.", BANK_CALLBACK_URL + "/" + otpID);
+                    false, "", "OTP Required.", BANK_CALLBACK_URL, otpID);
                 TransactionResponse res = new TransactionResponse(transactionData, caRes);
                 transactionResponses.add(res);
             } else { // declined
@@ -219,7 +219,7 @@ public class TransactionService {
                     bankInboxService.sendCardStatus(card.getBankAccountID(), card.getCardStatus().toString(), transaction);
                 }
                 CardAuthorizationResponse caRes = new CardAuthorizationResponse(
-                    false, "", "Fraud detected.", "");
+                    false, "", "Fraud detected.", "", null);
                 TransactionResponse res = new TransactionResponse(transactionData, caRes);
                 transactionResponses.add(res);
             }

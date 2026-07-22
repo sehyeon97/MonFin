@@ -2,9 +2,9 @@
 
 ## Tech Stack ##
 ### Bank backend - Spring Boot w/ Java ###
-### Bank frontend - React w/ TypeScript ###
+### Bank frontend - Angular ###
 ### Payment Processor backend - NestJS ###
-### Payment Processor frontend - Angular ###
+### Payment Processor frontend - React w/ TypeScript ###
 #### Both backends use PostgreSQL, but different databases ####
 
 #### The Bank includes the Token Service Provider logic. ####
@@ -28,7 +28,10 @@
 ### Secure payment workflows ###
 ### Object-Oriented-Programming (OOP) ###
 ### Layered Architecture ###
+### Microservices ###
 ### Generate cryptograms using Hash-based Message Authentication Code ###
+### SHA ###
+### AES encryption ###
 ### Service-to-service communication ###
 ### Asynchronous event handling ###
 ### Security-first ###

@@ -16,9 +16,9 @@ public class PPCallbackService {
     }
 
     // makes a post request to the payment processor's url
-    public void notifyPaymentProcessor(String callbackUrl, ProcessorOTPCallbackRequest request) {
+    public void notifyPaymentProcessor(String redirectUrl, ProcessorOTPCallbackRequest request) {
         restClient.post()
-            .uri(callbackUrl)
+            .uri(redirectUrl)
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
             .retrieve().toBodilessEntity();

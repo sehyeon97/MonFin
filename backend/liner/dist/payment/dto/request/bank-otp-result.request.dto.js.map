@@ -1,0 +1,1 @@
+{"version":3,"file":"bank-otp-result.request.dto.js","sourceRoot":"","sources":["../../../../src/payment/dto/request/bank-otp-result.request.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,qDAA6C;AAC7C,kEAA0D;AAI1D,MAAa,wBAAwB;IAEjC,eAAe,CAAmB;IAElC,WAAW,CAAoB;CAClC;AALD,4DAKC;AAHG;IADC,IAAA,4BAAU,GAAE;8BACK,sCAAe;iEAAC"}

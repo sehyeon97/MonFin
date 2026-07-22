@@ -44,5 +44,8 @@ export class Order {
     brand!: string;
 
     @Column()
+    count!: number;
+
+    @Column()
     isApproved!: boolean;
 }

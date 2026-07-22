@@ -133,7 +133,7 @@ public class TransactionIntegrationTest {
             System.out.println("    Is Authorized?: " + bankRes.resData().authorized());
             System.out.println("    Authorization Code: " + bankRes.resData().authorizationCode());
             System.out.println("    Decline Reason: " + bankRes.resData().declineReason());
-            System.out.println("    Bank callback url: " + bankRes.resData().bankCallbackUrl());
+            System.out.println("    Bank callback url: " + bankRes.resData().url());
             System.out.println("--------------------------------------------------------");
         }
     }
@@ -189,8 +189,7 @@ public class TransactionIntegrationTest {
 
             CardAuthorizationRequest request = new CardAuthorizationRequest(
                 transactionID, customerID, cardTokenFromPaymentProcessor, merchantID, merchantName,
-                "Brand", "ProductName", aPreviousDay, amount, cryptogram,
-                "payment_processor_callback/{customerID}");
+                "Brand", "ProductName", aPreviousDay, amount, cryptogram, "", "");
             requests.add(request);
         }
         System.out.println("--------------------------------------------------------");

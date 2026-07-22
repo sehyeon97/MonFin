@@ -1,12 +1,17 @@
-import { IsEmail, IsNotEmpty, IsStrongPassword, Length } from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, Length } from 'class-validator';
 
 export class CreateCustomerRequest {
     @IsNotEmpty()
     @IsEmail()
     email!: string;
 
-    @IsStrongPassword()
+    @IsNotEmpty()
+    //@IsStrongPassword()
     password!: string;
+
+    @IsNotEmpty()
+    @IsBoolean()
+    verified!: boolean;
 
     @IsNotEmpty()
     billingAddress!: string;

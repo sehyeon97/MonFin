@@ -1,20 +1,19 @@
-import { OrderHistoryService } from './customer/services/order-history.service';
 import { PaymentProcessorModule } from './payment/module/payment-processor.module';
 import { MerchantModule } from './merchant/module/merchant.module';
-import { CustomerAccountService } from './customer/services/customer-account.service';
 import { CustomerModule } from './customer/module/customer.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { MerchantSalesModule } from './merchant/module/merchant-sales.module';
+import { CustomerOrderHistoryModule } from './customer/module/customer.order-history.module';
 
 @Module({
     imports: [
         PaymentProcessorModule,
         MerchantModule,
+        MerchantSalesModule,
         CustomerModule,
+        CustomerOrderHistoryModule,
         ConfigModule.forRoot({
             isGlobal: true,
         }),
@@ -33,23 +32,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
                 synchronize: true, // in production, change to false and add migrationsRun: true
             }),
         }),
-
-        // Create RabbitMQ Client
-        ClientsModule.register([
-            {
-                name: 'PAYMENT_EVENTS',
-                transport: Transport.RMQ,
-                options: {
-                    urls: ['amqp://admin:admin@localhost:5672'],
-                    queue: 'payment_queue',
-                    queueOptions: {
-                        durable: true,
-                    },
-                },
-            },
-        ]),
     ],
-    controllers: [AppController],
-    providers: [OrderHistoryService, CustomerAccountService, AppService],
 })
 export class AppModule {}

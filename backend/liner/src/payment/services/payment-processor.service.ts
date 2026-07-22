@@ -34,8 +34,10 @@ export class PaymentProcessorService {
         PaymentProcessorService.bankServerUrl +
         '/api/bank/transactions/verify-otp';
 
-    // i think it has to be a link to payment processor's frontend
-    private static readonly callbackUrl = 'CHANGE THIS LATER';
+    private static readonly clientUrl = 'http://localhost:5173';
+    private static readonly serverUrl = 'http://localhost:3000';
+    private static readonly redirectUrl = '/purchased-items';
+    private static readonly callbackUrl = '/payment-processor/bank-otp';
 
     constructor(
         @InjectRepository(CardVault)
@@ -131,9 +133,8 @@ export class PaymentProcessorService {
     ///////////////////////// ### *** PROCESSOR *** ### /////////////////////////
     public async compileTransaction(
         req: TransactionRequest,
-    ): Promise<TransactionResponse[]> {
-        let otpRequired = false;
-        const transactionData = this.combineAllTransactions(req);
+    ): Promise<TransactionResponse> {
+        const combinedTransactions = await this.combineAllTransactions(req);
 
         // make a post request to bank/tsp backend (TransactionController.java)
         const response = await fetch(
@@ -144,47 +145,57 @@ export class PaymentProcessorService {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    transactionDetails: transactionData,
+                    transactionDetails: combinedTransactions,
                 }),
             },
         );
         const bankResponse =
             (await response.json()) as BankTransactionResponse[];
 
-        const transactionResponses: TransactionResponse[] = [];
-
+        const approvedTransactions: TransactionData[] = [];
+        const otpRequiredTransactions: TransactionData[] = [];
+        const declinedTransactions: TransactionData[] = [];
         bankResponse.forEach((res) => {
-            const transactionResponse: TransactionResponse =
-                new TransactionResponse();
-
             // const transactionData: TransactionData = res.transactionData;
             const cardAuthorizationData: CardAuthorizationResponse =
                 res.authorizationData;
+            const transactionData: TransactionData = res.transactionData;
 
             if (cardAuthorizationData.authorized) {
                 // transaction approved
-                transactionResponse.status = TRANSACTION_STATUS.APPROVED;
+                approvedTransactions.push(transactionData);
             } else if (cardAuthorizationData.declineReason == 'OTP Required.') {
-                // otp required: use bank's callback url
-                transactionResponse.status = TRANSACTION_STATUS.PENDING_OTP;
-                otpRequired = true;
+                otpRequiredTransactions.push(transactionData);
             } else {
-                // fraud detected: decline transaction
-                transactionResponse.status = TRANSACTION_STATUS.DECLINED;
+                declinedTransactions.push(transactionData);
             }
         });
 
-        if (otpRequired) {
-            // do something
-        }
+        await this.emitEvent(
+            approvedTransactions,
+            'payment.approved',
+            TRANSACTION_STATUS.APPROVED,
+        );
 
-        return transactionResponses;
+        await this.emitEvent(
+            declinedTransactions,
+            'payment.declined',
+            TRANSACTION_STATUS.DECLINED,
+        );
+
+        const transactionResponse: TransactionResponse =
+            new TransactionResponse();
+        transactionResponse.bankCallbackUrl =
+            otpRequiredTransactions.length > 0 ? 'bank-frontend-url' : '';
+        return transactionResponse;
     }
 
     // This assumes that a merchant can only own one business
-    private combineAllTransactions(
+    private async combineAllTransactions(
         data: TransactionRequest,
-    ): TransactionDetailsRequest[] {
+    ): Promise<TransactionDetailsRequest[]> {
+        const transactionsToStore: Transaction[] = [];
+
         const transactionDetails: TransactionDetailsRequest[] = [];
         const products = data.products;
         let merchantID = products[0].merchantID;
@@ -202,6 +213,7 @@ export class PaymentProcessorService {
                 );
 
                 // what the payment processor stores
+                // not getting stored yet
                 const transaction: Transaction = new Transaction();
                 transaction.cardToken = data.cardToken;
                 transaction.customerID = data.customerID;
@@ -211,6 +223,7 @@ export class PaymentProcessorService {
                 transaction.price = amountSum;
                 transaction.itemName = product.productName;
                 transaction.quantity = product.count;
+                transactionsToStore.push(transaction);
 
                 // what the bank is given
                 const req: TransactionDetailsRequest =
@@ -222,7 +235,12 @@ export class PaymentProcessorService {
                 req.timestamp = timestamp;
                 req.amount = amountSum;
                 req.cryptogram = cryptogram;
-                req.callbackUrl = PaymentProcessorService.callbackUrl;
+                req.redirectUrl =
+                    PaymentProcessorService.clientUrl +
+                    PaymentProcessorService.redirectUrl;
+                req.serverUrl =
+                    PaymentProcessorService.serverUrl +
+                    PaymentProcessorService.callbackUrl;
 
                 transactionDetails.push(req);
                 merchantID = currMerchantID;
@@ -230,6 +248,7 @@ export class PaymentProcessorService {
             }
         });
 
+        await this.transactionRepository.insert(transactionsToStore);
         return transactionDetails;
     }
 
@@ -268,40 +287,40 @@ export class PaymentProcessorService {
 
         // change approved transactions' statuses to processing
         // emit payment approved event
-        if (approvedTransactions.length > 0) {
-            await this.transactionRepository.update(
-                {
-                    id: In(
-                        approvedTransactions.map(
-                            (transaction) => transaction.transactionID,
-                        ),
-                    ),
-                },
-                {
-                    status: TRANSACTION_STATUS.PROCESSING,
-                },
-            );
-
-            this.client.emit('payment.approved', approvedTransactions);
-        }
+        await this.emitEvent(
+            approvedTransactions,
+            'payment.approved',
+            TRANSACTION_STATUS.APPROVED,
+        );
 
         // change declined transactions' statuses to declined
         // emit payment declined event
-        if (declinedTransactions.length > 0) {
+        await this.emitEvent(
+            declinedTransactions,
+            'payment.declined',
+            TRANSACTION_STATUS.DECLINED,
+        );
+    }
+
+    private async emitEvent(
+        transactions: TransactionData[],
+        eventType: string,
+        transactionStatus: TRANSACTION_STATUS,
+    ): Promise<void> {
+        if (transactions.length > 0) {
             await this.transactionRepository.update(
                 {
                     id: In(
-                        declinedTransactions.map(
+                        transactions.map(
                             (transaction) => transaction.transactionID,
                         ),
                     ),
                 },
                 {
-                    status: TRANSACTION_STATUS.DECLINED,
+                    status: transactionStatus,
                 },
             );
-
-            this.client.emit('payment.declined', declinedTransactions);
+            this.client.emit(eventType, transactions);
         }
     }
 }

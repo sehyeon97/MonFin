@@ -60,7 +60,7 @@ public class TransactionControllerTest {
         req = new ArrayList<>();
         req.add(new CardAuthorizationRequest(
             UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID().toString(), UUID.randomUUID(), "Amazon",
-            "Marly", "Herod", Instant.now(), 100, "cryptogram", "link"));
+            "Marly", "Herod", Instant.now(), 100, "cryptogram", "", ""));
         
         transactionID = UUID.randomUUID();
         transactionData = new TransactionData(
@@ -74,7 +74,7 @@ public class TransactionControllerTest {
         // Arrange
         List<TransactionResponse> resApproved = new ArrayList<>();
         CardAuthorizationResponse caRes = new CardAuthorizationResponse(
-            true, "authorized", "", "");
+            true, "authorized", "", "", UUID.randomUUID());
         TransactionResponse transactionResponse = new TransactionResponse(transactionData, caRes);
         resApproved.add(transactionResponse);
 
@@ -101,7 +101,7 @@ public class TransactionControllerTest {
         // Arrange
         List<TransactionResponse> resDeclined = new ArrayList<>();
         CardAuthorizationResponse caRes = new CardAuthorizationResponse(
-            false, "", "OTP Required.", "bank_callback_url");
+            false, "", "OTP Required.", "bank_callback_url", UUID.randomUUID());
         TransactionResponse transactionResponse = new TransactionResponse(transactionData, caRes);
         resDeclined.add(transactionResponse);
 

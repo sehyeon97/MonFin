@@ -1,5 +1,7 @@
+import { TransactionData } from '../transaction-data.dto';
+
 export class TransactionResponse {
-    status!: string; // approved or declined
-    bankCallbackUrl!: string; // when otp is required
-    transactionID!: string;
+    bankCallbackUrl!: string; // when otp is required. must be the bank frontend url
+    approvedTransactionClientData!: TransactionData[];
+    declinedTransactionClientData!: TransactionData[];
 }

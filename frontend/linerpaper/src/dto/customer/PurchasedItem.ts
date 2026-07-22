@@ -1,0 +1,15 @@
+export interface PurchasedItem {
+  id: string;
+  customerID: string;
+  merchantID: string;
+  cardToken: string;
+  boughtAt: string;
+  transactionID: string;
+  merchantName: string;
+  productName: string;
+  itemCount: number;
+  totalPrice: number;
+  brand: string;
+  count: number;
+  isApproved: boolean;
+}

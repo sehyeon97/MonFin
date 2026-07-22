@@ -13,9 +13,6 @@ export class RegisterMerchantRequest {
     verified!: boolean;
 
     @IsNotEmpty()
-    businessName!: string;
-
-    @IsNotEmpty()
     billingAddress!: string;
 
     @IsNotEmpty()

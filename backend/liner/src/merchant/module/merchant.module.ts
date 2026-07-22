@@ -8,10 +8,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Merchant } from '../entity/merchant.entity';
 import { Product } from '../entity/merchant.product.entity';
-import { CardVault } from '../../payment/entity/payment.entity.card.vault';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Merchant, Product, CardVault])],
+    imports: [TypeOrmModule.forFeature([Merchant, Product])],
     controllers: [MerchantController],
     providers: [MerchantService],
 })

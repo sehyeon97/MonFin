@@ -12,4 +12,6 @@ import java.util.UUID;
  */
 public record CardAuthorizationRequest(
     UUID transactionID, UUID customerID, String cardToken, UUID merchantID, String merchantName,
-    String brand, String productName, Instant timestamp, int amount, String cryptogram, String callbackUrl) {}
+    String brand, String productName, Instant timestamp, int amount, String cryptogram,
+    String redirectUrl, String serverUrl    
+) {}

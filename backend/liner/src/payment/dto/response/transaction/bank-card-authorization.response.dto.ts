@@ -3,4 +3,5 @@ export class CardAuthorizationResponse {
     authorizationCode!: string;
     declineReason!: string;
     bankCallbackUrl!: string;
+    otpID!: string;
 }

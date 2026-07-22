@@ -7,12 +7,12 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Customer } from '../entity/customer.entity.user';
 import { CustomerAccountService } from '../services/customer-account.service';
-import { CardVault } from '../../payment/entity/payment.entity.card.vault';
+import { OrderHistoryService } from '../services/order-history.service';
 import { Order } from '../entity/customer.entity.order';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Customer, CardVault, Order])],
+    imports: [TypeOrmModule.forFeature([Customer, Order])],
     controllers: [CustomerController],
-    providers: [CustomerAccountService],
+    providers: [CustomerAccountService, OrderHistoryService],
 })
 export class CustomerModule {}

@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Order } from '../entity/customer.entity.order';
 import { Repository } from 'typeorm';
 import { CustomerOrder } from '../dto/order.dto';
+import { PurchasedItem } from '../dto/responses/purchased-item.response.dto';
 
 @Injectable()
 export class OrderHistoryService {
@@ -27,6 +28,12 @@ export class OrderHistoryService {
         await this.orderRepository.insert(ordersToAdd);
     }
 
+    public async getCustomerOrderHistory(
+        customerID: string,
+    ): Promise<PurchasedItem[]> {
+        return await this.orderRepository.find({ where: { customerID } });
+    }
+
     private convertDTOToEntity(
         orders: CustomerOrder[],
         isApproved: boolean,
@@ -43,6 +50,7 @@ export class OrderHistoryService {
             orderToAdd.itemCount = 30;
             orderToAdd.totalPrice = order.amount;
             orderToAdd.brand = order.brand;
+            orderToAdd.count = order.count;
             orderToAdd.isApproved = isApproved;
             ordersToAdd.push(orderToAdd);
         }

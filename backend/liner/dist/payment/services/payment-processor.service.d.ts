@@ -1,0 +1,33 @@
+import { Transaction } from '../entity/payment.entity.transaction';
+import { Repository } from 'typeorm';
+import { CardVault } from '../entity/payment.entity.card.vault';
+import { AddMerchantDebitCardRequest } from '../dto/request/merchant-card.request.dto';
+import { MerchantCardResponse } from '../dto/response/merchant-card.response.dto';
+import { AddPaymentMethodRequest } from '../dto/request/customer-payment-method.request.dto';
+import { CustomerSavedPaymentMethodResponse } from '../dto/response/customer-payment-method.response.dto';
+import { TransactionRequest } from '../dto/request/transaction.request.dto';
+import { TransactionResponse } from '../dto/response/transaction.response.dto';
+import { BankOTPTransactionResult } from '../dto/request/bank-otp-result.request.dto';
+import { ClientProxy } from '@nestjs/microservices';
+export declare class PaymentProcessorService {
+    private readonly cardVaultRepo;
+    private readonly transactionRepository;
+    private readonly client;
+    private static readonly bankServerUrl;
+    private static readonly bankTransactionUrl;
+    private static readonly bankOTPUrl;
+    private static readonly clientUrl;
+    private static readonly serverUrl;
+    private static readonly redirectUrl;
+    private static readonly callbackUrl;
+    constructor(cardVaultRepo: Repository<CardVault>, transactionRepository: Repository<Transaction>, client: ClientProxy);
+    addDebitCardForMerchant(debitCard: AddMerchantDebitCardRequest): Promise<MerchantCardResponse>;
+    private hasDebitCard;
+    getSavedPaymentMethods(customerID: string): Promise<CustomerSavedPaymentMethodResponse[]>;
+    savePaymentMethod(paymentMethod: AddPaymentMethodRequest): Promise<void>;
+    compileTransaction(req: TransactionRequest): Promise<TransactionResponse>;
+    private combineAllTransactions;
+    private generateCryptogram;
+    finalizeTransactions(req: BankOTPTransactionResult[]): Promise<void>;
+    private emitEvent;
+}

@@ -1,4 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('merchant')
 export class Merchant {
@@ -16,9 +21,6 @@ export class Merchant {
     verified!: boolean;
 
     @Column()
-    businessName!: string;
-
-    @Column()
     billingAddress!: string;
 
     @Column()
@@ -29,4 +31,7 @@ export class Merchant {
 
     @Column()
     billingZip!: string;
+
+    @CreateDateColumn()
+    createdAt!: Date;
 }

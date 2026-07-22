@@ -6,5 +6,5 @@ public record CardTokenizationRequest(
     String fullName,
     String expMonth,
     String expYear,
-    String merchantID
+    String userID
 ) {}

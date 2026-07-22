@@ -8,4 +8,5 @@ export class CustomerOrder {
     productName!: string;
     timestamp!: string;
     amount!: number;
+    count!: number;
 }

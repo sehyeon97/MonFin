@@ -50,13 +50,13 @@ public class OTPValidatorService {
         List<UUID> transactionIDs = transactionOTPRepository.findAllByOtpID(otpID).stream().map(TransactionOTP::getTransactionId).toList();
         ProcessorOTPCallbackRequest req = 
             new ProcessorOTPCallbackRequest(transactionIDs, "APPROVED", "authorized");
-        callbackService.notifyPaymentProcessor(otp.getPPCallbackUrl(), req);
+        callbackService.notifyPaymentProcessor(otp.getServerUrl(), req);
 
         // Create response
         List<TransactionResponse> response = new ArrayList<>();
         for (int i = 0; i < transactionIDs.size(); i++) {
             CardAuthorizationResponse caRes = new CardAuthorizationResponse(
-                true, "authorized", "", "");
+                true, "authorized", "", otp.getRedirectUrl(), null);
             TransactionResponse tRes = new TransactionResponse(data, caRes);
             response.add(tRes);
         }
@@ -64,13 +64,17 @@ public class OTPValidatorService {
         // remove this transaction from otp repository
         otpRepository.delete(otp);
         otpRepository.flush(); // makes the deletion immediate
+
+        // this response should contain payment processor frontend url to redirect customer
+        // because card authorization has a bankCallbackUrl field, we give that field the redirect url value
+        // this is returned to the bank frontend
         return response;
     }
 
     @Transactional
-    public UUID storeOTP(UUID transactionID, String callbackUrl) {
+    public UUID storeOTP(UUID transactionID, String redirectUrl, String serverUrl) {
         String otpStr = generateOTP();
-        OneTimePasscode otp = new OneTimePasscode(otpStr, callbackUrl);
+        OneTimePasscode otp = new OneTimePasscode(otpStr, redirectUrl, serverUrl);
         otpRepository.save(otp);
         transactionOTPRepository.save(new TransactionOTP(otp.getOtpID(), transactionID));
         return otp.getOtpID();

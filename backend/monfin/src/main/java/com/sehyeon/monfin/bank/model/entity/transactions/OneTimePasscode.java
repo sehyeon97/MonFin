@@ -18,13 +18,15 @@ public class OneTimePasscode {
 
     // private UUID transactionID; Refactored to new Entity called TransactionOTP
     private String otp;
-    private String ppCallbackUrl;
+    private String redirectUrl;
+    private String serverUrl;
 
     protected OneTimePasscode() {}
 
-    public OneTimePasscode(String otp, String ppCallbackUrl) {
+    public OneTimePasscode(String otp, String redirectUrl, String serverUrl) {
         this.otp = otp;
-        this.ppCallbackUrl = ppCallbackUrl;
+        this.redirectUrl = redirectUrl;
+        this.serverUrl = serverUrl;
     }
 
     public UUID getOtpID() {
@@ -35,8 +37,12 @@ public class OneTimePasscode {
         return otp;
     }
 
-    public String getPPCallbackUrl() {
-        return ppCallbackUrl;
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    public String getServerUrl() {
+        return serverUrl;
     }
     
 }

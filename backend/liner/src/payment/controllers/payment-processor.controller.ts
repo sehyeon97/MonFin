@@ -12,7 +12,7 @@ import { BankOTPTransactionResult } from '../dto/request/bank-otp-result.request
 import { TransactionRequest } from '../dto/request/transaction.request.dto';
 import { TransactionResponse } from '../dto/response/transaction.response.dto';
 
-@Controller('payment-processor')
+@Controller('payment-api/payment-processor')
 export class PaymentProcessorController {
     constructor(
         private readonly paymentProcessorService: PaymentProcessorService,
@@ -28,7 +28,7 @@ export class PaymentProcessorController {
     ///////////////////////// ### *** MERCHANT *** ### /////////////////////////
 
     ///////////////////////// ### *** CUSTOMER *** ### /////////////////////////
-    @Get('customer/payment-methods')
+    @Get('customer/payment-methods/:id')
     public async viewPaymentMethods(
         @Param('id') customerID: string,
     ): Promise<CustomerSavedPaymentMethodResponse[]> {
@@ -47,7 +47,7 @@ export class PaymentProcessorController {
     @Post('checkout')
     public async createTransaction(
         @Body() req: TransactionRequest,
-    ): Promise<TransactionResponse[]> {
+    ): Promise<TransactionResponse> {
         return await this.paymentProcessorService.compileTransaction(req);
     }
 
