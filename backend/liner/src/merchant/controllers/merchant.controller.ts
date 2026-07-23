@@ -8,7 +8,6 @@ import { MerchantService } from '../services/merchant.service';
 import { ProductsResponse } from '../dto/responses/list.products.response.dto';
 import { ProductRequest } from '../dto/requests/product.request.dto';
 import { ProductResponse } from '../dto/responses/product.response.dto';
-import { SignInMerchantRequest } from '../dto/requests/sign-in-merchant.request.dto';
 
 @Controller('payment-api/merchants')
 export class MerchantController {
@@ -20,12 +19,13 @@ export class MerchantController {
         await this.merchantService.registerNewMerchant(merchant);
     }
 
-    @Post('login')
-    public async loginMerchant(
-        @Body() request: SignInMerchantRequest,
-    ): Promise<string> {
-        return await this.merchantService.signIn(request);
-    }
+    // *** REFACTORED TO JWT AUTH *** Testing in progress. . . then delete after success
+    // @Post('login')
+    // public async loginMerchant(
+    //     @Body() request: SignInMerchantRequest,
+    // ): Promise<string> {
+    //     return await this.merchantService.signIn(request);
+    // }
 
     @Post('add-product')
     public async addProduct(req: ProductRequest): Promise<ProductResponse> {

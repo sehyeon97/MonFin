@@ -14,6 +14,7 @@ const payment_processor_controller_1 = require("./../controllers/payment-process
 const payment_processor_service_1 = require("./../services/payment-processor.service");
 const common_1 = require("@nestjs/common");
 const rabbitmq_module_1 = require("../../rabbitmq/rabbitmq.module");
+const jwt_module_1 = require("../../auth/jwt.module");
 let PaymentProcessorModule = class PaymentProcessorModule {
 };
 exports.PaymentProcessorModule = PaymentProcessorModule;
@@ -22,6 +23,7 @@ exports.PaymentProcessorModule = PaymentProcessorModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([payment_entity_card_vault_1.CardVault, payment_entity_transaction_1.Transaction]),
             rabbitmq_module_1.RabbitMQModule,
+            jwt_module_1.JWTModule,
         ],
         controllers: [payment_processor_controller_1.PaymentProcessorController],
         providers: [payment_processor_service_1.PaymentProcessorService],

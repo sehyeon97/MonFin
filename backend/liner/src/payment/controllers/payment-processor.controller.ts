@@ -2,7 +2,7 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { CustomerSavedPaymentMethodResponse } from '../dto/response/customer-payment-method.response.dto';
 import { AddPaymentMethodRequest } from '../dto/request/customer-payment-method.request.dto';
 import { PaymentProcessorService } from '../services/payment-processor.service';
@@ -11,6 +11,8 @@ import { MerchantCardResponse } from '../dto/response/merchant-card.response.dto
 import { BankOTPTransactionResult } from '../dto/request/bank-otp-result.request.dto';
 import { TransactionRequest } from '../dto/request/transaction.request.dto';
 import { TransactionResponse } from '../dto/response/transaction.response.dto';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import type { AuthenticatedRequest } from '../../auth/jwt-auth-guard.dto';
 
 @Controller('payment-api/payment-processor')
 export class PaymentProcessorController {
@@ -28,18 +30,26 @@ export class PaymentProcessorController {
     ///////////////////////// ### *** MERCHANT *** ### /////////////////////////
 
     ///////////////////////// ### *** CUSTOMER *** ### /////////////////////////
-    @Get('customer/payment-methods/:id')
+    @Get('customer/payment-methods')
+    @UseGuards(JwtAuthGuard)
     public async viewPaymentMethods(
-        @Param('id') customerID: string,
+        @Req() request: AuthenticatedRequest,
     ): Promise<CustomerSavedPaymentMethodResponse[]> {
-        return this.paymentProcessorService.getSavedPaymentMethods(customerID);
+        return this.paymentProcessorService.getSavedPaymentMethods(
+            request.user.id,
+        );
     }
 
     @Post('customer/save/payment-method')
+    @UseGuards(JwtAuthGuard)
     public async addPaymentMethod(
+        @Req() request: AuthenticatedRequest,
         @Body() paymentMethod: AddPaymentMethodRequest,
     ): Promise<void> {
-        return this.paymentProcessorService.savePaymentMethod(paymentMethod);
+        return this.paymentProcessorService.savePaymentMethod(
+            paymentMethod,
+            request.user.id,
+        );
     }
     ///////////////////////// ### *** CUSTOMER *** ### /////////////////////////
 

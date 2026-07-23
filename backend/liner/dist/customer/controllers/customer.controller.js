@@ -16,7 +16,6 @@ exports.CustomerController = void 0;
 const common_1 = require("@nestjs/common");
 const customer_account_service_1 = require("../services/customer-account.service");
 const create_customer_request_dto_1 = require("../dto/requests/create-customer-request.dto");
-const sign_in_customer_request_dto_1 = require("../dto/requests/sign-in-customer-request.dto");
 const order_history_service_1 = require("../services/order-history.service");
 let CustomerController = class CustomerController {
     customerAccountService;
@@ -27,9 +26,6 @@ let CustomerController = class CustomerController {
     }
     async createCustomer(request) {
         return await this.customerAccountService.createCustomerAccount(request);
-    }
-    async loginCustomer(request) {
-        return await this.customerAccountService.signIn(request);
     }
     async getPurchasedItems(customerID) {
         return await this.orderHistoryService.getCustomerOrderHistory(customerID);
@@ -43,13 +39,6 @@ __decorate([
     __metadata("design:paramtypes", [create_customer_request_dto_1.CreateCustomerRequest]),
     __metadata("design:returntype", Promise)
 ], CustomerController.prototype, "createCustomer", null);
-__decorate([
-    (0, common_1.Post)('login'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [sign_in_customer_request_dto_1.SignInCustomerRequest]),
-    __metadata("design:returntype", Promise)
-], CustomerController.prototype, "loginCustomer", null);
 __decorate([
     (0, common_1.Get)('purchased-items/:customerID'),
     __param(0, (0, common_1.Param)('customerID')),

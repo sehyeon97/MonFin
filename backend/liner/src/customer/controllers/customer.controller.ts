@@ -6,7 +6,6 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CustomerAccountService } from '../services/customer-account.service';
 import { Customer } from '../entity/customer.entity.user';
 import { CreateCustomerRequest } from '../dto/requests/create-customer-request.dto';
-import { SignInCustomerRequest } from '../dto/requests/sign-in-customer-request.dto';
 import { OrderHistoryService } from '../services/order-history.service';
 import { PurchasedItem } from '../dto/responses/purchased-item.response.dto';
 
@@ -25,12 +24,13 @@ export class CustomerController {
         return await this.customerAccountService.createCustomerAccount(request);
     }
 
-    @Post('login')
-    public async loginCustomer(
-        @Body() request: SignInCustomerRequest,
-    ): Promise<string> {
-        return await this.customerAccountService.signIn(request);
-    }
+    // *** REFACTORED TO JWT AUTH *** Testing in progress. . . then delete after success
+    // @Post('login')
+    // public async loginCustomer(
+    //     @Body() request: SignInCustomerRequest,
+    // ): Promise<string> {
+    //     return await this.customerAccountService.signIn(request);
+    // }
 
     @Get('purchased-items/:customerID')
     public async getPurchasedItems(

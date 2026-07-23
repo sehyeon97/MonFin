@@ -5,6 +5,5 @@ public record CardTokenizationRequest(
     String cvv,
     String fullName,
     String expMonth,
-    String expYear,
-    String userID
+    String expYear
 ) {}

@@ -18,6 +18,7 @@ const customer_payment_method_request_dto_1 = require("../dto/request/customer-p
 const payment_processor_service_1 = require("../services/payment-processor.service");
 const merchant_card_request_dto_1 = require("../dto/request/merchant-card.request.dto");
 const transaction_request_dto_1 = require("../dto/request/transaction.request.dto");
+const jwt_auth_guard_1 = require("../../auth/jwt-auth.guard");
 let PaymentProcessorController = class PaymentProcessorController {
     paymentProcessorService;
     constructor(paymentProcessorService) {
@@ -26,11 +27,11 @@ let PaymentProcessorController = class PaymentProcessorController {
     async addDebitForMerchant(req) {
         return this.paymentProcessorService.addDebitCardForMerchant(req);
     }
-    async viewPaymentMethods(customerID) {
-        return this.paymentProcessorService.getSavedPaymentMethods(customerID);
+    async viewPaymentMethods(request) {
+        return this.paymentProcessorService.getSavedPaymentMethods(request.user.id);
     }
-    async addPaymentMethod(paymentMethod) {
-        return this.paymentProcessorService.savePaymentMethod(paymentMethod);
+    async addPaymentMethod(request, paymentMethod) {
+        return this.paymentProcessorService.savePaymentMethod(paymentMethod, request.user.id);
     }
     async createTransaction(req) {
         return await this.paymentProcessorService.compileTransaction(req);
@@ -48,17 +49,20 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PaymentProcessorController.prototype, "addDebitForMerchant", null);
 __decorate([
-    (0, common_1.Get)('customer/payment-methods/:id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)('customer/payment-methods'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PaymentProcessorController.prototype, "viewPaymentMethods", null);
 __decorate([
     (0, common_1.Post)('customer/save/payment-method'),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [customer_payment_method_request_dto_1.AddPaymentMethodRequest]),
+    __metadata("design:paramtypes", [Object, customer_payment_method_request_dto_1.AddPaymentMethodRequest]),
     __metadata("design:returntype", Promise)
 ], PaymentProcessorController.prototype, "addPaymentMethod", null);
 __decorate([

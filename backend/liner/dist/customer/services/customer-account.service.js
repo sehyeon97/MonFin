@@ -32,7 +32,9 @@ let CustomerAccountService = class CustomerAccountService {
             billingState: req.billingState,
             billingZip: req.billingZip,
         });
-        return await this.customerRepository.save(customer);
+        const savedCustomer = await this.customerRepository.save(customer);
+        console.log(savedCustomer);
+        return savedCustomer;
     }
     async signIn(req) {
         const customer = await this.customerRepository.findOne({

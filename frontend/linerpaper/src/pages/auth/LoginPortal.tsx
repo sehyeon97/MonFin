@@ -26,13 +26,11 @@ export function LoginPortal() {
 
     async function loginUser(request: LoginRequest) {
         // user ID could be customer ID or merchant ID
-        const userID: string = await LoginUser(request, userType);
-        console.log("user id: " + userID)
-        if (userID) {
-            window.localStorage.setItem("userID", userID);
-            routeUser();
-        } else {
+        const userID: string = await LoginUser(request);
+        if (userID === "Invalid email or password.") {
             setError("Could not find user with the credentials provided.")
+        } else {
+            routeUser();
         }
     }
 
@@ -44,8 +42,9 @@ export function LoginPortal() {
             // so we want the user to log in again after creating an account,
             // so we can retrieve the customer id
             setError("Signup successful. Please log in again to continue.");
+        } else {
+            setError("Signup failed. Please try again.") // be more specific why, later
         }
-        setError("Signup failed. Please try again.") // be more specific why, later
     }
 
     function routeUser() {
@@ -61,14 +60,14 @@ export function LoginPortal() {
             {mode === "login" && (
                 <>
                     <title>Login</title>
-                    <UserAuthForm mode={mode} onSubmit={loginUser} />
+                    <UserAuthForm mode={mode} onSubmit={loginUser} userRole={userType} />
                 </>
             )}
 
             {mode === "signup" && (
                 <>
                     <title>Signup</title>
-                    <UserAuthForm mode={mode} onSubmit={signupUser} />
+                    <UserAuthForm mode={mode} onSubmit={signupUser} userRole={userType} />
                 </>
             )}
             

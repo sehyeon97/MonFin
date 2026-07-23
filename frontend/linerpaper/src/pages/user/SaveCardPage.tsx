@@ -24,7 +24,6 @@ export function SaveCardPage() {
 
         // save card information to payment processor backend
         await AddCustomerCard({
-            customerID: window.localStorage.getItem("userID")!,
             cardToken: cardToken,
             lastFour: request.pan.substring(12),
             fullName: request.fullName,

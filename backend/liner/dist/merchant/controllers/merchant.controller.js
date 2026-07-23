@@ -8,16 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MerchantController = void 0;
 const common_1 = require("@nestjs/common");
 const register_merchant_request_dto_1 = require("../dto/requests/register-merchant-request.dto");
 const merchant_service_1 = require("../services/merchant.service");
 const product_request_dto_1 = require("../dto/requests/product.request.dto");
-const sign_in_merchant_request_dto_1 = require("../dto/requests/sign-in-merchant.request.dto");
 let MerchantController = class MerchantController {
     merchantService;
     constructor(merchantService) {
@@ -25,9 +21,6 @@ let MerchantController = class MerchantController {
     }
     async registerMerchant(merchant) {
         await this.merchantService.registerNewMerchant(merchant);
-    }
-    async loginMerchant(request) {
-        return await this.merchantService.signIn(request);
     }
     async addProduct(req) {
         return await this.merchantService.addProduct(req);
@@ -43,13 +36,6 @@ __decorate([
     __metadata("design:paramtypes", [register_merchant_request_dto_1.RegisterMerchantRequest]),
     __metadata("design:returntype", Promise)
 ], MerchantController.prototype, "registerMerchant", null);
-__decorate([
-    (0, common_1.Post)('login'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [sign_in_merchant_request_dto_1.SignInMerchantRequest]),
-    __metadata("design:returntype", Promise)
-], MerchantController.prototype, "loginMerchant", null);
 __decorate([
     (0, common_1.Post)('add-product'),
     __metadata("design:type", Function),

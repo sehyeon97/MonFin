@@ -39,7 +39,6 @@ public class ValidateCardServiceTest {
     private static final String FULL_NAME = "poo ding";
     private static final String EXP_MONTH = "6";
     private static final String EXP_YEAR = "2031";
-    private static final String MERCHANT_ID = "11509964";
     
     private static final BasicCardInfo INFO = new BasicCardInfo(PAN, EXP_MONTH, EXP_YEAR, FULL_NAME, CVV);
     private static final CardType CARD_TYPE = CardType.DEBIT;
@@ -50,7 +49,7 @@ public class ValidateCardServiceTest {
     @Test
     public void shouldReturnValid() {
         // Arrange
-        CardTokenizationRequest req = new CardTokenizationRequest(PAN, CVV, FULL_NAME, EXP_MONTH, EXP_YEAR, MERCHANT_ID);
+        CardTokenizationRequest req = new CardTokenizationRequest(PAN, CVV, FULL_NAME, EXP_MONTH, EXP_YEAR);
         when(cardRepository.findCardByBasicCardInfo(any()))
             .thenReturn(Optional.of(new Card(0, 0, INFO, CARD_TYPE, CARD_NETWORK, CARD_TIER, Instant.now(), 500, 1000)));
 
@@ -69,7 +68,7 @@ public class ValidateCardServiceTest {
     @Test
     public void shouldReturnInvalid() {
         // Arrange
-        CardTokenizationRequest req = new CardTokenizationRequest("1234567812345678", CVV, FULL_NAME, EXP_MONTH, EXP_YEAR, MERCHANT_ID);
+        CardTokenizationRequest req = new CardTokenizationRequest("1234567812345678", CVV, FULL_NAME, EXP_MONTH, EXP_YEAR);
         when(cardRepository.findCardByBasicCardInfo(any()))
             .thenReturn(Optional.empty());
         

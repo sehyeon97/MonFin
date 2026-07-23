@@ -44,7 +44,7 @@ public class PPCardTokenizerTest {
         String expMonth = "6";
         String expYear = "2031";
         String merchantID = "11509964";
-        CardTokenizationRequest req = new CardTokenizationRequest(pan, cvv, fullName, expMonth, expYear, merchantID);
+        CardTokenizationRequest req = new CardTokenizationRequest(pan, cvv, fullName, expMonth, expYear);
 
         CardType cardType = CardType.DEBIT;
         CardNetwork cardNetwork = CardNetwork.VISA;

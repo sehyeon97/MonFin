@@ -29,7 +29,9 @@ export class CustomerAccountService {
             billingZip: req.billingZip,
         });
 
-        return await this.customerRepository.save(customer);
+        const savedCustomer = await this.customerRepository.save(customer);
+        console.log(savedCustomer);
+        return savedCustomer;
     }
 
     public async signIn(req: SignInCustomerRequest): Promise<string> {

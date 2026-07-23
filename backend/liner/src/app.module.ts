@@ -6,9 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MerchantSalesModule } from './merchant/module/merchant-sales.module';
 import { CustomerOrderHistoryModule } from './customer/module/customer.order-history.module';
+import { JWTModule } from './auth/jwt.module';
 
 @Module({
     imports: [
+        JWTModule,
         PaymentProcessorModule,
         MerchantModule,
         MerchantSalesModule,

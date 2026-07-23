@@ -7,5 +7,4 @@ export interface CardTokenizationRequest {
   fullName: string;
   expMonth: string;
   expYear: string;
-  userID: string;
 }

@@ -86,7 +86,7 @@ public class PPCardTokenizer {
             mac.init(spec);
 
             String requestParams = 
-                request.userID() + "|" + request.pan() + "|" + request.cvv() + "|" + request.expMonth() + "|" + request.expYear();
+                request.pan() + "|" + request.cvv() + "|" + request.expMonth() + "|" + request.expYear();
             byte[] hmac = mac.doFinal(requestParams.getBytes(StandardCharsets.UTF_8));
 
             return bytestoHexString(hmac);

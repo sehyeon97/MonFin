@@ -1,5 +1,4 @@
 export declare class AddPaymentMethodRequest {
-    customerID: string;
     cardToken: string;
     lastFour: string;
     fullName: string;

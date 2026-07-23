@@ -10,14 +10,16 @@ type UserAuthFormProps =
     | {
           mode: "login";
           onSubmit: (request: LoginRequest) => Promise<void>;
+          userRole: string;
       }
     | {
           mode: "signup";
           onSubmit: (request: SignupRequest) => Promise<void>;
+          userRole: string;
       };
 
 
-export function UserAuthForm({ mode, onSubmit }: UserAuthFormProps) {
+export function UserAuthForm({ mode, onSubmit, userRole }: UserAuthFormProps) {
     // login & signup shared
     const { loginForm, setEmail, setPassword } = useLoginForm();
 
@@ -43,7 +45,8 @@ export function UserAuthForm({ mode, onSubmit }: UserAuthFormProps) {
         if (mode === "login") {
             const request: LoginRequest = {
                 email: loginForm.email,
-                password: loginForm.password
+                password: loginForm.password,
+                role: userRole,
             };
             onSubmit(request);
         } else {

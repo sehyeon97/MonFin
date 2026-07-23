@@ -3,9 +3,9 @@ export const Url = {
   Customer: "/customers",
   Merchant: "/merchants",
   PaymentProcessor: "/payment-processor",
-  Login: "/login",
+  AuthLogin: "/auth/login",
   Signup: "/register",
   TSP: "/api/bank/payment/processor/credentials", // should be bank frontend embed iframe later
-  CustomerAddPaymentMethod: "customer/save/payment-method",
-  CustomerViewSavedPaymentMethods: "customer/payment-methods",
+  CustomerAddPaymentMethod: "/customer/save/payment-method",
+  CustomerViewSavedPaymentMethods: "/customer/payment-methods",
 };

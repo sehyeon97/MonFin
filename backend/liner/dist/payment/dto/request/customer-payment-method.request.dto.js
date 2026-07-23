@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AddPaymentMethodRequest = void 0;
 const class_validator_1 = require("class-validator");
 class AddPaymentMethodRequest {
-    customerID;
     cardToken;
     lastFour;
     fullName;
@@ -21,11 +20,6 @@ class AddPaymentMethodRequest {
     expYear;
 }
 exports.AddPaymentMethodRequest = AddPaymentMethodRequest;
-__decorate([
-    (0, class_validator_1.IsUUID)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], AddPaymentMethodRequest.prototype, "customerID", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)

@@ -23,7 +23,6 @@ class CreateCustomerRequest {
 exports.CreateCustomerRequest = CreateCustomerRequest;
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsEmail)(),
     __metadata("design:type", String)
 ], CreateCustomerRequest.prototype, "email", void 0);
 __decorate([

@@ -12,7 +12,6 @@ type CardDetailsProps = {
 
 export function CardDetailsForm({ onSubmit }: CardDetailsProps) {
     const { cardDetails, setPan, setCVV, setFullName, setExpMonth, setExpYear } = useCardDetailsForm();
-    const userID: string = window.localStorage.getItem("userID")!; // if logged in, it won't ever be null
 
     function handleSubmit(event: React.SubmitEvent): void {
         event.preventDefault();
@@ -23,7 +22,6 @@ export function CardDetailsForm({ onSubmit }: CardDetailsProps) {
             fullName: cardDetails.fullName,
             expMonth: cardDetails.expMonth,
             expYear: cardDetails.expYear,
-            userID: userID,
         };
 
         onSubmit(request);
@@ -36,6 +34,7 @@ export function CardDetailsForm({ onSubmit }: CardDetailsProps) {
             <FullNameInput value={cardDetails.fullName} onChange={setFullName} />
             <ExpiryMonthInput value={cardDetails.expMonth} onChange={setExpMonth} />
             <ExpiryYearInput value={cardDetails.expYear} onChange={setExpYear} />
+            <button>Add Card</button>
         </form>
     );
 }

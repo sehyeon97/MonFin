@@ -24,7 +24,7 @@ export declare class PaymentProcessorService {
     addDebitCardForMerchant(debitCard: AddMerchantDebitCardRequest): Promise<MerchantCardResponse>;
     private hasDebitCard;
     getSavedPaymentMethods(customerID: string): Promise<CustomerSavedPaymentMethodResponse[]>;
-    savePaymentMethod(paymentMethod: AddPaymentMethodRequest): Promise<void>;
+    savePaymentMethod(paymentMethod: AddPaymentMethodRequest, customerID: string): Promise<void>;
     compileTransaction(req: TransactionRequest): Promise<TransactionResponse>;
     private combineAllTransactions;
     private generateCryptogram;

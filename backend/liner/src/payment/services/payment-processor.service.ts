@@ -101,23 +101,29 @@ export class PaymentProcessorService {
         customerID: string,
     ): Promise<CustomerSavedPaymentMethodResponse[]> {
         const paymentMethods = await this.cardVaultRepo.find({
-            where: { id: customerID },
+            where: { userID: customerID },
         });
 
-        return paymentMethods.map((paymentMethod) => ({
+        console.log('paymentMethods:', paymentMethods);
+        console.log('is array:', Array.isArray(paymentMethods));
+
+        const arr = paymentMethods.map((paymentMethod) => ({
             id: paymentMethod.id,
             network: paymentMethod.network,
             lastFour: paymentMethod.lastFour,
             expMonth: paymentMethod.expMonth,
             expYear: paymentMethod.expYear,
         }));
+        console.log(arr);
+        return arr;
     }
 
     public async savePaymentMethod(
         paymentMethod: AddPaymentMethodRequest,
+        customerID: string,
     ): Promise<void> {
         const pm = this.cardVaultRepo.create({
-            userID: paymentMethod.customerID,
+            userID: customerID,
             cardToken: paymentMethod.cardToken,
             lastFour: paymentMethod.lastFour,
             fullName: paymentMethod.fullName,

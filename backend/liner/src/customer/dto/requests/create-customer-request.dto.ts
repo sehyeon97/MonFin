@@ -1,8 +1,8 @@
-import { IsBoolean, IsEmail, IsNotEmpty, Length } from 'class-validator';
+import { IsBoolean, IsNotEmpty, Length } from 'class-validator';
 
 export class CreateCustomerRequest {
     @IsNotEmpty()
-    @IsEmail()
+    // @IsEmail()
     email!: string;
 
     @IsNotEmpty()

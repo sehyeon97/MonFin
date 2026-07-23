@@ -15,12 +15,14 @@ const typeorm_1 = require("@nestjs/typeorm");
 const config_1 = require("@nestjs/config");
 const merchant_sales_module_1 = require("./merchant/module/merchant-sales.module");
 const customer_order_history_module_1 = require("./customer/module/customer.order-history.module");
+const jwt_module_1 = require("./auth/jwt.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            jwt_module_1.JWTModule,
             payment_processor_module_1.PaymentProcessorModule,
             merchant_module_1.MerchantModule,
             merchant_sales_module_1.MerchantSalesModule,

@@ -1,5 +1,4 @@
 export interface AddPaymentMethodRequest {
-  customerID: string;
   cardToken: string;
   lastFour: string;
   fullName: string;

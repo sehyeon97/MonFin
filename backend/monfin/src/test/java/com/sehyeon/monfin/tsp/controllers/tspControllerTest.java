@@ -101,7 +101,7 @@ public class tspControllerTest {
 
         CardTokenizationRequest request = new CardTokenizationRequest(
             basicCardInfo.getPAN(), basicCardInfo.getSecurityCode(), basicCardInfo.getFullName(),
-            basicCardInfo.getExpMonth(), basicCardInfo.getExpYear(), "11509964"
+            basicCardInfo.getExpMonth(), basicCardInfo.getExpYear()
         );
 
         // act
@@ -128,7 +128,7 @@ public class tspControllerTest {
     public void shouldFailToTokenize() throws Exception {
         // Arrange
         CardTokenizationRequest request = new CardTokenizationRequest(
-            URI_ENDPOINT, URI_ENDPOINT, "J W", "6", "2031", "1596");
+            URI_ENDPOINT, URI_ENDPOINT, "J W", "6", "2031");
 
         // Act
         ResultActions resultActions = mockMvc.perform(

@@ -1,10 +1,6 @@
-import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class AddPaymentMethodRequest {
-    @IsUUID()
-    @IsNotEmpty()
-    customerID!: string;
-
     @IsNotEmpty()
     cardToken!: string;
 
