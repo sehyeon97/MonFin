@@ -18,5 +18,10 @@ public interface BankRepository extends JpaRepository<BankAccount, UUID> {
     // return bank account ID based on bank account login credentials
     // this is not secure, but it's an MVP
     public Optional<BankAccount> findByUsernameAndPassword(String username, String password);
+
+    // does an exist query instead, which is more efficient
+    public boolean existsByPhoneNumber(String phoneNumber);
+
+    public boolean existsByUsername(String username);
     
 }

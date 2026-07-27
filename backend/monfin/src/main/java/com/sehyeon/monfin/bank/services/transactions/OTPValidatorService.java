@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sehyeon.monfin.bank.dto.requests.ProcessorOTPCallbackRequest;
-import com.sehyeon.monfin.bank.dto.responses.CardAuthorizationResponse;
-import com.sehyeon.monfin.bank.dto.responses.TransactionData;
-import com.sehyeon.monfin.bank.dto.responses.TransactionResponse;
+import com.sehyeon.monfin.bank.dto.responses.transaction.CardAuthorizationResponse;
+import com.sehyeon.monfin.bank.dto.responses.transaction.TransactionData;
+import com.sehyeon.monfin.bank.dto.responses.transaction.TransactionResponse;
 import com.sehyeon.monfin.bank.model.entity.transactions.OneTimePasscode;
 import com.sehyeon.monfin.bank.model.entity.transactions.TransactionOTP;
 import com.sehyeon.monfin.bank.repos.transactions.OTPRepository;

@@ -20,9 +20,9 @@ import org.springframework.stereotype.Service;
 
 import com.sehyeon.monfin.bank.domainobjs.FraudDetectionResult;
 import com.sehyeon.monfin.bank.dto.requests.CardAuthorizationRequest;
-import com.sehyeon.monfin.bank.dto.responses.CardAuthorizationResponse;
-import com.sehyeon.monfin.bank.dto.responses.TransactionData;
-import com.sehyeon.monfin.bank.dto.responses.TransactionResponse;
+import com.sehyeon.monfin.bank.dto.responses.transaction.CardAuthorizationResponse;
+import com.sehyeon.monfin.bank.dto.responses.transaction.TransactionData;
+import com.sehyeon.monfin.bank.dto.responses.transaction.TransactionResponse;
 import com.sehyeon.monfin.bank.model.card.basic.BasicCardInfo;
 import com.sehyeon.monfin.bank.model.card.status.CardStatus;
 import com.sehyeon.monfin.bank.model.entity.bank.Card;

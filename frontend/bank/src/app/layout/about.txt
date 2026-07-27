@@ -1,0 +1,3 @@
+The layout folder consists of page layout themes that are shared among different pages.
+For example, bank account and card management pages may have the PersonalLayout,
+and transaction history might have TransactionLayout.

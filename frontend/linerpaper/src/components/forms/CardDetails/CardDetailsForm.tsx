@@ -1,40 +1,90 @@
-import type { CardTokenizationRequest } from "../../../dto/tsp/CardTokenizationRequest";
-import { useCardDetailsForm } from "../../../hooks/card/useCardDetailsForm";
-import { CvvInput } from "./CvvInput";
-import { ExpiryMonthInput } from "./ExpiryMonthInput";
-import { ExpiryYearInput } from "./ExpiryYearInput";
-import { FullNameInput } from "./FullNameInput";
-import { PanInput } from "./PanInput";
+import { useEffect, useState } from "react";
+import type { CardTokenizationResponse } from "../../../dto/tsp/CardTokenizationResponse";
+import { AddCustomerCard } from "../../../api/payment/AddCustomerCard";
+import { useNavigate } from "react-router-dom";
 
-type CardDetailsProps = {
-    onSubmit: (req: CardTokenizationRequest) => Promise<void>;
-};
+export function CardDetailsForm() {
+    const [message, setMessage] = useState("");
+    const [haveAddedCard, setHaveAddedCard] = useState(false);
+    const navigate = useNavigate();
 
-export function CardDetailsForm({ onSubmit }: CardDetailsProps) {
-    const { cardDetails, setPan, setCVV, setFullName, setExpMonth, setExpYear } = useCardDetailsForm();
+    useEffect(() => {
+        async function handleIframeMessage(event: MessageEvent) {
+            // Verify the message is sent by bank/tsp frontend
+            if (event.origin !== "http://localhost:4200") {
+                return;
+            }
 
-    function handleSubmit(event: React.SubmitEvent): void {
-        event.preventDefault();
+            // we know the response dto is the same across our clients / servers
+            if (!event.data.tokenized) {
+                setMessage("Could not add this card.\nPlease check card information and try again.");
+                return;
+            }
 
-        const request: CardTokenizationRequest = {
-            pan: cardDetails.pan.trim().replace(/\s/g, ""), // remove all whitespaces
-            cvv: cardDetails.cvv,
-            fullName: cardDetails.fullName,
-            expMonth: cardDetails.expMonth,
-            expYear: cardDetails.expYear,
+            // minus the tokenized and message from bank/tsp frontend
+            const responseFromTSP: CardTokenizationResponse = {
+                cardToken: event.data.cardToken,
+                lastFour: event.data.lastFour,
+                fullName: event.data.fullName,
+                network: event.data.network,
+                expMonth: event.data.expMonth,
+                expYear: event.data.expYear,
+            };
+
+            // send the response as a request to payment processor backend
+            await AddCustomerCard(responseFromTSP);
+
+            // after a second of displaying message,
+            // navigate user to their saved cards page
+            setMessage(event.data.message);
+            setHaveAddedCard(true);
+        }
+
+        // bank/tsp frontend postmessage() will be caught using this event listener
+        window.addEventListener(
+            "message",
+            handleIframeMessage,
+        );
+
+        // unmount listener so next form uses new listener
+        // removes unnecessary duplication, memory leaks, and unexpected behavior
+        return () => {
+            window.removeEventListener(
+                "message",
+                handleIframeMessage,
+            );
         };
+    }, []);
 
-        onSubmit(request);
-    }
+    useEffect(() => {
+        function showSuccessMessage() {
+            if (haveAddedCard) {
+                // after a second of displaying message,
+                // navigate user to their saved cards page
+                setMessage(message);
+                setTimeout(() => {
+                    navigate("/view-saved-cards");
+                }, 1000);
+            }
+        }
+
+        showSuccessMessage();
+    }, [haveAddedCard, message, navigate]);
 
     return (
-        <form onSubmit={handleSubmit}>
-            <PanInput value={cardDetails.pan} onChange={setPan} />
-            <CvvInput value={cardDetails.cvv} onChange={setCVV} />
-            <FullNameInput value={cardDetails.fullName} onChange={setFullName} />
-            <ExpiryMonthInput value={cardDetails.expMonth} onChange={setExpMonth} />
-            <ExpiryYearInput value={cardDetails.expYear} onChange={setExpYear} />
-            <button>Add Card</button>
-        </form>
+        <>
+            <iframe
+                src="http://localhost:4200"
+                width="500"
+                height="700"
+                style={{
+                    border: "none",
+                }}
+            />
+            <div hidden={message === "" ? true : false}>
+                <br />
+                <p>{message}</p>
+            </div>
+        </>
     );
 }

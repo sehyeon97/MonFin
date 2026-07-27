@@ -25,9 +25,9 @@ import tools.jackson.databind.ObjectMapper;
 import com.sehyeon.monfin.bank.controllers.TransactionController;
 import com.sehyeon.monfin.bank.dto.requests.CardAuthorizationRequest;
 import com.sehyeon.monfin.bank.dto.requests.VerifyOTPRequest;
-import com.sehyeon.monfin.bank.dto.responses.CardAuthorizationResponse;
-import com.sehyeon.monfin.bank.dto.responses.TransactionData;
-import com.sehyeon.monfin.bank.dto.responses.TransactionResponse;
+import com.sehyeon.monfin.bank.dto.responses.transaction.CardAuthorizationResponse;
+import com.sehyeon.monfin.bank.dto.responses.transaction.TransactionData;
+import com.sehyeon.monfin.bank.dto.responses.transaction.TransactionResponse;
 import com.sehyeon.monfin.bank.services.transactions.OTPValidatorService;
 import com.sehyeon.monfin.bank.services.transactions.TransactionService;
 

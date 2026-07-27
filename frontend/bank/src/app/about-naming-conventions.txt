@@ -1,0 +1,4 @@
+Functions and variables use camelCase.
+Everything else PascalCase.
+File naming is like NestJS.
+Global constant naming is like Java.

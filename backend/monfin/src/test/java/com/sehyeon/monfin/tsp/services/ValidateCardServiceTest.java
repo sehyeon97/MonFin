@@ -16,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.sehyeon.monfin.bank.dto.requests.CardTokenizationRequest;
-import com.sehyeon.monfin.bank.dto.responses.ValidateCardResponse;
+import com.sehyeon.monfin.bank.dto.responses.tsp.ValidateCardResponse;
 import com.sehyeon.monfin.bank.model.card.basic.BasicCardInfo;
 import com.sehyeon.monfin.bank.model.card.limits.CardTier;
 import com.sehyeon.monfin.bank.model.card.network.CardNetwork;

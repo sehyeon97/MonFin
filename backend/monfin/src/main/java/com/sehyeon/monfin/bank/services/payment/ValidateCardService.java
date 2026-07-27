@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sehyeon.monfin.bank.dto.requests.CardTokenizationRequest;
-import com.sehyeon.monfin.bank.dto.responses.ValidateCardResponse;
+import com.sehyeon.monfin.bank.dto.responses.tsp.ValidateCardResponse;
 import com.sehyeon.monfin.bank.model.card.basic.BasicCardInfo;
 import com.sehyeon.monfin.bank.model.entity.bank.Card;
 import com.sehyeon.monfin.bank.repos.CardRepository;

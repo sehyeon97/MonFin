@@ -1,0 +1,4 @@
+This folder contains all the different pages.
+For example, bank account page, transaction page, card management page, etc.
+It can be thought of as one giant component.
+Contains UI unique to a route.

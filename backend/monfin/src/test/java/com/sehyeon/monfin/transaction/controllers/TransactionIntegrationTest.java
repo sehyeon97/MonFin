@@ -34,7 +34,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.sehyeon.monfin.bank.dto.requests.CardAuthorizationRequest;
-import com.sehyeon.monfin.bank.dto.responses.TransactionResponse;
+import com.sehyeon.monfin.bank.dto.responses.transaction.TransactionResponse;
 import com.sehyeon.monfin.bank.model.card.basic.BasicCardInfo;
 import com.sehyeon.monfin.bank.model.card.limits.CardTier;
 import com.sehyeon.monfin.bank.model.card.network.CardNetwork;

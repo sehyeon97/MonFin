@@ -20,8 +20,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.Rollback;
 
-import com.sehyeon.monfin.bank.dto.responses.TransactionData;
-import com.sehyeon.monfin.bank.dto.responses.TransactionResponse;
+import com.sehyeon.monfin.bank.dto.responses.transaction.TransactionData;
+import com.sehyeon.monfin.bank.dto.responses.transaction.TransactionResponse;
 import com.sehyeon.monfin.bank.model.entity.transactions.OneTimePasscode;
 import com.sehyeon.monfin.bank.repos.transactions.OTPRepository;
 import com.sehyeon.monfin.bank.repos.transactions.TransactionOTPRepository;

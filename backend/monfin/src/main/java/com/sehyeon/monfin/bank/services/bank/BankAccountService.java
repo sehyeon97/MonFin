@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sehyeon.monfin.bank.dto.requests.CreateBankAccountRequest;
+import com.sehyeon.monfin.bank.dto.responses.auth.SignupAndLoginAuthRes;
+import com.sehyeon.monfin.bank.dto.responses.auth.SignupErrorResponse;
+import com.sehyeon.monfin.bank.dto.responses.auth.errortypes.SignupErrorTypes;
 import com.sehyeon.monfin.bank.model.card.limits.CardTier;
 import com.sehyeon.monfin.bank.model.card.network.CardNetwork;
 import com.sehyeon.monfin.bank.model.card.types.CardType;
@@ -14,6 +17,7 @@ import com.sehyeon.monfin.bank.model.entity.UserCredentials;
 import com.sehyeon.monfin.bank.model.entity.bank.BankAccount;
 import com.sehyeon.monfin.bank.model.entity.bank.Card;
 import com.sehyeon.monfin.bank.repos.BankRepository;
+import com.sehyeon.monfin.bank.services.auth.JwtService;
 import com.sehyeon.monfin.bank.services.card.CardIssuanceService;
 
 import jakarta.transaction.Transactional;
@@ -35,6 +39,9 @@ public class BankAccountService {
     @Autowired
     private CardIssuanceService cardIssuanceService;
 
+    @Autowired
+    private JwtService jwtService;
+
     public BankAccountService() {}
 
     /**
@@ -44,9 +51,24 @@ public class BankAccountService {
      * Could also completely do all database updates then flush at the very end all pending tasks
      */
     @Transactional
-    public void createBankAccount(CreateBankAccountRequest req) {
+    public SignupAndLoginAuthRes createBankAccount(CreateBankAccountRequest req) {
+        if (isPhoneNumberInUse(req.phoneNumber())) {
+            String signupError = SignupErrorTypes.PHONE_NUMBER_ALREADY_EXISTS.getErrorMessage();
+            return new SignupAndLoginAuthRes(null, new SignupErrorResponse(signupError), null);
+        }
+
+        if (isUsernameInUse(req.username())) {
+            String signupError = SignupErrorTypes.USERNAME_ALREADY_EXISTS.getErrorMessage();
+            return new SignupAndLoginAuthRes(null, new SignupErrorResponse(signupError), null);
+        }
+
+        // signup user since inputs are valid
         BankAccount bankAccount = new BankAccount(req.username(), req.password(), req.fullName(), req.phoneNumber());
         bankRepository.save(bankAccount);
+
+        // generate a jwt token
+        String jwtAccessToken = jwtService.createFirstJwtFor(req.username());
+        return new SignupAndLoginAuthRes(jwtAccessToken, null, null);
     } // Flushes automatically here because it is tagged transactional
 
     /**
@@ -108,6 +130,14 @@ public class BankAccountService {
             default:
                 return CardTier.BRONZE;
         }
+    }
+
+    private boolean isPhoneNumberInUse(String phoneNumber) {
+        return bankRepository.existsByPhoneNumber(phoneNumber);
+    }
+
+    private boolean isUsernameInUse(String username) {
+        return bankRepository.existsByUsername(username);
     }
     
 }

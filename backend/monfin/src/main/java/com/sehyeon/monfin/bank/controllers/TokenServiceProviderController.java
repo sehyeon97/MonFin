@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sehyeon.monfin.bank.dto.requests.CardTokenizationRequest;
-import com.sehyeon.monfin.bank.dto.responses.CardTokenizationResponse;
+import com.sehyeon.monfin.bank.dto.responses.tsp.CardTokenizationResponse;
 import com.sehyeon.monfin.bank.services.payment.TokenServiceProvider;
 
 import jakarta.validation.Valid;

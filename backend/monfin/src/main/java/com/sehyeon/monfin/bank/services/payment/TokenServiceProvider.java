@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sehyeon.monfin.bank.dto.requests.CardTokenizationRequest;
-import com.sehyeon.monfin.bank.dto.responses.CardTokenizationResponse;
-import com.sehyeon.monfin.bank.dto.responses.ValidateCardResponse;
+import com.sehyeon.monfin.bank.dto.responses.tsp.CardTokenizationResponse;
+import com.sehyeon.monfin.bank.dto.responses.tsp.ValidateCardResponse;
 import com.sehyeon.monfin.bank.model.payment.TokenizedCardInfo;
 
 @Service
@@ -24,10 +24,11 @@ public class TokenServiceProvider {
         ValidateCardResponse card = cardValidator.doesCardExist(request);
         if (card.isValid()) {
             TokenizedCardInfo cardInfo = cardTokenizer.generateCardToken(request, card.card());
-            return new CardTokenizationResponse(true, "Tokenization Successful", cardInfo.getCardDetailsForPP());
+            return new CardTokenizationResponse(
+                true, "Tokenization Successful", cardInfo.getCardDetailsForPP(), card.card().getCardNetwork());
         }
 
-        return new CardTokenizationResponse(false, "Tokenization Unsuccessful", "");
+        return new CardTokenizationResponse(false, "Tokenization Unsuccessful", "", null);
     }
 
 }

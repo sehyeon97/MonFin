@@ -73,7 +73,7 @@ export function UserAuthForm({ mode, onSubmit, userRole }: UserAuthFormProps) {
             />
             <input 
             title="Password" type="password" value={loginForm.password}
-            placeholder="Enter password. Mininmum 6, maximum 16 characters. No symbols."
+            placeholder={mode === 'login' ? "Enter password." : "Mininmum 6, maximum 16 characters. No symbols."}
             minLength={6} maxLength={16}
             onChange={(event) => setPassword(event.target.value)}
             />
