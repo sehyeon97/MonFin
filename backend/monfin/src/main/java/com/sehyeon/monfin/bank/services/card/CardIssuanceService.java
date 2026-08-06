@@ -12,7 +12,6 @@ import com.sehyeon.monfin.bank.model.card.basic.BasicCardInfo;
 import com.sehyeon.monfin.bank.model.card.limits.CardTier;
 import com.sehyeon.monfin.bank.model.card.network.CardNetwork;
 import com.sehyeon.monfin.bank.model.card.types.CardType;
-import com.sehyeon.monfin.bank.model.entity.bank.BankAccount;
 import com.sehyeon.monfin.bank.model.entity.bank.Card;
 import com.sehyeon.monfin.bank.model.limits.CardLimits;
 import com.sehyeon.monfin.bank.model.limits.SpendingLimits;
@@ -28,7 +27,7 @@ public class CardIssuanceService {
 
     // At the moment, only creates DEBIT cards
     public Card issueCard(
-        BankAccount bankAccount, String fullName, CardType cardType, CardNetwork cardNetwork, CardTier cardTier) {
+        String fullName, CardType cardType, CardNetwork cardNetwork, CardTier cardTier) {
         // look up card tier based on card network and assign daily and monthly limits
         // TODO: works for credit cards only for now (make it work with debit)
         CardLimits cardLimits = new CardLimits();

@@ -52,9 +52,13 @@ public class AuthenticationService {
             return LoginStatus.FAIL;
         }
 
+        if (auth == null) {
+            return LoginStatus.FAIL;
+        }
+
         BankAccountDetails bankAccount = (BankAccountDetails) auth.getPrincipal();
         String jwt = jwtService.createJwtAccessRefreshFor(bankAccount.getBankAccountID());
-        String[] accessAndRefreshJwt = jwt.split("|");
+        String[] accessAndRefreshJwt = jwt.split("\\|");
 
         Cookie accessCookie = new Cookie("access_token", accessAndRefreshJwt[0]);
         Cookie refreshCookie = new Cookie("refresh_token", accessAndRefreshJwt[1]);
@@ -96,7 +100,7 @@ public class AuthenticationService {
 
         // Step 3: Generate JWT (Access_token | Refresh_token)
         String jwt = jwtService.createJwtAccessRefreshFor(bankAccount.getBankAccountID());
-        String[] accessAndRefreshJwt = jwt.split("|");
+        String[] accessAndRefreshJwt = jwt.split("\\|");
 
         // Step 4: Set HttpOnly Cookie (Automatically sent to frontend as header)
         Cookie accessCookie = new Cookie("access_token", accessAndRefreshJwt[0]);

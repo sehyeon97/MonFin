@@ -20,8 +20,7 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
-    private @Value("${auth.jwt.key}") static String secretKey;
-    private static final SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    private final SecretKey secretKey;
 
     // JWT Access Token | Bank Account ID
     private Map<String, UUID> accessTokenOwner;
@@ -29,9 +28,10 @@ public class JwtService {
     // access token lifecycle (15min)
     private static final Duration ACCESS_TOKEN_LIFECYCLE = Duration.ofMinutes(15);
     // refresh token lifecycle (1 week)
-    private static final Duration REFRESH_TOKEN_LIFECYCLE = Duration.ofDays(7);
+    private static final Duration REFRESH_TOKEN_LIFECYCLE = Duration.ofDays(1);
 
-    public JwtService() {
+    public JwtService(@Value("${auth.jwt.key}") String secretKey) {
+        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         accessTokenOwner = new HashMap<>();
     }
 
@@ -63,18 +63,27 @@ public class JwtService {
     }
 
     public boolean isValidJWT(String accessToken, UUID bankAccountID) {
+        // System.out.println("ACCESS TOKEN MAP SIZE: " + accessTokenOwner.size());
         if (!accessTokenOwner.containsKey(accessToken)) {
             return false;
         }
-        return accessTokenOwner.get(accessToken) == bankAccountID;
+        // System.out.println(accessTokenOwner.get(accessToken) == bankAccountID);
+        // System.out.println("Stored Bank account id: " + accessTokenOwner.get(accessToken));
+        // System.out.println("Given bank account id: " + bankAccountID.toString());
+        // Fix UUID comparison from == to .equals()
+        return accessTokenOwner.get(accessToken).equals(bankAccountID);
     }
 
     public Claims parseJwt(String jwt) {
-        return Jwts.parser()
-            .verifyWith(key)
-            .build()
-            .parseSignedClaims(jwt)
-            .getPayload();
+        try {
+            return Jwts.parser()
+                .verifyWith(this.secretKey)
+                .build()
+                .parseSignedClaims(jwt)
+                .getPayload();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private String buildJwt(String subject, UUID userID, Date expiration) {
@@ -84,7 +93,7 @@ public class JwtService {
             .claim("id", userID)
             // 15min past issued time
             .expiration(expiration)
-            .signWith(key)
+            .signWith(this.secretKey)
             .compact();
     }
     

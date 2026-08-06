@@ -72,7 +72,11 @@ public class SpringSecurityConfig {
 
             // JWT doesn't exist during signup and login, so it should not go through JWT filtering
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/bank/accounts/create", "/api/bank/accounts/login").permitAll()
+                .requestMatchers(
+                    "/api/bank/auth/signup",
+                    "/api/bank/auth/login",
+                    "/api/bank/payment/processor/credentials" // probably not the best way
+                ).permitAll()
                 .anyRequest().authenticated()
             )
 

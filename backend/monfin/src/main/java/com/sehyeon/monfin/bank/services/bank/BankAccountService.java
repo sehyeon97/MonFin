@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sehyeon.monfin.bank.dto.requests.CreateBankAccountRequest;
-import com.sehyeon.monfin.bank.dto.requests.LoginRequest;
 import com.sehyeon.monfin.bank.model.card.limits.CardTier;
 import com.sehyeon.monfin.bank.model.card.network.CardNetwork;
 import com.sehyeon.monfin.bank.model.card.types.CardType;
@@ -45,30 +44,8 @@ public class BankAccountService {
      */
     @Transactional
     public BankAccount createBankAccount(CreateBankAccountRequest req) {
-        // if (isPhoneNumberInUse(req.phoneNumber())) {
-        //     String signupError = SignupErrorTypes.PHONE_NUMBER_ALREADY_EXISTS.getErrorMessage();
-        //     return new SignupAndLoginAuthRes(null, new SignupErrorResponse(signupError), null);
-        // }
-
-        // if (isUsernameInUse(req.username())) {
-        //     String signupError = SignupErrorTypes.USERNAME_ALREADY_EXISTS.getErrorMessage();
-        //     return new SignupAndLoginAuthRes(null, new SignupErrorResponse(signupError), null);
-        // }
-
-        // // signup user since inputs are valid
-        // BankAccount bankAccount = new BankAccount(req.username(), req.password(), req.fullName(), req.phoneNumber());
-        // bankRepository.save(bankAccount);
-        // return new SignupAndLoginAuthRes(bankAccount, null, null);
         return bankRepository.save(new BankAccount(req.username(), req.password(), req.fullName(), req.phoneNumber()));
     } // Flushes automatically here because it is tagged transactional
-
-    /**
-     * If the user does not have any bank accounts open,
-     * a BankAccountNotFoundException will be thrown in runtime (@ the controller layer)
-     */
-    public Optional<BankAccount> getBankAccountID(LoginRequest userCredentials) {
-        return bankRepository.findByUsernameAndPassword(userCredentials.username(), userCredentials.password());
-    }
 
     @Transactional
     public void addCardToAccount(
@@ -76,7 +53,7 @@ public class BankAccountService {
         // Add the following 3 as parameters passed thru by frontend via controllers
         // Right now, they are for testing purposes
         Card card = cardIssuanceService.issueCard(
-            bankAccount, fullName, convertStrToCardType(cardType), convertStrToCardNetwork(cardNetwork), convertStrToCardTier(cardTier));
+            fullName, convertStrToCardType(cardType), convertStrToCardNetwork(cardNetwork), convertStrToCardTier(cardTier));
         cardService.createCard(card);
         bankAccount.addCard(card);
     }

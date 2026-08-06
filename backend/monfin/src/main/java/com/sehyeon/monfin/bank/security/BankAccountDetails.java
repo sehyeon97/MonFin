@@ -76,5 +76,9 @@ public class BankAccountDetails implements UserDetails {
     public boolean haveDetailsChanged() {
         return haveDetailsChanged;
     }
+
+    public BankAccount getBankAccountAsEntity() {
+        return bankAccount;
+    }
     
 }

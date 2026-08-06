@@ -1,10 +1,8 @@
 package com.sehyeon.monfin.bank.controller;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sehyeon.monfin.bank.dto.requests.NewCardRequest;
 import com.sehyeon.monfin.bank.dto.responses.NewCardResponse;
-import com.sehyeon.monfin.bank.model.entity.bank.BankAccount;
-import com.sehyeon.monfin.bank.repos.BankRepository;
+import com.sehyeon.monfin.bank.security.BankAccountDetails;
 import com.sehyeon.monfin.bank.services.bank.BankAccountService;
 
 /**
@@ -28,9 +25,6 @@ public class BankController {
     @Autowired
     private final BankAccountService bankAccountService;
 
-    @Autowired
-    private BankRepository bankRepository;
-
     public BankController(BankAccountService bankAccountService) {
         // spring automatically injects the service bean here through constructor injection
         this.bankAccountService = bankAccountService;
@@ -42,18 +36,27 @@ public class BankController {
      * Later, will change to JWT (JSON Web Token)
      */
     @PostMapping("/cards/create")
-    public ResponseEntity<?> addCardToBankAccount(@RequestBody NewCardRequest req) {
-        Optional<BankAccount> account = bankRepository.findById(req.bankAccountID());
-
-        // bank account is not found
-        if (account.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new NewCardResponse("Invalid bank account"));
-        }
-
+    public ResponseEntity<NewCardResponse> addCardToBankAccount(@RequestBody NewCardRequest req, Authentication auth) {
+        BankAccountDetails bankAccount = (BankAccountDetails) auth.getPrincipal();
         bankAccountService.addCardToAccount(
-            account.get(), account.get().getFullName(), req.cardType(), req.cardNetwork(), req.cardTier());
+            bankAccount.getBankAccountAsEntity(),
+            bankAccount.getUsername(),
+            req.cardType(),
+            req.cardNetwork(),
+            req.cardTier()
+        );
+        return ResponseEntity.ok(new NewCardResponse("Successfully added card to account."));
+        // Optional<BankAccount> account = bankRepository.findById(req.bankAccountID());
 
-        return ResponseEntity.ok(new NewCardResponse("Successfully added card to account"));
+        // // bank account is not found
+        // if (account.isEmpty()) {
+        //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new NewCardResponse("Invalid bank account"));
+        // }
+
+        // bankAccountService.addCardToAccount(
+        //     account.get(), account.get().getFullName(), req.cardType(), req.cardNetwork(), req.cardTier());
+
+        // return ResponseEntity.ok(new NewCardResponse("Successfully added card to account"));
     }
     
 }

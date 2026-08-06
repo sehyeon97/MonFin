@@ -38,7 +38,7 @@ public class CardTokenMaker {
         this.radix = radix;
     }
 
-    // there won't be a way to decrypt, for security purposes
+    // encrypt to store to database
     public String encrypt(String middleSixDigits) {
         Cipher cipher;
         try {
@@ -52,6 +52,22 @@ public class CardTokenMaker {
         }
 
         // return custom runtime exception when empty string is returned
+        return "";
+    }
+
+    // decrypt after retrieving from database
+    public String decrypt(String encryptedMiddleSixDigits) {
+        Cipher cipher;
+        try {
+            cipher = Cipher.getInstance(TRANSFORMATION, PROVIDER);
+            cipher.init(Cipher.DECRYPT_MODE, key, new FPEParameterSpec(radix, tweak));
+            byte[] numeralBytes = toNumeralBytes(encryptedMiddleSixDigits);
+            byte[] output = cipher.doFinal(numeralBytes);
+            return fromNumberalBytes(output);
+        } catch (GeneralSecurityException gse) {
+            System.out.println(gse.getLocalizedMessage());
+        }
+
         return "";
     }
 

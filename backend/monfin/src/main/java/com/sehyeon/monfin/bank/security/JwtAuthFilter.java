@@ -63,11 +63,12 @@ public class JwtAuthFilter extends OncePerRequestFilter { // means it runs once 
                 // because we don't have roles, we use the two parameter object (principal + credentials)
                 // credentials is password and we don't need the password after authentication, therefore set to null
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    bankAccountDetails, null
+                    bankAccountDetails, null, bankAccountDetails.getAuthorities()
                 );
 
                 // For the rest of the request, this user is authenticated
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("authentication: " + SecurityContextHolder.getContext().getAuthentication());
             }
         }
 
@@ -95,7 +96,7 @@ public class JwtAuthFilter extends OncePerRequestFilter { // means it runs once 
 
     private UUID getBankAccountID(String accessToken) {
         Claims claims = jwtService.parseJwt(accessToken);
-        return claims.get("id", UUID.class);
+        return UUID.fromString(claims.get("id", String.class));
     }
     
 }
