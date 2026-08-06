@@ -2,16 +2,18 @@ package com.sehyeon.monfin.bank.services.auth;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -20,47 +22,68 @@ public class JwtService {
 
     private @Value("${auth.jwt.key}") static String secretKey;
     private static final SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
-    private Set<String> dispatchedJwts;
+
+    // JWT Access Token | Bank Account ID
+    private Map<String, UUID> accessTokenOwner;
+
+    // access token lifecycle (15min)
+    private static final Duration ACCESS_TOKEN_LIFECYCLE = Duration.ofMinutes(15);
+    // refresh token lifecycle (1 week)
+    private static final Duration REFRESH_TOKEN_LIFECYCLE = Duration.ofDays(7);
 
     public JwtService() {
-        dispatchedJwts = new HashSet<>();
+        accessTokenOwner = new HashMap<>();
     }
 
-    public String createFirstJwtFor(String username) {
-        dispatchedJwts.add(username);
-        return buildJwt(username);
+    /**
+     * Generates both access and refresh tokens separated by |
+     * Should be used when users signup or login
+     */
+    public String createJwtAccessRefreshFor(UUID bankAccountID) {
+        String random = UUID.randomUUID().toString().replaceAll("-", "");
+
+        Date accessLifecycle = Date.from(Instant.now().plus(ACCESS_TOKEN_LIFECYCLE));
+        Date refreshLifecycle = Date.from(Instant.now().plus(REFRESH_TOKEN_LIFECYCLE));
+
+        String accessToken = buildJwt(random, bankAccountID, accessLifecycle);
+        String refreshToken = buildJwt(random, bankAccountID, refreshLifecycle);
+
+        accessTokenOwner.put(accessToken, bankAccountID);
+        return accessToken + "|" + refreshToken;
     }
 
-    public String refreshJwt(String jwt) {
-        if (!dispatchedJwts.contains(jwt)) {
-            return "";
-        }
-
-        return generateNewJwtBasedOnCurrent(jwt);
+    // Should be called for all requests other than login and signup
+    public String refreshAccessToken() {
+        return "Not implemented yet";
     }
 
     // User signed out
-    public void removeJwtFor(String username) {
-        dispatchedJwts.remove(username);
+    public void removeJwtFor(String jwt) {
+        accessTokenOwner.remove(jwt);
     }
 
-    private String generateNewJwtBasedOnCurrent(String jwt) {
-        StringBuilder subject = new StringBuilder(10);
-        Random random = new Random();
-        int upperBound = jwt.length();
-        for (int i = 0; i < subject.capacity(); i++) {
-            subject.append(jwt.charAt(random.nextInt(upperBound)));
+    public boolean isValidJWT(String accessToken, UUID bankAccountID) {
+        if (!accessTokenOwner.containsKey(accessToken)) {
+            return false;
         }
-
-        return buildJwt(subject.toString());
+        return accessTokenOwner.get(accessToken) == bankAccountID;
     }
 
-    private String buildJwt(String subject) {
+    public Claims parseJwt(String jwt) {
+        return Jwts.parser()
+            .verifyWith(key)
+            .build()
+            .parseSignedClaims(jwt)
+            .getPayload();
+    }
+
+    private String buildJwt(String subject, UUID userID, Date expiration) {
         return Jwts.builder()
-            .subject(subject.toString())
+            .subject(subject)
             .issuedAt(new Date())
+            .claim("id", userID)
             // 15min past issued time
-            .expiration(new Date(System.currentTimeMillis() + Duration.ofMinutes(15).toMillis()))
+            .expiration(expiration)
             .signWith(key)
             .compact();
     }

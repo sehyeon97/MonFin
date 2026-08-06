@@ -1,4 +1,4 @@
-package com.sehyeon.monfin.bank.controllers;
+package com.sehyeon.monfin.bank.controller;
 
 import java.util.List;
 

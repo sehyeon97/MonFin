@@ -23,5 +23,8 @@ public interface BankRepository extends JpaRepository<BankAccount, UUID> {
     public boolean existsByPhoneNumber(String phoneNumber);
 
     public boolean existsByUsername(String username);
+
+    // For JWT Auth
+    public Optional<BankAccount> findByUsername(String username);
     
 }

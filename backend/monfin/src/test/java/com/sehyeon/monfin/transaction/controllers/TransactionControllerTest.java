@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import tools.jackson.databind.ObjectMapper;
 
-import com.sehyeon.monfin.bank.controllers.TransactionController;
+import com.sehyeon.monfin.bank.controller.TransactionController;
 import com.sehyeon.monfin.bank.dto.requests.CardAuthorizationRequest;
 import com.sehyeon.monfin.bank.dto.requests.VerifyOTPRequest;
 import com.sehyeon.monfin.bank.dto.responses.transaction.CardAuthorizationResponse;

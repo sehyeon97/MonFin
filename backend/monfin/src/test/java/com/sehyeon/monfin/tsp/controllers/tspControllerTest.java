@@ -21,7 +21,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.sehyeon.monfin.bank.controllers.TokenServiceProviderController;
+import com.sehyeon.monfin.bank.controller.TokenServiceProviderController;
 import com.sehyeon.monfin.bank.dto.requests.CardTokenizationRequest;
 import com.sehyeon.monfin.bank.model.card.basic.BasicCardInfo;
 import com.sehyeon.monfin.bank.model.card.limits.CardTier;

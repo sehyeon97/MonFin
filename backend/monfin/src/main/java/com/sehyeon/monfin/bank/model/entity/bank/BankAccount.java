@@ -69,4 +69,8 @@ public class BankAccount {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+    
+    public List<Card> getAllCards() {
+        return cards;
+    }
 }

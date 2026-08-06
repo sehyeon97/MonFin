@@ -28,11 +28,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.sehyeon.monfin.bank.dto.requests.NewCardRequest;
+import com.sehyeon.monfin.bank.dto.requests.LoginRequest;
 import com.sehyeon.monfin.bank.dto.responses.NewCardResponse;
 import com.sehyeon.monfin.bank.model.card.limits.CardTier;
 import com.sehyeon.monfin.bank.model.card.network.CardNetwork;
 import com.sehyeon.monfin.bank.model.card.types.CardType;
-import com.sehyeon.monfin.bank.model.entity.UserCredentials;
 import com.sehyeon.monfin.bank.model.entity.bank.BankAccount;
 import com.sehyeon.monfin.bank.model.entity.bank.Card;
 import com.sehyeon.monfin.bank.repos.BankRepository;
@@ -106,7 +106,7 @@ public class BankControllerTest {
 
     @Test
     public void getBankAccountPass() throws Exception {
-        UserCredentials userCredentials = new UserCredentials("John", "Doe");
+        LoginRequest userCredentials = new LoginRequest("John", "Doe");
 
         // Act & Assert
         webTestClient.post()
@@ -123,7 +123,7 @@ public class BankControllerTest {
 
     @Test
     public void getBankAccountFail() throws Exception {
-        UserCredentials userCredentials = new UserCredentials("Bob", "Builder");
+        LoginRequest userCredentials = new LoginRequest("Bob", "Builder");
 
         String requestBody = objectMapper.writeValueAsString(userCredentials);
 
