@@ -1,0 +1,1 @@
+A single, centralized module containing all navigation routes.

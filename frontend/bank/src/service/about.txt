@@ -1,0 +1,3 @@
+Contains strictly business logic, no UI.
+API calls and Handlers.
+Handlers will usually call the API functions.

@@ -1,0 +1,15 @@
+authService.ts 
+- makes HTTP request to backend
+                ↓↓↓
+    ↑↑↑
+handleLogin.ts
+- handles response | Success → navigation
+                ↓↓↓
+    ↑↑↑         Fail
+useLoginForm.tsx
+- converts form inputs into Request DTO (Login | Signup)
+- validates this Request, shows error message if necessary
+                ↓↓↓
+    ↑↑↑
+AuthForm.tsx
+- renders the form UI
