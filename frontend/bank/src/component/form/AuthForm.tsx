@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { LoginUserCredentials } from "@/dtos/auth/auth.login-request";
 import { CreateBankAccountRequest } from "@/dtos/auth/auth.signup-request";
@@ -86,7 +86,7 @@ export function AuthForm({ onLogin, onSignup, error }: AuthFormProps) {
                 onChange={(event) => setPhoneNumber(event.target.value)}
             />
             </>}
-            <button>Login</button>
+            <button>{isLogin ? "Login" : "Signup"}</button>
             {isLogin ? 
                 <footer onClick={onCreateAccountClick}>Create an account</footer> : 
                 <footer onClick={onBackToLoginClick}>Back to login</footer>}

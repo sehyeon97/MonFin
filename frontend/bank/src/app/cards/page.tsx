@@ -11,7 +11,6 @@ export default function Cards() {
             expireMonth="12" expireYear="2026" 
             cardType="DEBIT" cardNetwork="VISA" cardTier="GOLD"
         >
-            
         </Card>
     );
 }

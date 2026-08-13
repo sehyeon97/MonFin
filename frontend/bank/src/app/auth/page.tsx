@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Container } from "@/component/Container";
 import { AuthForm } from "@/component/form/AuthForm";
@@ -17,7 +17,7 @@ export default function Auth() {
     async function onLogin(request: LoginUserCredentials) {
         const data: string = await loginUser(request);
 
-        if (data) {
+        if (data === "Success") {
             navigator.replaceWithHomePage();
             return;
         }

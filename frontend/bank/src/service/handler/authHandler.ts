@@ -11,7 +11,7 @@ export async function loginUser(request: LoginUserCredentials) {
   const response: Response = await login(request);
 
   if (response.ok) {
-    return "";
+    return "Success";
   }
   return response.text();
 }

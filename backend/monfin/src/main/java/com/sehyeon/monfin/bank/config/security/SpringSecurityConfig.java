@@ -56,8 +56,10 @@ public class SpringSecurityConfig {
      * @throws Exception Invalid Security Config | missing dependencies | invalid matcher config
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+    public SecurityFilterChain securityFilterChain(
+        HttpSecurity http
+    ) throws Exception {
+        return http
             .cors(Customizer.withDefaults())
 
             // CSRF = Cross-Site Request Forgery
@@ -68,7 +70,8 @@ public class SpringSecurityConfig {
             // Whenever the frontend sends a request, they must add this csrf token
             // When the malicious site tries to send a fake request, they won't have this shared csrf token
             // Later, Spring Security will validate the csrf using the internal CsrfFilter
-            .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+            //.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+            .csrf(csrf -> csrf.disable())
 
             // JWT doesn't exist during signup and login, so it should not go through JWT filtering
             .authorizeHttpRequests(auth -> auth
@@ -82,9 +85,8 @@ public class SpringSecurityConfig {
 
             // Runs my jwt filter before Spring Security's built-in username/password authentication filter.
             .addFilterBefore(jwtFilter,
-                    UsernamePasswordAuthenticationFilter.class);
-        
-        return http.build();
+                    UsernamePasswordAuthenticationFilter.class)
+            .build();
     }
 
     // The type of password encryption used to encrypt passwords
@@ -111,7 +113,7 @@ public class SpringSecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource configurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cors = new CorsConfiguration();
 
         // sites that are allowed to make requests to the server
@@ -125,7 +127,8 @@ public class SpringSecurityConfig {
             "GET",
             "POST",
             "PUT",
-            "DELETE"
+            "DELETE",
+            "OPTIONS" // For preflights, like checking to see cors passes
         ));
 
         // cookies are allowed { credentials: "include" } (for jwt http only cookies)
@@ -133,10 +136,11 @@ public class SpringSecurityConfig {
 
         // csrf token cookies and content-type request headers are allowed
         // authorization (bearer) and any other custom headers are declined
-        cors.setAllowedHeaders(List.of(
-            "Content-Type",
-            "X-XSRF-TOKEN"
-        ));
+        // cors.setAllowedHeaders(List.of(
+        //     "Content-Type",
+        //     "X-XSRF-TOKEN"
+        // ));
+        cors.setAllowedHeaders(List.of("*"));
 
         // Object that defines which url endpoints the cors rules apply to
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

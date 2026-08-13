@@ -1,5 +1,4 @@
 import { CONTAINER_CHILD_CLASS_NAME, CONTAINER_CLASS_NAME, CONTAINER_TITLE_CLASS_NAME } from "@/style/classnames";
-import { fredoka } from "@/style/fonts";
 
 /**
  * A Container UI that has a title, and a
@@ -12,16 +11,16 @@ type ContainerProps = {
     className?: string;
 }
 
-export function Container({title, children: child, className = ""}: ContainerProps) {
+export function Container({title, children, className = ""}: ContainerProps) {
     return (
-        <section className={`${CONTAINER_CLASS_NAME} ${className} ${fredoka.className}`}>
+        <section className={`${CONTAINER_CLASS_NAME} ${className}`}>
             <header>
                 <h1 className={CONTAINER_TITLE_CLASS_NAME}>
                     {title}
                 </h1>
             </header>
             <div className={CONTAINER_CHILD_CLASS_NAME}>
-                {child}
+                {children}
             </div>
         </section>
     );

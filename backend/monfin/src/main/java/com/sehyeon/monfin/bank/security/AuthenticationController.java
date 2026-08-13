@@ -2,6 +2,8 @@ package com.sehyeon.monfin.bank.security;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +51,19 @@ public class AuthenticationController {
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(statusMessage);
+    }
+
+    /**
+     * Use case: User exits tab that had the web app open. User never exits the browser.
+     *          On the same browser, they open the web app again in a new tab.
+     *          JWT tokens may be set already. For quality user experience,
+     *          validate the jwt when they exist on the frontend.
+     *          Then on client side, we show auth form or home page.
+     */
+    @GetMapping("/still-valid")
+    public ResponseEntity<Boolean> isJWTStillValid(Authentication authentication) {
+        // if this line is reached, it passed the JwtFilter and Authentication
+        return ResponseEntity.ok(true);
     }
     
 }

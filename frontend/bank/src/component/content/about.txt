@@ -1,0 +1,13 @@
+All files belonging here are content displayed when user clicks on a tab.
+For example, when authenticated, home (dashboard) is displayed.
+The actual content displayed is provided by DashboardContent.tsx
+
+These components itself may change its content based on user interactions.
+The page will never be different, unless signed out.
+
+Note for self:
+The loaded content should be saved somehow to optimize speed.
+Only the first time it loads, should it take a moment.
+When the user changes something so that the fetched result would be different,
+then we need to fetch the new result on page load.
+But for now, just fetch every time the content is loaded.
