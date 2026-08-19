@@ -3,14 +3,16 @@ import { Tab } from "./Tab";
 import { HomeTab } from "./type/HomeTab";
 import { TabDivider } from "./TabDivider";
 import { ThemeModeToggler } from "./ThemeModeToggler";
+import { Button } from "../Button";
 
 type TabBarProps = {
     activeTab: HomeTab;
     onTabChange: (tab: HomeTab) => void;
     onToggle: () => void;
+    onLogout: () => void;
 }
 
-export function HomeTabBar({ activeTab, onTabChange, onToggle }: TabBarProps) {
+export function HomeTabBar({ activeTab, onTabChange, onToggle, onLogout }: TabBarProps) {
     return (
         <div role="tablist" className={`${CONTAINER_CLASS_NAME} ${TAB_BAR_CLASS_NAME}`}>
             {/* LEFT GROUP */}
@@ -89,10 +91,9 @@ export function HomeTabBar({ activeTab, onTabChange, onToggle }: TabBarProps) {
                 <TabDivider />
 
                 {/* Log out */}
-                <Tab
-                    tabLabel="Log out"
-                    isSelected={activeTab === HomeTab.LOGOUT}
-                    onClick={() => onTabChange(HomeTab.LOGOUT)}
+                <Button
+                    text="Log out"
+                    onClick={onLogout}
                 />
             </div>
             {/* LEFT GROUP */}

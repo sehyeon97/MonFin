@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sehyeon.monfin.bank.dto.requests.CreateBankAccountRequest;
+import com.sehyeon.monfin.bank.dto.responses.card.AccountCardsResponse;
+import com.sehyeon.monfin.bank.dto.responses.card.BasicCardInfoResponse;
 import com.sehyeon.monfin.bank.model.card.limits.CardTier;
 import com.sehyeon.monfin.bank.model.card.network.CardNetwork;
+import com.sehyeon.monfin.bank.model.card.status.CardStatus;
 import com.sehyeon.monfin.bank.model.card.types.CardType;
 import com.sehyeon.monfin.bank.model.entity.bank.BankAccount;
 import com.sehyeon.monfin.bank.model.entity.bank.Card;
@@ -44,18 +47,48 @@ public class BankAccountService {
      */
     @Transactional
     public BankAccount createBankAccount(CreateBankAccountRequest req) {
-        return bankRepository.save(new BankAccount(req.username(), req.password(), req.fullName(), req.phoneNumber()));
+        return bankRepository.save(
+            new BankAccount(req.username(), req.password(), req.fullName(), req.phoneNumber()));
     } // Flushes automatically here because it is tagged transactional
 
     @Transactional
-    public void addCardToAccount(
-        BankAccount bankAccount, String fullName, String cardType, String cardNetwork, String cardTier) {
-        // Add the following 3 as parameters passed thru by frontend via controllers
-        // Right now, they are for testing purposes
+    public BasicCardInfoResponse addCardToAccount(
+        UUID bankAccountID, String fullName,
+        String cardType, String cardNetwork, String cardTier, boolean isDebit) {
         Card card = cardIssuanceService.issueCard(
-            fullName, convertStrToCardType(cardType), convertStrToCardNetwork(cardNetwork), convertStrToCardTier(cardTier));
+            fullName,
+            convertStrToCardType(cardType),
+            convertStrToCardNetwork(cardNetwork),
+            convertStrToCardTier(cardTier), isDebit
+        );
         cardService.createCard(card);
+
+        Optional<BankAccount> bankAccountData = bankRepository.findById(bankAccountID);
+        if (bankAccountData.isEmpty()) {
+            throw new RuntimeException("Bank account not found");
+        }
+
+        BankAccount bankAccount = bankAccountData.get();
         bankAccount.addCard(card);
+        return new BasicCardInfoResponse(
+            card.getLastFour(),
+            card.getBasicCardInfo().getExpMonth(),
+            card.getBasicCardInfo().getExpYear(),
+            cardTier,
+            cardNetwork,
+            cardType,
+            CardStatus.ISSUED.toString(),
+            card.getMonthlyLimit(),
+            card.getDailyLimit(),
+            card.getAvailableCredit(),
+            card.getBalance(),
+            card.isDebit()
+        );
+    }
+
+    @Transactional
+    public void removeCardFromAccount(UUID bankAccountID, String lastFour) {
+        cardService.removeCard(bankAccountID, lastFour);
     }
 
     // sms service will call this, and we know the bank account exists in that context
@@ -70,6 +103,10 @@ public class BankAccountService {
 
     public boolean isUsernameInUse(String username) {
         return bankRepository.existsByUsername(username);
+    }
+
+    public AccountCardsResponse getCardsOwnedByAccount(UUID bankAccountID) {
+        return cardService.getCardsOwnedByAccount(bankAccountID);
     }
 
     private CardType convertStrToCardType(String cardType) {

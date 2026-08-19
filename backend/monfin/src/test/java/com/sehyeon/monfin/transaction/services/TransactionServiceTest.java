@@ -81,7 +81,7 @@ public class TransactionServiceTest {
     @BeforeEach
     public void setup() {
         BasicCardInfo info = new BasicCardInfo("null", "12", "2026", "null", "123");
-        this.card = new Card(0, 0, info, null, null, null, null, 1000, 10000);
+        this.card = new Card(0, 0, info, null, null, null, null, 1000, 10000, true);
         this.card.setCardStatus(CardStatus.ACTIVE);
         this.cardToken = new CardToken("card-token", card);
         this.req.add(new CardAuthorizationRequest(
@@ -164,7 +164,7 @@ public class TransactionServiceTest {
         BasicCardInfo info = new BasicCardInfo(
             "1234123412341234", "5", "2026", "dough", "123");
         Card otherCard = new Card(
-            100, 0, info, null, null, null, Instant.now(), 1000, 10000);
+            100, 0, info, null, null, null, Instant.now(), 1000, 10000, true);
         otherCard.setCardStatus(CardStatus.ACTIVE);
         CardToken otherCardToken = new CardToken("token", otherCard);
 
@@ -207,7 +207,7 @@ public class TransactionServiceTest {
         // higher than daily limit request
         Card otherCard = new Card(
             highAmount, 0, info, null, null, null,
-            timestamp, lowAmount - 100, highAmount - 100);
+            timestamp, lowAmount - 100, highAmount - 100, true);
         CardToken otherCardToken = new CardToken("low-card-token", otherCard);
         otherCard.setCardStatus(CardStatus.ACTIVE);
         otherCard.setBankAccount(new BankAccount("Dough", "Ordoe", "Dough Doe", "Though-dough-toe"));

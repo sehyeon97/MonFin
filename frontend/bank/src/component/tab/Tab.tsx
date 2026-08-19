@@ -9,7 +9,7 @@ type TabProps = {
 
 export function Tab({ tabLabel, isSelected = false, onClick }: TabProps) {
     return (
-        // loading spinner not used because same page
+        // loading spinner not used because tab bar stays consistent on page
         <Button 
             className={`${TAB_CLASS_NAME} ${isSelected ? `${TAB_SELECT_CLASS_NAME}` : ""}`}
             text={tabLabel} role="tab" onClick={onClick}

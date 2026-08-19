@@ -49,7 +49,7 @@ public class CardRepositoryTest {
         BasicCardInfo basicCardInfo = new BasicCardInfo(PAN, expMonth, expYear, fullName, securityCode);
         Card card = new Card(
             0, 5000, basicCardInfo, CardType.CREDIT, CardNetwork.VISA, CardTier.SILVER,
-            Instant.now(), 1000, 5000
+            Instant.now(), 1000, 5000, true
         );
 
         cardRepository.save(card);

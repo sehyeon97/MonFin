@@ -1,8 +1,13 @@
 package com.sehyeon.monfin.bank.security;
 
+import java.time.Duration;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sehyeon.monfin.bank.dto.requests.CreateBankAccountRequest;
 import com.sehyeon.monfin.bank.dto.requests.LoginRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -64,6 +70,50 @@ public class AuthenticationController {
     public ResponseEntity<Boolean> isJWTStillValid(Authentication authentication) {
         // if this line is reached, it passed the JwtFilter and Authentication
         return ResponseEntity.ok(true);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<LoginStatus> refresh(
+        Authentication authentication,
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @CookieValue("refresh_token") String refreshToken
+    ) {
+        BankAccountDetails bankAccount = (BankAccountDetails) authentication.getPrincipal();
+        LoginStatus status =
+            authService.refreshSession(bankAccount.getBankAccountID(), refreshToken, request, response);
+
+        return ResponseEntity.ok(status);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+        @CookieValue("access_token") String accessToken, HttpServletResponse response, Authentication auth) {
+        BankAccountDetails bankAccount = (BankAccountDetails) auth.getPrincipal();
+        authService.logout(bankAccount.getBankAccountID());
+
+        // Tell browser to delete cookies by setting maxAge to 0
+        // Browsers automatically delete cookies when maxAge is 0
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(Duration.ZERO)
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/")
+                .maxAge(Duration.ZERO)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+        return ResponseEntity.noContent().build();
     }
     
 }

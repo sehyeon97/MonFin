@@ -31,7 +31,7 @@ public class BankAccountDetails implements UserDetails {
      * but I want to avoid making database calls despite using Redis anyway
      * Another way to go about it is just return bank account ID (future consideration) 
      */
-    private boolean haveDetailsChanged;
+    private Boolean haveDetailsChanged;
 
     public BankAccountDetails(BankAccount bankAccount) {
         this.bankAccount = bankAccount;
@@ -73,7 +73,7 @@ public class BankAccountDetails implements UserDetails {
         haveDetailsChanged = true;
     }
 
-    public boolean haveDetailsChanged() {
+    public Boolean haveDetailsChanged() {
         return haveDetailsChanged;
     }
 

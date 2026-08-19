@@ -8,5 +8,4 @@ export enum HomeTab {
   PROFILE = "profile",
   SETTINGS = "settings",
   HELP = "help",
-  LOGOUT = "logout",
 }

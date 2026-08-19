@@ -51,7 +51,7 @@ public class ValidateCardServiceTest {
         // Arrange
         CardTokenizationRequest req = new CardTokenizationRequest(PAN, CVV, FULL_NAME, EXP_MONTH, EXP_YEAR);
         when(cardRepository.findCardByBasicCardInfo(any()))
-            .thenReturn(Optional.of(new Card(0, 0, INFO, CARD_TYPE, CARD_NETWORK, CARD_TIER, Instant.now(), 500, 1000)));
+            .thenReturn(Optional.of(new Card(0, 0, INFO, CARD_TYPE, CARD_NETWORK, CARD_TIER, Instant.now(), 500, 1000, true)));
 
         // Act
         ValidateCardResponse res = validator.doesCardExist(req);

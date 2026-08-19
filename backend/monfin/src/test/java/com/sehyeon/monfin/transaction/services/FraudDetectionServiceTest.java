@@ -58,7 +58,7 @@ public class FraudDetectionServiceTest {
         BasicCardInfo info = new BasicCardInfo(
             "1234123412341234", "12", "2026", "Yo To", "123");
         card = new Card(CARD_BALANCE, 0, info,
-            CardType.DEBIT, CardNetwork.VISA, CardTier.GOLD, Instant.now(), CARD_DAILY_LIMIT, CARD_MONTHLY_LIMIT);
+            CardType.DEBIT, CardNetwork.VISA, CardTier.GOLD, Instant.now(), CARD_DAILY_LIMIT, CARD_MONTHLY_LIMIT, true);
         card.setCardStatus(CardStatus.ACTIVE);
     }
 

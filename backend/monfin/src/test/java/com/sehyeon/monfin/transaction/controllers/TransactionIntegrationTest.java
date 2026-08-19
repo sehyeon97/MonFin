@@ -151,7 +151,7 @@ public class TransactionIntegrationTest {
             expMonth, expYear, "Not Scammer", "123");
         Card card = new Card(CARD_BALANCE, 0, basicCardInfo,
             CardType.DEBIT, CardNetwork.MASTERCARD, CardTier.GOLD,
-            Instant.now(), DAILY_LIMIT, MONTHLY_LIMIT);
+            Instant.now(), DAILY_LIMIT, MONTHLY_LIMIT, true);
         card.setCardStatus(CardStatus.ACTIVE);
 
         // tie customer's card with customer's bank account

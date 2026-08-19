@@ -93,7 +93,7 @@ public class tspControllerTest {
         bankRepository.saveAndFlush(bankAccount);
 
         // add a card to this bank account
-        Card card = cardIssuer.issueCard("poo ding", CardType.CREDIT, CardNetwork.VISA, CardTier.GOLD);
+        Card card = cardIssuer.issueCard("poo ding", CardType.CREDIT, CardNetwork.VISA, CardTier.GOLD, true);
         System.out.println("PAN ON ISSUE CARD: " + card.getBasicCardInfo().getPAN());
         cardRepository.saveAndFlush(card);
         System.out.println(cardRepository.count()); // should be 1

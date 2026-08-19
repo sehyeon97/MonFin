@@ -1,5 +1,6 @@
 package com.sehyeon.monfin.bank.repos;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,5 +22,12 @@ public interface CardRepository extends JpaRepository<Card, UUID> {
 
     // For getting card associated with MERCHANT
     public Optional<Card> findCardByBankAccount_BankAccountID(UUID bankAccountID);
+
+    // Pull up all cards owned by bank account
+    // Issued cards (need activation)
+    // Active cards + Frozen Cards 
+    public List<Card> findAllByBankAccount_BankAccountID(UUID bankAccountID);
+
+    public void deleteByBankAccount_BankAccountIDAndLastFour(UUID bankAccountID, String lastFour);
     
 }

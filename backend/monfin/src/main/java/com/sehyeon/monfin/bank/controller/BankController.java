@@ -3,13 +3,16 @@ package com.sehyeon.monfin.bank.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sehyeon.monfin.bank.dto.requests.DeleteCardRequest;
 import com.sehyeon.monfin.bank.dto.requests.NewCardRequest;
-import com.sehyeon.monfin.bank.dto.responses.NewCardResponse;
+import com.sehyeon.monfin.bank.dto.responses.card.AccountCardsResponse;
+import com.sehyeon.monfin.bank.dto.responses.card.BasicCardInfoResponse;
 import com.sehyeon.monfin.bank.security.BankAccountDetails;
 import com.sehyeon.monfin.bank.services.bank.BankAccountService;
 
@@ -32,31 +35,40 @@ public class BankController {
 
     /**
      * create a card for a bank account
-     * For MVP, bankAccountID will be passed between client and server
-     * Later, will change to JWT (JSON Web Token)
+     * Later, need to add error cases
+     * Like not meeting requirements to create such card
      */
     @PostMapping("/cards/create")
-    public ResponseEntity<NewCardResponse> addCardToBankAccount(@RequestBody NewCardRequest req, Authentication auth) {
+    public ResponseEntity<BasicCardInfoResponse> addCardToBankAccount(@RequestBody NewCardRequest req, Authentication auth) {
         BankAccountDetails bankAccount = (BankAccountDetails) auth.getPrincipal();
-        bankAccountService.addCardToAccount(
-            bankAccount.getBankAccountAsEntity(),
+        String cardType = req.cardType();
+        BasicCardInfoResponse result = bankAccountService.addCardToAccount(
+            bankAccount.getBankAccountID(),
             bankAccount.getUsername(),
-            req.cardType(),
+            cardType,
             req.cardNetwork(),
-            req.cardTier()
+            req.cardTier(),
+            cardType == "DEBIT"
         );
-        return ResponseEntity.ok(new NewCardResponse("Successfully added card to account."));
-        // Optional<BankAccount> account = bankRepository.findById(req.bankAccountID());
+        return ResponseEntity.ok(result);
+    }
 
-        // // bank account is not found
-        // if (account.isEmpty()) {
-        //     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new NewCardResponse("Invalid bank account"));
-        // }
+    // Gets all cards owned by bank account regardless of card status
+    @GetMapping("/cards/get")
+    public ResponseEntity<AccountCardsResponse> getAllOwnedCards(Authentication auth) {
+        BankAccountDetails bankAccount = (BankAccountDetails) auth.getPrincipal();
+        AccountCardsResponse res = 
+            bankAccountService.getCardsOwnedByAccount(bankAccount.getBankAccountID());
 
-        // bankAccountService.addCardToAccount(
-        //     account.get(), account.get().getFullName(), req.cardType(), req.cardNetwork(), req.cardTier());
+        System.out.println("LAST FOUR BACKEND: " + res.cards().get(0).lastFour());
+        return ResponseEntity.ok(res);
+    }
 
-        // return ResponseEntity.ok(new NewCardResponse("Successfully added card to account"));
+    @PostMapping("/cards/delete")
+    public ResponseEntity<?> removeCardFromBankAccount(@RequestBody DeleteCardRequest req, Authentication auth) {
+        BankAccountDetails bankAccount = (BankAccountDetails) auth.getPrincipal();
+        bankAccountService.removeCardFromAccount(bankAccount.getBankAccountID(), req.last4());
+        return ResponseEntity.ok("It's always successful.");
     }
     
 }

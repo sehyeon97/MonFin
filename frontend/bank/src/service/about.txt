@@ -1,3 +1,6 @@
 Contains strictly business logic, no UI.
 API calls and Handlers.
 Handlers will usually call the API functions.
+
+Handlers ideally do any extra validation checks for given Request.
+It is also the place to handle various responses.

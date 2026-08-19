@@ -56,7 +56,13 @@ export const INPUT_CLASS_NAME: string =
 
 //////////////////////////////////////// BUTTON ////////////////////////////////////////
 
-export const BUTTON_CLASS_NAME: string = "";
+export const BUTTON_CLASS_NAME: string =
+  "rounded-[3rem] text-center text-[#FFF7D6] p-5";
+
+export const BUTTON_SELECTED_CLASS_NAME: string =
+  "scale-105 shadow-lg ring-2 ring-[var(--theme-border)] bg-[var(--theme-input-background)]";
+
+export const BUTTON_NOT_SELECTED_CLASS_NAME: string = "";
 
 //////////////////////////////////////// BUTTON ////////////////////////////////////////
 
@@ -100,12 +106,31 @@ export const CONTENT_CLASS_NAME: string =
   "w-full px-6 py-2 bg-[var(--theme-background)] text-2xl font-semibold";
 
 // To have multiple Container components in one row
-export const CONTENT_ROW_CLASS_NAME: string = "";
+// Other children height stretches to match tallest Container
+export const CONTENT_ROW_CLASS_NAME: string =
+  "flex flex-row items-stretch gap-5";
+
+// MUST USE WITH CONTENT_ROW_CLASS_NAME
+// This must be the custom className given to Container
+// Row -> Container and Container's children will adjust height to tallest child
+// Make sure to also add justify-between or justify-evenly along with this string
+// so that the actual contents within container stretch to fill up the entire space
+// * items-stretch doesn't work with h-full *
+export const CONTENT_ROW_CHILD_CLASS_NAME: string = "flex flex-col";
 
 // To have multiple Container components in a column (in one row)
-export const CONTENT_COLUMN_CLASS_NAME: string = "";
+export const CONTENT_COLUMN_CLASS_NAME: string =
+  "flex flex-col items-stretch gap-[5px]";
+
+export const CONTENT_COLUMN_CHILD_CLASS_NAME: string = "flex flex-row";
 
 //////////////////////////////////////// CONTENT ////////////////////////////////////////
+
+//////////////////////////////////////// CAROUSEL ////////////////////////////////////////
+
+export const CAROUSEL_CLASS_NAME: string = "";
+
+//////////////////////////////////////// CAROUSEL ////////////////////////////////////////
 
 //////////////////////////////////////// LOGIN FORM ////////////////////////////////////////
 
@@ -125,5 +150,35 @@ export const LOGIN_FORM_INPUT_CLASS_NAME: string =
 
 //////////////////////////////////////// LOGIN FORM ////////////////////////////////////////
 
+//////////////////////////////////////// CARD ////////////////////////////////////////
+
+export const CARD_CLASS_NAME: string =
+  "aspect-[1.586/1] w-full rounded-3xl bg-slate-800 p-6 text-white shadow-lg";
+
+export const CARD_TIER_CLASS_NAME: string = "text-sm font-semibold uppercase";
+
+export const CARD_NETWORK_CLASS_NAME: string = "text-lg font-semibold";
+
+export const CARD_TYPE_CLASS_NAME: string =
+  "text-sm font-medium uppercase tracking-wide";
+
+export const CARD_EXP_DATE_CLASS_NAME: string = "text-sm font-medium";
+
+export const CARD_LAST_FOUR_CLASS_NAME: string = "text-xl tracking-[0.25em]";
+
+//////////////////////////////////////// CARD ////////////////////////////////////////
+
+//////////////////////////////////////// POPUP ////////////////////////////////////////
+
+// fixed removes this from the normal page layout
+export const REFRESH_SESSION_POPUP_CLASS_NAME: string =
+  "fixed right-4 top-4 z-50 w-80 tracking-widest " +
+  "bg-[var(--theme-background)] shadow-[var(--theme-shadow)] text-[var(--theme-input-text)]";
+
+export const REFRESH_SESSION_POPUP_BUTTON_CLASS_NAME: string =
+  "border-2 border-[var(--theme-border)]";
+
+//////////////////////////////////////// POPUP ////////////////////////////////////////
+
 export const MAIN_CLASS_NAME: string =
-  "flex flex-col items-center gap-3 pt-5 w-[90vw] mx-auto";
+  "flex flex-col items-center gap-3 pt-5 w-[90vw] mx-auto pb-5";

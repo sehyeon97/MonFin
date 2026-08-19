@@ -27,7 +27,7 @@ public class CardIssuanceServiceTest {
         bankRepository.save(bankAccount);
 
         String fullName = "John Doe";
-        Card card = cardIssuanceService.issueCard(fullName, CardType.CREDIT, CardNetwork.VISA, CardTier.SILVER);
+        Card card = cardIssuanceService.issueCard(fullName, CardType.CREDIT, CardNetwork.VISA, CardTier.SILVER, true);
 
         assertNotNull(card);
     }

@@ -1,1 +1,4 @@
 Contains hooks that are shared across components and pages.
+useState function parameter: 
+    1. function name with () will run on every render
+    2. function name without () only runs during initialization

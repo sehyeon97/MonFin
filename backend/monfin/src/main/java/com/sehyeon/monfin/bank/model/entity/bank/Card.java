@@ -62,7 +62,7 @@ public class Card {
     private CardStatus cardStatus;
     private final CardNetwork cardNetwork;
     private final CardTier cardTier;
-    private final String last4;
+    private final String lastFour;
     // private final int expMonth;              @Transition to BasicCardInfo
     // private final int expYear; // 4 digits   @Transition to BasicCardInfo
     // private final String fullName;           @Transition to BasicCardInfo
@@ -96,20 +96,22 @@ public class Card {
     @OneToMany(mappedBy = "card")
     private List<CardToken> tokens;
 
+    private Boolean isDebit;
+
     // required to test
     protected Card() {
         this.basicCardInfo = null;
         this.cardType = null;
         this.cardNetwork = null;
         this.cardTier = null;
-        this.last4 = "";
+        this.lastFour = "";
         this.issuedAt = null;
     }
 
     public Card(
         int balance, int availableCredit, BasicCardInfo basicCardInfo,
         CardType cardType, CardNetwork cardNetwork, CardTier cardTier,
-        Instant issuedAt, int dailyLimit, int monthlyLimit
+        Instant issuedAt, int dailyLimit, int monthlyLimit, boolean isDebit
     ) {
         // this.encryptedCardNum = encryptedCardNum;        @Transition to BasicCardInfo
         this.balance = balance;
@@ -119,7 +121,7 @@ public class Card {
         this.cardStatus = CardStatus.ISSUED;
         this.cardNetwork = cardNetwork;
         this.cardTier = cardTier;
-        this.last4 = "Idontknowyet"; // handled separately, not here
+        this.lastFour = basicCardInfo.getPAN().substring(12);
         // this.expMonth = expMonth;                        @Transition to BasicCardInfo
         // this.expYear = expYear;                          @Transition to BasicCardInfo
         // this.fullName = fullName;                        @Transition to BasicCardInfo
@@ -130,9 +132,12 @@ public class Card {
         this.monthlyLimit = monthlyLimit;
         this.riskScore = 0;
         this.flaggedForReview = false;
-        this.lastUsedAt = activatedAt; // Whenever the user uses the card, this value changes. so it should be same as activatedAt initially
+        // Whenever the user uses the card, this value changes. so it should be same as activatedAt initially
+        this.lastUsedAt = activatedAt;
 
         this.tokens = new ArrayList<>();
+
+        this.isDebit = isDebit;
     }
 
     public UUID getCardID() {
@@ -179,8 +184,8 @@ public class Card {
         return cardTier;
     }
 
-    public String getLast4() {
-        return last4;
+    public String getLastFour() {
+        return lastFour;
     }
 
     // public String getEncryptedCardNum() {                @Transition to BasicCardInfo
@@ -225,6 +230,10 @@ public class Card {
 
     public List<CardToken> getTokens() {
         return tokens;
+    }
+
+    public Boolean isDebit() {
+        return isDebit;
     }
     
 }

@@ -1,6 +1,11 @@
 package com.sehyeon.monfin.bank.security;
 
+import java.time.Duration;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,6 +19,7 @@ import com.sehyeon.monfin.bank.services.auth.JwtService;
 import com.sehyeon.monfin.bank.services.bank.BankAccountService;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Service
@@ -63,9 +69,17 @@ public class AuthenticationService {
         Cookie accessCookie = new Cookie("access_token", accessAndRefreshJwt[0]);
         Cookie refreshCookie = new Cookie("refresh_token", accessAndRefreshJwt[1]);
 
+        // Sends cookie to any path on this server
+        accessCookie.setPath("/");
+        refreshCookie.setPath("/");
+
         // Accepts seconds: Minutes * how many seconds are in a minute
         accessCookie.setMaxAge(accessTokenTimeLimit);
         refreshCookie.setMaxAge(refreshTokenTimeLimit);
+
+        // client cannot access, only read
+        accessCookie.setHttpOnly(true);
+        refreshCookie.setHttpOnly(true);
 
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
@@ -110,10 +124,51 @@ public class AuthenticationService {
         accessCookie.setMaxAge(accessTokenTimeLimit);
         refreshCookie.setMaxAge(refreshTokenTimeLimit);
 
+        // Sends cookie to any path on this server
+        accessCookie.setPath("/");
+        refreshCookie.setPath("/");
+
+        // client cannot access, only read
+        accessCookie.setHttpOnly(true);
+        refreshCookie.setHttpOnly(true);
+
+        // if hosted on actual website (HTTPS)
+        // but localhost should use false (false by default)
+        // accessCookie.setSecure(true);
+        // refreshCookie.setSecure(true);
+
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
 
         return SignupStatus.SUCCESS;
+    }
+
+    public LoginStatus refreshSession(
+        UUID bankAccountID, String refreshToken, HttpServletRequest request, HttpServletResponse response) {
+        if (!jwtService.isRefreshTokenValid(refreshToken, bankAccountID)) {
+            return LoginStatus.FAIL;
+        }
+
+        String accessToken = jwtService.refreshAccessToken(bankAccountID);
+        ResponseCookie accessCookie = ResponseCookie.from(
+                "access_token",
+                accessToken
+        )
+        .httpOnly(true)
+        .path("/")
+        .maxAge(Duration.ofMinutes(15))
+        .build();
+
+        response.addHeader(
+                HttpHeaders.SET_COOKIE,
+                accessCookie.toString()
+        );
+
+        return LoginStatus.SUCCESS;
+    }
+
+    public void logout(UUID bankAccountID) {
+        jwtService.removeJwtFor(bankAccountID);
     }
 
     private boolean isUniquePhoneNumberAndUsername(CreateBankAccountRequest req) {

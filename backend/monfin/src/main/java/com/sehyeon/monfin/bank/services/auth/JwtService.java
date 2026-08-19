@@ -22,8 +22,8 @@ public class JwtService {
 
     private final SecretKey secretKey;
 
-    // JWT Access Token | Bank Account ID
-    private Map<String, UUID> accessTokenOwner;
+    // Bank Account ID | JWT Access Token
+    private Map<UUID, String> accessTokenOwner;
 
     // access token lifecycle (15min)
     private static final Duration ACCESS_TOKEN_LIFECYCLE = Duration.ofMinutes(15);
@@ -48,30 +48,60 @@ public class JwtService {
         String accessToken = buildJwt(random, bankAccountID, accessLifecycle);
         String refreshToken = buildJwt(random, bankAccountID, refreshLifecycle);
 
-        accessTokenOwner.put(accessToken, bankAccountID);
+        accessTokenOwner.put(bankAccountID, accessToken);
         return accessToken + "|" + refreshToken;
     }
 
-    // Should be called for all requests other than login and signup
-    public String refreshAccessToken() {
-        return "Not implemented yet";
+    // Should be called for all requests to refresh session other than login and signup
+    public String refreshAccessToken(UUID bankAccountID) {
+        String random = UUID.randomUUID().toString().replaceAll("-", "");
+
+        Date accessLifecycle = Date.from(Instant.now().plus(ACCESS_TOKEN_LIFECYCLE));
+        String accessToken = buildJwt(random, bankAccountID, accessLifecycle);
+
+        accessTokenOwner.put(bankAccountID, accessToken);
+        return accessToken;
     }
 
     // User signed out
-    public void removeJwtFor(String jwt) {
-        accessTokenOwner.remove(jwt);
+    public void removeJwtFor(UUID bankAccountID) {
+        accessTokenOwner.remove(bankAccountID);
     }
 
     public boolean isValidJWT(String accessToken, UUID bankAccountID) {
         // System.out.println("ACCESS TOKEN MAP SIZE: " + accessTokenOwner.size());
-        if (!accessTokenOwner.containsKey(accessToken)) {
+        if (!accessTokenOwner.containsKey(bankAccountID)) {
             return false;
         }
         // System.out.println(accessTokenOwner.get(accessToken) == bankAccountID);
         // System.out.println("Stored Bank account id: " + accessTokenOwner.get(accessToken));
         // System.out.println("Given bank account id: " + bankAccountID.toString());
         // Fix UUID comparison from == to .equals()
-        return accessTokenOwner.get(accessToken).equals(bankAccountID);
+        return accessTokenOwner.get(bankAccountID).equals(accessToken);
+    }
+
+    public boolean isRefreshTokenValid(String refreshToken, UUID bankAccountID) {
+        Claims claims = parseJwt(refreshToken);
+
+        // refresh token signed with wrong secret key
+        if (claims == null) {
+            return false;
+        }
+
+        // refresh token expired
+        if (claims.getExpiration().before(new Date())) {
+            return false;
+        }
+
+        UUID otherBankAccountID = 
+            UUID.fromString(claims.get("id", String.class));
+
+        // suspiscious wrong id passed in refresh token or hacked account?
+        if (!bankAccountID.equals(otherBankAccountID)) {
+            return false;
+        }
+
+        return true;
     }
 
     public Claims parseJwt(String jwt) {
@@ -90,7 +120,7 @@ public class JwtService {
         return Jwts.builder()
             .subject(subject)
             .issuedAt(new Date())
-            .claim("id", userID)
+            .claim("id", userID.toString()) // JSON doesn't have native UUID type
             // 15min past issued time
             .expiration(expiration)
             .signWith(this.secretKey)

@@ -50,7 +50,7 @@ public class PPCardTokenizerTest {
         CardNetwork cardNetwork = CardNetwork.VISA;
         CardTier cardTier = CardTier.SILVER;
         BasicCardInfo basicCardInfo = new BasicCardInfo(pan, expMonth, expYear, fullName, merchantID);
-        Card card = new Card(0, 0, basicCardInfo, cardType, cardNetwork, cardTier, Instant.now(), 500, 1000);
+        Card card = new Card(0, 0, basicCardInfo, cardType, cardNetwork, cardTier, Instant.now(), 500, 1000, true);
 
         // Act
         TokenizedCardInfo tokenizedInfo = tokenizer.generateCardToken(req, card);

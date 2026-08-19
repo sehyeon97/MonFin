@@ -27,9 +27,8 @@ public class CardIssuanceService {
 
     // At the moment, only creates DEBIT cards
     public Card issueCard(
-        String fullName, CardType cardType, CardNetwork cardNetwork, CardTier cardTier) {
+        String fullName, CardType cardType, CardNetwork cardNetwork, CardTier cardTier, boolean isDebit) {
         // look up card tier based on card network and assign daily and monthly limits
-        // TODO: works for credit cards only for now (make it work with debit)
         CardLimits cardLimits = new CardLimits();
         SpendingLimits spendingLimits = cardLimits.getSpendingLimits(cardNetwork, cardTier);
 
@@ -44,7 +43,7 @@ public class CardIssuanceService {
         Card card = new Card(
             0, 0, basicCardInfo,
             cardType, cardNetwork, cardTier, Instant.now(),
-            spendingLimits.getDailyAmountLimit(), spendingLimits.getMonthlyAmountLimit()
+            spendingLimits.getDailyAmountLimit(), spendingLimits.getMonthlyAmountLimit(), isDebit
         );
 
         // Save card to "cards" table
