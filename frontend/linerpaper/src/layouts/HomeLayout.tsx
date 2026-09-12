@@ -1,10 +1,15 @@
 import { Outlet } from "react-router-dom";
 import { NavBar } from "../components/navbar/NavBar";
+import type { UserType } from "../types/UserType";
 
-export function HomeLayout() {
+type HomeLayoutProps = {
+    userType: UserType,
+};
+
+export function HomeLayout({ userType }: HomeLayoutProps) {
     return (
         <>
-            <NavBar />
+            <NavBar userType={userType} />
             <main>
                 {/* render nested routes */}
                 <Outlet />

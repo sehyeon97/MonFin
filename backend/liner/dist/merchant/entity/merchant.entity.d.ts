@@ -8,4 +8,5 @@ export declare class Merchant {
     billingState: string;
     billingZip: string;
     createdAt: Date;
+    getID(): string;
 }

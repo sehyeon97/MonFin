@@ -20,9 +20,11 @@ import org.springframework.stereotype.Service;
 
 import com.sehyeon.monfin.bank.domainobjs.FraudDetectionResult;
 import com.sehyeon.monfin.bank.dto.requests.CardAuthorizationRequest;
+import com.sehyeon.monfin.bank.dto.responses.transaction.BankTransactionRecord;
 import com.sehyeon.monfin.bank.dto.responses.transaction.CardAuthorizationResponse;
 import com.sehyeon.monfin.bank.dto.responses.transaction.TransactionData;
 import com.sehyeon.monfin.bank.dto.responses.transaction.TransactionResponse;
+import com.sehyeon.monfin.bank.exceptions.InvalidCardException;
 import com.sehyeon.monfin.bank.model.card.basic.BasicCardInfo;
 import com.sehyeon.monfin.bank.model.card.status.CardStatus;
 import com.sehyeon.monfin.bank.model.entity.bank.Card;
@@ -231,6 +233,39 @@ public class TransactionService {
         return transactionResponses;
     }
 
+    public List<BankTransactionRecord> getAllTransactions(UUID bankAccountID) {
+        List<BankTransactionRecord> response = new ArrayList<>();
+        List<Transaction> transactions =
+            transactionRepository.findAllByBankAccountIDOrderByTimestampDesc(bankAccountID);
+
+        for (int i = 0; i < transactions.size(); i++) {
+            Transaction transaction = transactions.get(i);
+            Optional<CardToken> cardData = tokenRepository.findByCardToken(transaction.getCardToken());
+
+            if (cardData.isEmpty()) {
+                throw new InvalidCardException("Card token invalid");
+            }
+
+            Optional<Card> cardContainer = cardService.getCardByID(cardData.get().getCardID());
+            if (cardContainer.isEmpty()) {
+                throw new InvalidCardException("Card not found with card token");
+            }
+
+            Card card = cardContainer.get();
+            BankTransactionRecord data = new BankTransactionRecord(
+                transaction.getID(),
+                card.getLastFour(),
+                transaction.getMerchantName(),
+                transaction.getTimestamp(),
+                convertAmountToDollarFormat(transaction.getAmount()),
+                transaction.getTransactionStatus()
+            );
+
+            response.add(data);
+        }
+        return response;
+    }
+
     private String generateCryptogram(String cardToken, String merchantID, Instant timestamp, int amount) {
         try {
             Mac mac = Mac.getInstance("HmacSHA512");
@@ -316,6 +351,32 @@ public class TransactionService {
     private boolean hasEnoughAvailableBalance(Card card, int amount) {
         // if (card.getCardType() == CardType.CREDIT) {}
         return card.getBalance() - amount >= 0;
+    }
+
+    // remember that 1000 is $10.00
+    private String convertAmountToDollarFormat(String amount) {
+        if (amount.length() < 3) {
+            return "$0." + amount;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        String dollars = amount.substring(0, amount.length() - 2);
+
+        sb.append("$");
+        int count = 1;
+        for (int i = dollars.length() - 1; i >= 0; i--) {
+            if (count % 4 == 0) {
+                sb.append(",");
+            }
+            sb.append(dollars.charAt(i));
+            count += 1;
+        }
+
+        sb.append(".");
+        sb.append(amount.charAt(amount.length() - 2));
+        sb.append(amount.charAt(amount.length() - 1));
+
+        return sb.reverse().toString();
     }
     
 }

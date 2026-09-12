@@ -26,10 +26,16 @@ let MerchantService = class MerchantService {
         this.merchantRepository = merchantRepository;
         this.productRepository = productRepository;
     }
-    async registerNewMerchant(newMerchant) {
-        const merchant = this.merchantRepository.create(newMerchant);
-        merchant.verified = false;
-        await this.merchantRepository.save(merchant);
+    async registerNewMerchant(req) {
+        const merchant = this.merchantRepository.create();
+        merchant.email = req.email;
+        merchant.password = req.password;
+        merchant.verified = req.verified;
+        merchant.billingAddress = req.billingAddress;
+        merchant.billingCity = req.billingCity;
+        merchant.billingState = req.billingState;
+        merchant.billingZip = req.billingZip;
+        return await this.merchantRepository.save(merchant);
     }
     async signIn(req) {
         const merchant = await this.merchantRepository.findOne({

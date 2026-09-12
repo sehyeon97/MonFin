@@ -23,11 +23,17 @@ export class MerchantService {
     ) {}
 
     public async registerNewMerchant(
-        newMerchant: RegisterMerchantRequest,
-    ): Promise<void> {
-        const merchant: Merchant = this.merchantRepository.create(newMerchant);
-        merchant.verified = false;
-        await this.merchantRepository.save(merchant);
+        req: RegisterMerchantRequest,
+    ): Promise<Merchant> {
+        const merchant: Merchant = this.merchantRepository.create();
+        merchant.email = req.email;
+        merchant.password = req.password;
+        merchant.verified = req.verified;
+        merchant.billingAddress = req.billingAddress;
+        merchant.billingCity = req.billingCity;
+        merchant.billingState = req.billingState;
+        merchant.billingZip = req.billingZip;
+        return await this.merchantRepository.save(merchant);
     }
 
     public async signIn(req: SignInMerchantRequest): Promise<string> {

@@ -1,5 +1,3 @@
-import { CardStatus } from "@/hook/card-content/types/CardStatus";
-import { Button } from "../Button";
 import { BasicCardInfo } from "@/dtos/bank-card/basic-card-info";
 import { Column } from "../content/col/Column";
 import { Row } from "../content/row/Row";
@@ -16,14 +14,12 @@ import { CARD_CLASS_NAME, CARD_EXP_DATE_CLASS_NAME, CARD_LAST_FOUR_CLASS_NAME, C
  */
 type CardProps = {
     details: BasicCardInfo;
-    activateCard?: (card: BasicCardInfo) => void;
 };
 
 // How the card visually looks
 // It doesn't need all the parts to a card, such as full name, card status, etc
 export function Card({
     details,
-    activateCard
 }: CardProps) {
     console.log(`LAST FOUR: ${details.lastFour}`)
     return (
@@ -44,8 +40,6 @@ export function Card({
                 <span className={CARD_LAST_FOUR_CLASS_NAME}>
                     •••• {details.lastFour}
                 </span>
-                {details.cardStatus === CardStatus.ISSUED && 
-                    <Button text="Activate" onClick={() => activateCard!(details)}></Button>}
             </Column>
 
             {/* Bottom */}

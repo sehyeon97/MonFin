@@ -25,7 +25,8 @@ let CustomerController = class CustomerController {
         this.orderHistoryService = orderHistoryService;
     }
     async createCustomer(request) {
-        return await this.customerAccountService.createCustomerAccount(request);
+        const customer = await this.customerAccountService.createCustomerAccount(request);
+        return customer.id;
     }
     async getPurchasedItems(customerID) {
         return await this.orderHistoryService.getCustomerOrderHistory(customerID);

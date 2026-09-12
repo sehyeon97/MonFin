@@ -20,8 +20,10 @@ export class CustomerController {
     @Post('register')
     public async createCustomer(
         @Body() request: CreateCustomerRequest,
-    ): Promise<Customer> {
-        return await this.customerAccountService.createCustomerAccount(request);
+    ): Promise<string> {
+        const customer: Customer =
+            await this.customerAccountService.createCustomerAccount(request);
+        return customer.id;
     }
 
     // *** REFACTORED TO JWT AUTH *** Testing in progress. . . then delete after success

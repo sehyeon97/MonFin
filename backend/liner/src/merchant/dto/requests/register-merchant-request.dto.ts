@@ -1,11 +1,12 @@
-import { IsEmail, IsNotEmpty, IsStrongPassword } from 'class-validator';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class RegisterMerchantRequest {
     @IsNotEmpty()
     @IsEmail()
     email!: string;
 
-    @IsStrongPassword()
+    // @IsStrongPassword()
+    @IsNotEmpty() // whitelist: true in validation pipe expects @IsNotEmpty() fields
     password!: string;
 
     // is email verified?

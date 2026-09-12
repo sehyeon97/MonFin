@@ -180,5 +180,13 @@ export const REFRESH_SESSION_POPUP_BUTTON_CLASS_NAME: string =
 
 //////////////////////////////////////// POPUP ////////////////////////////////////////
 
+//////////////////////////////////////// TRANSACTION CONTENT ////////////////////////////////////////
+
+export const TRANSACTION_ROW_CLASS_NAME: string = "";
+
+export const TRANSACTION_COL_CLASS_NAME: string = "";
+
+//////////////////////////////////////// TRANSACTION CONTENT ////////////////////////////////////////
+
 export const MAIN_CLASS_NAME: string =
   "flex flex-col items-center gap-3 pt-5 w-[90vw] mx-auto pb-5";

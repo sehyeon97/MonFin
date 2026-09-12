@@ -1,12 +1,19 @@
+import type { UserType } from "../../types/UserType";
 import { NavBarItem } from "./NavBarItem";
 import { navLinks } from "./NavLinks";
 
-export function NavBar() {
+type NavBarProps = {
+    userType: UserType,
+};
+
+export function NavBar({ userType }: NavBarProps) {
+    const links = navLinks(userType);
+
     return (
         <nav>
             <div>
-                {navLinks.map(item => (
-                    <NavBarItem item={item}/>
+                {links.map((item, index) => (
+                    <NavBarItem key={index} item={item}/>
                 ))}
             </div>
         </nav>

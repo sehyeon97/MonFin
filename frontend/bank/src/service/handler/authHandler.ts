@@ -5,7 +5,7 @@ import {
   logoutAndRemoveCredentials,
   refreshAccessToken,
   signup,
-} from "../api/authService";
+} from "../api/auth/authService";
 
 /**
  * In case we want to do something with the different response (entities) in the future

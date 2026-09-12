@@ -6,7 +6,7 @@ import { ProductResponse } from '../dto/responses/product.response.dto';
 export declare class MerchantController {
     private readonly merchantService;
     constructor(merchantService: MerchantService);
-    registerMerchant(merchant: RegisterMerchantRequest): Promise<void>;
+    registerMerchant(merchant: RegisterMerchantRequest): Promise<string>;
     addProduct(req: ProductRequest): Promise<ProductResponse>;
     getMerchantProducts(merchantID: string): Promise<ProductsResponse>;
 }

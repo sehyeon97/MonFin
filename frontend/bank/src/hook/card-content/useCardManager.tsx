@@ -66,7 +66,7 @@ export function useCardManager() {
 
     // at the moment, live-render changes happen when tab is clicked
     return { 
-        activeCards, activateCards: issuedCards, 
+        activeCards, issuedCards, 
         addToIssuedCards, removeFromIssuedCards, 
         addToActiveCards, removeFromActiveCards 
     };

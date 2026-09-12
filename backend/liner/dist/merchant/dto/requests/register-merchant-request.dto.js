@@ -27,7 +27,7 @@ __decorate([
     __metadata("design:type", String)
 ], RegisterMerchantRequest.prototype, "email", void 0);
 __decorate([
-    (0, class_validator_1.IsStrongPassword)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], RegisterMerchantRequest.prototype, "password", void 0);
 __decorate([

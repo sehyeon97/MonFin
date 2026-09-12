@@ -34,4 +34,8 @@ export class Merchant {
 
     @CreateDateColumn()
     createdAt!: Date;
+
+    public getID(): string {
+        return this.id;
+    }
 }

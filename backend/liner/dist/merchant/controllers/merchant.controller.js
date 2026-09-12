@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MerchantController = void 0;
 const common_1 = require("@nestjs/common");
@@ -20,7 +23,10 @@ let MerchantController = class MerchantController {
         this.merchantService = merchantService;
     }
     async registerMerchant(merchant) {
-        await this.merchantService.registerNewMerchant(merchant);
+        console.log('MERCHANT REQUEST:', merchant);
+        console.log('MERCHANT PASSWORD:', merchant?.password);
+        const result = await this.merchantService.registerNewMerchant(merchant);
+        return result.getID();
     }
     async addProduct(req) {
         return await this.merchantService.addProduct(req);
@@ -32,18 +38,21 @@ let MerchantController = class MerchantController {
 exports.MerchantController = MerchantController;
 __decorate([
     (0, common_1.Post)('register'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [register_merchant_request_dto_1.RegisterMerchantRequest]),
     __metadata("design:returntype", Promise)
 ], MerchantController.prototype, "registerMerchant", null);
 __decorate([
     (0, common_1.Post)('add-product'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [product_request_dto_1.ProductRequest]),
     __metadata("design:returntype", Promise)
 ], MerchantController.prototype, "addProduct", null);
 __decorate([
     (0, common_1.Get)('view-products'),
+    __param(0, (0, common_1.Query)('merchantID')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)

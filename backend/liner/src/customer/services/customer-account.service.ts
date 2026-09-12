@@ -19,7 +19,7 @@ export class CustomerAccountService {
     public async createCustomerAccount(
         req: CreateCustomerRequest,
     ): Promise<Customer> {
-        const customer = this.customerRepository.create({
+        const customer: Customer = this.customerRepository.create({
             email: req.email,
             password: req.password,
             verified: req.verified,

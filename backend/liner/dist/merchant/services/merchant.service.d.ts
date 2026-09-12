@@ -10,7 +10,7 @@ export declare class MerchantService {
     private readonly merchantRepository;
     private readonly productRepository;
     constructor(merchantRepository: Repository<Merchant>, productRepository: Repository<Product>);
-    registerNewMerchant(newMerchant: RegisterMerchantRequest): Promise<void>;
+    registerNewMerchant(req: RegisterMerchantRequest): Promise<Merchant>;
     signIn(req: SignInMerchantRequest): Promise<string>;
     addProduct(req: ProductRequest): Promise<ProductResponse>;
     getProducts(merchantID: string): Promise<ProductsResponse>;

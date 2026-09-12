@@ -15,7 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+// import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -78,6 +78,10 @@ public class SpringSecurityConfig {
                 .requestMatchers(
                     "/api/bank/auth/signup",
                     "/api/bank/auth/login",
+                    // transaction requests involve payment processor requests
+                    // and user may not be logged into their bank account
+                    "/api/bank/transactions/authorize",
+                    "/api/bank/transactions/verify-otp",
                     "/api/bank/payment/processor/credentials" // probably not the best way
                 ).permitAll()
                 .anyRequest().authenticated()

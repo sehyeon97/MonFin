@@ -1,6 +1,7 @@
 package com.sehyeon.monfin.bank.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,12 +10,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sehyeon.monfin.bank.dto.requests.ActivateCardRequest;
 import com.sehyeon.monfin.bank.dto.requests.DeleteCardRequest;
 import com.sehyeon.monfin.bank.dto.requests.NewCardRequest;
 import com.sehyeon.monfin.bank.dto.responses.card.AccountCardsResponse;
 import com.sehyeon.monfin.bank.dto.responses.card.BasicCardInfoResponse;
 import com.sehyeon.monfin.bank.security.BankAccountDetails;
 import com.sehyeon.monfin.bank.services.bank.BankAccountService;
+import com.sehyeon.monfin.bank.services.bank.CardService;
 
 /**
  * Handles basic bank features such as:
@@ -27,10 +30,13 @@ import com.sehyeon.monfin.bank.services.bank.BankAccountService;
 public class BankController {
     @Autowired
     private final BankAccountService bankAccountService;
+    @Autowired
+    private final CardService cardService;
 
-    public BankController(BankAccountService bankAccountService) {
+    public BankController(BankAccountService bankAccountService, CardService cardService) {
         // spring automatically injects the service bean here through constructor injection
         this.bankAccountService = bankAccountService;
+        this.cardService = cardService;
     }
 
     /**
@@ -69,6 +75,16 @@ public class BankController {
         BankAccountDetails bankAccount = (BankAccountDetails) auth.getPrincipal();
         bankAccountService.removeCardFromAccount(bankAccount.getBankAccountID(), req.last4());
         return ResponseEntity.ok("It's always successful.");
+    }
+
+    @PostMapping("/cards/activate")
+    public ResponseEntity<BasicCardInfoResponse> activateIssuedCard(@RequestBody ActivateCardRequest req, Authentication auth) {
+        BankAccountDetails bankAccount = (BankAccountDetails) auth.getPrincipal();
+        BasicCardInfoResponse res = cardService.activateCard(req, bankAccount.getBankAccountID());
+        if (res == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // returns empty body
+        }
+        return ResponseEntity.ok(res);
     }
     
 }

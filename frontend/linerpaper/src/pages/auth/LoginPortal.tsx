@@ -2,15 +2,19 @@ import { useState } from "react";
 import { UserAuthForm } from "../../components/forms/auth/UserAuthForm";
 import type { LoginRequest } from "../../dto/user/LoginRequest";
 import { LoginUser } from "../../api/auth/LoginUser";
-import { UserTypes } from "../../types/UserType";
+import { UserTypes, type UserType } from "../../types/UserType";
 import { SignupUser } from "../../api/auth/SignupUser";
 import type { SignupRequest } from "../../dto/user/SignupRequest";
 import { useNavigate } from "react-router-dom";
 
-export function LoginPortal() {
+type LoginPortalProps = {
+    userType: UserType;
+    setUserType: (userType: UserType) => void;
+}
+
+export function LoginPortal({ userType, setUserType }: LoginPortalProps) {
     const [mode, setMode] = useState("login");
-    const [checked, setChecked] = useState(false);
-    const [userType, setUserType] = useState(UserTypes.Customer);
+    // const [userType, setUserType] = useState(UserTypes.Customer);
     const [error, setError] = useState("");
 
     const navigate = useNavigate();
@@ -19,9 +23,8 @@ export function LoginPortal() {
         setMode(mode);
     }
 
-    function toggleCheckbox() {
-        setChecked(!checked);
-        setUserType(checked ? UserTypes.Merchant : UserTypes.Customer);
+    function toggleCheckbox(event: React.ChangeEvent<HTMLInputElement>) {
+        setUserType(event.target.checked ? UserTypes.Merchant : UserTypes.Customer);
     }
 
     async function loginUser(request: LoginRequest) {
@@ -35,9 +38,9 @@ export function LoginPortal() {
     }
 
     async function signupUser(request: SignupRequest) {
-        const data = await SignupUser(request, userType);
+        const data: string = await SignupUser(request, userType);
         
-        if (data.id) {
+        if (data.length > 0) {
             // at the moment, data is an object (customer | merchant),
             // so we want the user to log in again after creating an account,
             // so we can retrieve the customer id
@@ -72,7 +75,7 @@ export function LoginPortal() {
             )}
             
             <div>
-                <input type="checkbox" checked={checked} onChange={toggleCheckbox}></input>
+                <input type="checkbox" checked={userType === UserTypes.Merchant} onChange={toggleCheckbox}></input>
                 <label>I am Merchant</label>
                 <br/>
                 <button onClick={() => handleModeChange("login")}>Login</button>

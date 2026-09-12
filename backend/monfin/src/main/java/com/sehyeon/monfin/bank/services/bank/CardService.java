@@ -8,9 +8,11 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sehyeon.monfin.bank.dto.requests.ActivateCardRequest;
 import com.sehyeon.monfin.bank.dto.responses.card.AccountCardsResponse;
 import com.sehyeon.monfin.bank.dto.responses.card.BasicCardInfoResponse;
 import com.sehyeon.monfin.bank.model.card.basic.BasicCardInfo;
+import com.sehyeon.monfin.bank.model.card.status.CardStatus;
 import com.sehyeon.monfin.bank.model.entity.bank.Card;
 import com.sehyeon.monfin.bank.repos.CardRepository;
 
@@ -93,6 +95,35 @@ public class CardService {
         }
         
         return new AccountCardsResponse(infos);
+    }
+
+    @Transactional
+    public BasicCardInfoResponse activateCard(ActivateCardRequest req, UUID bankAccountID) {
+        List<Card> cards = cardRepository.findAllByBankAccount_BankAccountID(bankAccountID);
+        for (Card card : cards) {
+            if (card.getLastFour().equals(req.lastFour())) {
+                if (card.getCardStatus() != CardStatus.ACTIVE) {
+                    return null;
+                }
+                card.setCardStatus(CardStatus.ACTIVE);
+                BasicCardInfo info = card.getBasicCardInfo();
+                return new BasicCardInfoResponse(
+                    card.getLastFour(),
+                    info.getExpMonth(),
+                    info.getExpYear(),
+                    card.getCardTier().toString(),
+                    card.getCardNetwork().toString(),
+                    card.getCardType().toString(),
+                    "ACTIVE",
+                    card.getMonthlyLimit(),
+                    card.getDailyLimit(),
+                    card.getAvailableCredit(),
+                    card.getBalance(),
+                    card.isDebit()
+                );
+            }
+        }
+        return null;
     }
 
 }

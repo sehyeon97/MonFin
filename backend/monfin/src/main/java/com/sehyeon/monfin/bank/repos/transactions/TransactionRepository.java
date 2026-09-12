@@ -18,5 +18,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     // ordered newest to oldest transactions (gets THIS MONTH's transactions only)
     public List<Transaction> findByCardTokenAndTimestampBetweenOrderByTimestampDesc(
         String cardToken, Instant startOfMonth, Instant endOfMonth);
+
+    // Get all transactions for bank account and sort by timestamp in descending order
+    // EX: today -> yesterday 8pm -> yesterday 7:30pm
+    public List<Transaction> findAllByBankAccountIDOrderByTimestampDesc(UUID bankAccountID);
     
 }

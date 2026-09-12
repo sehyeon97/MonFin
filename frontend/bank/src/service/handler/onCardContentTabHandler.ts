@@ -1,5 +1,5 @@
 import { AccountCardsResponse } from "@/dtos/bank-card/owned-cards.response";
-import { getAllCards } from "../api/getCardsService";
+import { getAllCards } from "../api/card/getCardsService";
 
 export async function onCardContentTabHandler(): Promise<AccountCardsResponse> {
   const response: Response = await getAllCards();

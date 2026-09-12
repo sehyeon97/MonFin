@@ -61,6 +61,8 @@ export function UserAuthForm({ mode, onSubmit, userRole }: UserAuthFormProps) {
                 billingState: signupForm.state,
                 billingZip: signupForm.zip,
             };
+            console.log("Signup request:", request);
+console.log("Signup password:", loginForm.password);
             onSubmit(request);
         }
     }

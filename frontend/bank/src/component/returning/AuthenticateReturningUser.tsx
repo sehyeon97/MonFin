@@ -3,7 +3,7 @@
 import { useNavigation } from "@/hook/navigation/useNavigation";
 import { MuffinIcon } from "@/loading/icon/Muffin";
 import { Spinner } from "@/loading/Spinner";
-import { validateReturningUser } from "@/service/api/authService";
+import { validateReturningUser } from "@/service/api/auth/authService";
 import { useEffect, useState } from "react";
 
 // As a user that has closed our web app by exiting the tab, but remaining on the same browser,

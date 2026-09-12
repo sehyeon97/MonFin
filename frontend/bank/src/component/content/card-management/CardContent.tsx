@@ -7,14 +7,14 @@ import { Button } from "@/component/Button";
 import { useState } from "react";
 import { BasicCardInfo } from "@/dtos/bank-card/basic-card-info";
 import { MuffinIcon } from "@/loading/icon/Muffin";
-import { removeCardFromAccount } from "@/service/handler/removeCardHandler";
 import { DeleteCardRequest } from "@/dtos/bank-card/delete-card.request";
 import { ShowActiveAndActivateCards } from "./row/first/ShowActiveAndActivateCards";
 import { AddCard } from "./row/second/AddCard";
+import { removeCardFromAccount } from "@/service/handler/cardHandler";
 
 export function CardManagementContent() {
     const { 
-        activeCards, activateCards: issuedCards,
+        activeCards, issuedCards,
         addToIssuedCards, removeFromIssuedCards, 
         addToActiveCards, removeFromActiveCards 
     } = useCardManager();

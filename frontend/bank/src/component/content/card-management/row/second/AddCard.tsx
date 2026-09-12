@@ -8,9 +8,9 @@ import { CardTier } from "@/hook/card-content/types/CardTier";
 import { useCardSelection } from "@/hook/card-content/useCardSelection";
 import { MuffinIcon } from "@/loading/icon/Muffin";
 import { CONTENT_ROW_CHILD_CLASS_NAME } from "@/style/classnames";
-import { createCardForAccount } from "@/service/handler/newCardHandler";
 import { BasicCardInfo } from "@/dtos/bank-card/basic-card-info";
 import { NewCardRequest } from "@/dtos/bank-card/new-card.request";
+import { createCardForAccount } from "@/service/handler/cardHandler";
 
 type AddCardProps = {
     addToIssuedCards: (card: BasicCardInfo) => void;

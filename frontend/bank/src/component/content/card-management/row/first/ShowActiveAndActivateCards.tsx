@@ -37,11 +37,11 @@ export function ShowActiveAndActivateCards({ activeCards, issuedCards, activateC
                         <Column>
                             <Card
                                 details={card}
-                                activateCard={(card: BasicCardInfo) => activateCard(card)}
                             />
                             <Button
                                 text="Activate"
                                 className="bg-slate-800 py-2!"
+                                onClick={() => activateCard(card)}
                             />
                         </Column>
                     </div>

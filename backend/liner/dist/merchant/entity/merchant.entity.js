@@ -21,6 +21,9 @@ let Merchant = class Merchant {
     billingState;
     billingZip;
     createdAt;
+    getID() {
+        return this.id;
+    }
 };
 exports.Merchant = Merchant;
 __decorate([
