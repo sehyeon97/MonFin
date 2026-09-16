@@ -7,6 +7,8 @@ import { SignupUser } from "../../api/auth/SignupUser";
 import type { SignupRequest } from "../../dto/user/SignupRequest";
 import { useNavigate } from "react-router-dom";
 
+import '../../stylesheets/Login.css';
+
 type LoginPortalProps = {
     userType: UserType;
     setUserType: (userType: UserType) => void;
@@ -59,29 +61,35 @@ export function LoginPortal({ userType, setUserType }: LoginPortalProps) {
     }
 
     return (
-        <div>
-            {mode === "login" && (
-                <>
-                    <title>Login</title>
-                    <UserAuthForm mode={mode} onSubmit={loginUser} userRole={userType} />
-                </>
-            )}
+        <div className="login-container">
+            <div className="login-box">
+                {mode === "login" && (
+                    <>
+                        <title>Login</title>
+                        <UserAuthForm mode={mode} onSubmit={loginUser} userRole={userType} />
+                    </>
+                )}
 
-            {mode === "signup" && (
-                <>
-                    <title>Signup</title>
-                    <UserAuthForm mode={mode} onSubmit={signupUser} userRole={userType} />
-                </>
-            )}
-            
-            <div>
-                <input type="checkbox" checked={userType === UserTypes.Merchant} onChange={toggleCheckbox}></input>
-                <label>I am Merchant</label>
-                <br/>
-                <button onClick={() => handleModeChange("login")}>Login</button>
-                <button onClick={() => handleModeChange("signup")}>Signup</button>
-                <br/>
-                <p>{error}</p>
+                {mode === "signup" && (
+                    <>
+                        <title>Signup</title>
+                        <UserAuthForm mode={mode} onSubmit={signupUser} userRole={userType} />
+                    </>
+                )}
+                
+                <div>
+                    <input 
+                        type="checkbox"
+                        checked={userType === UserTypes.Merchant}
+                        onChange={toggleCheckbox}
+                    />
+                    <label className="login-title">I am Merchant</label>
+                    <br/>
+                    <button onClick={() => handleModeChange("login")}>Login</button>
+                    <button onClick={() => handleModeChange("signup")}>Signup</button>
+                    <br/>
+                    <p>{error}</p>
+                </div>
             </div>
         </div>
     );

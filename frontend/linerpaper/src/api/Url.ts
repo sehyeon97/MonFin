@@ -8,6 +8,7 @@ export const Url = {
   TSP: "/api/bank/payment/processor/credentials", // should be bank frontend embed iframe later
   CustomerAddPaymentMethod: "/customer/save/payment-method",
   CustomerViewSavedPaymentMethods: "/customer/payment-methods",
-  MerchantProductPage: "view-products",
-  MerchantAddProduct: "add-product",
+  MerchantProductPage: "/view-products",
+  MerchantAddProduct: "/add-product",
+  MerchantUpdateProduct: "/update-product",
 };

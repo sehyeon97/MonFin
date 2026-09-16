@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
 import type { ProductResponse } from "../../../dto/merchant/ProductResponse";
 import { ProductCard } from "../../../components/product/ProductCard";
-import { GetMerchantProducts } from "../../../api/payment/GetMerchantProducts";
-
-// testing for one merchant for now
-const merchantID: string = "84069a79-bc5c-49c2-bb36-b7299f0b9375";
+import { GetMerchantProducts } from "../../../api/merchant/GetMerchantProducts";
+import { UserTypes } from "../../../types/UserType";
+import type { AllProductsResponse } from "../../../dto/merchant/AllProductsResponse";
 
 export function CustomerHomePage() {
     const [products, setProducts] = useState<ProductResponse[]>([]);
 
     useEffect(() => {
         const getProducts = async () => {
-            const data: ProductResponse[] = await GetMerchantProducts(merchantID);
-            setProducts(data);
+            const data: AllProductsResponse = await GetMerchantProducts(UserTypes.Customer, {businessName: "Biz"});
+            setProducts(data.products);
         }
 
         getProducts();
@@ -29,6 +28,7 @@ export function CustomerHomePage() {
                     price={product.price}
                     desc={product.desc}
                     count={product.count}
+                    showSettingsIcon={false}
                 />
             ))}
         </div>

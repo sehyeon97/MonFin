@@ -1,0 +1,137 @@
+/* Login container */
+.login-container {
+    width: 50%;
+    min-height: 50vh;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 1px solid #e4dff0;
+    border-radius: 16px;
+
+    background: #f5d4f2;
+}
+
+/* Login box */
+.login-box {
+    width: 400px;
+    padding: 40px;
+
+    background: #ffffff;
+    border: 1px solid #e4dff0;
+    border-radius: 16px;
+
+    box-shadow: 0 8px 30px rgba(60, 40, 90, 0.12);
+}
+
+/* Title */
+.login-title {
+    margin: 0 0 8px;
+    color: #2d2638;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Form group */
+.login-field {
+    margin-bottom: 20px;
+}
+
+/* Labels */
+.login-label {
+    display: block;
+    margin-bottom: 8px;
+
+    color: #3b3445;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Inputs */
+.login-input {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    border: 1px solid #d8d1e2;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #2d2638;
+
+    font-size: 15px;
+
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.login-input:focus {
+    border-color: #a77ad9;
+    box-shadow: 0 0 0 3px rgba(167, 122, 217, 0.15);
+}
+
+.login-input::placeholder {
+    color: #aaa3b2;
+}
+
+/* Login button */
+.login-button {
+    width: 100%;
+    padding: 13px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #9b6bd3;
+    color: #ffffff;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.login-button:hover {
+    background: #8755c2;
+}
+
+.login-button:active {
+    transform: translateY(1px);
+}
+
+/* Error message */
+.login-error {
+    margin-bottom: 16px;
+
+    padding: 10px 12px;
+
+    border-radius: 6px;
+
+    background: #fff0f0;
+    color: #c03939;
+
+    font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .login-box {
+        width: 100%;
+        padding: 30px 24px;
+    }
+}

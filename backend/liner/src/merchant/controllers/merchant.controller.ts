@@ -2,13 +2,25 @@
 https://docs.nestjs.com/controllers#controllers
 */
 
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Post,
+    Query,
+    Req,
+    UseGuards,
+} from '@nestjs/common';
 import { RegisterMerchantRequest } from '../dto/requests/register-merchant-request.dto';
 import { MerchantService } from '../services/merchant.service';
 import { ProductsResponse } from '../dto/responses/list.products.response.dto';
 import { ProductRequest } from '../dto/requests/product.request.dto';
 import { ProductResponse } from '../dto/responses/product.response.dto';
 import { Merchant } from '../entity/merchant.entity';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import * as jwtAuthGuardDto from '../../auth/jwt-auth-guard.dto';
+import { UserRoles } from '../../auth/user-role.enum';
+import { UpdateProductRequest } from '../dto/requests/update-product-request.dto';
 
 @Controller('payment-api/merchants')
 export class MerchantController {
@@ -24,25 +36,42 @@ export class MerchantController {
         return result.getID();
     }
 
-    // *** REFACTORED TO JWT AUTH *** Testing in progress. . . then delete after success
-    // @Post('login')
-    // public async loginMerchant(
-    //     @Body() request: SignInMerchantRequest,
-    // ): Promise<string> {
-    //     return await this.merchantService.signIn(request);
-    // }
-
+    @UseGuards(JwtAuthGuard)
     @Post('add-product')
     public async addProduct(
-        @Body() req: ProductRequest,
+        @Req() req: jwtAuthGuardDto.AuthenticatedRequest,
+        @Body() productReq: ProductRequest,
     ): Promise<ProductResponse> {
-        return await this.merchantService.addProduct(req);
+        return await this.merchantService.addProduct(productReq, req.user);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get('view-products')
     public async getMerchantProducts(
-        @Query('merchantID') merchantID: string,
+        @Req() req: jwtAuthGuardDto.AuthenticatedRequest,
+        @Query('businessName') businessName?: string,
     ): Promise<ProductsResponse> {
-        return await this.merchantService.getProducts(merchantID);
+        // if merchant, body will not exist
+        if (req.user.role === UserRoles.Merchant) {
+            console.log('Getting merchant products for preview...');
+            const products = await this.merchantService.getProductsForMerchant(
+                req.user.id,
+            );
+            console.log(`number of products: ${products.products.length}`);
+            return products;
+        }
+        return await this.merchantService.getProductsForCustomer(businessName!);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('update-product')
+    public async updateProduct(
+        @Req() req: jwtAuthGuardDto.AuthenticatedRequest,
+        @Body() updateRequest: UpdateProductRequest,
+    ): Promise<ProductResponse> {
+        return await this.merchantService.updateProduct(
+            updateRequest,
+            req.user,
+        );
     }
 }

@@ -9,41 +9,61 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProductRequest = void 0;
+exports.UpdateProductRequest = void 0;
 const class_validator_1 = require("class-validator");
-class ProductRequest {
+class UpdateProductRequest {
     businessName;
     brand;
     price;
     desc;
     count;
+    newPrice;
+    newDesc;
+    newCount;
 }
-exports.ProductRequest = ProductRequest;
+exports.UpdateProductRequest = UpdateProductRequest;
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], ProductRequest.prototype, "businessName", void 0);
+], UpdateProductRequest.prototype, "businessName", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], ProductRequest.prototype, "brand", void 0);
+], UpdateProductRequest.prototype, "brand", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
-], ProductRequest.prototype, "price", void 0);
+], UpdateProductRequest.prototype, "price", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MaxLength)(250),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], ProductRequest.prototype, "desc", void 0);
+], UpdateProductRequest.prototype, "desc", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.Min)(1),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
-], ProductRequest.prototype, "count", void 0);
-//# sourceMappingURL=product.request.dto.js.map
+], UpdateProductRequest.prototype, "count", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], UpdateProductRequest.prototype, "newPrice", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.MaxLength)(250),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateProductRequest.prototype, "newDesc", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Min)(1),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], UpdateProductRequest.prototype, "newCount", void 0);
+//# sourceMappingURL=update-product-request.dto.js.map

@@ -1,5 +1,4 @@
 export interface ProductRequest {
-  merchantID: string;
   businessName: string;
   brand: string;
   price: number;

@@ -21,7 +21,6 @@ let JwtAuthGuard = class JwtAuthGuard {
         const request = context
             .switchToHttp()
             .getRequest();
-        console.log(request.cookies);
         const token = request.cookies?.access_token;
         if (!token) {
             throw new common_1.UnauthorizedException('token invalid');

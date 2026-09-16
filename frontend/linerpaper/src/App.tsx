@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import './App.css'
 import { LoginPortal } from './pages/auth/LoginPortal'
 import { CustomerHomePage } from './pages/user/customer/CustomerHomePage'
 import { MerchantHomePage } from './pages/user/merchant/MerchantHomePage'

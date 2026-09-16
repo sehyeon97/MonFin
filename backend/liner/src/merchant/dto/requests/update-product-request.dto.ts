@@ -6,7 +6,7 @@ import {
     Min,
 } from 'class-validator';
 
-export class ProductRequest {
+export class UpdateProductRequest {
     @IsNotEmpty()
     @IsString()
     businessName!: string;
@@ -28,4 +28,18 @@ export class ProductRequest {
     @Min(1)
     @IsNumber()
     count!: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    newPrice!: number;
+
+    @IsNotEmpty()
+    @MaxLength(250)
+    @IsString()
+    newDesc!: string;
+
+    @IsNotEmpty()
+    @Min(1)
+    @IsNumber()
+    newCount!: number;
 }

@@ -12,6 +12,8 @@ import { Product } from '../entity/merchant.product.entity';
 import { ProductResponse } from '../dto/responses/product.response.dto';
 import { ProductsResponse } from '../dto/responses/list.products.response.dto';
 import { SignInMerchantRequest } from '../dto/requests/sign-in-merchant.request.dto';
+import { JWTAccessPayload } from '../../auth/jwt-access-payload.dto';
+import { UpdateProductRequest } from '../dto/requests/update-product-request.dto';
 
 @Injectable()
 export class MerchantService {
@@ -46,8 +48,18 @@ export class MerchantService {
         return merchant ? merchant.id : '';
     }
 
-    public async addProduct(req: ProductRequest): Promise<ProductResponse> {
-        const product: Product = this.productRepository.create(req);
+    public async addProduct(
+        req: ProductRequest,
+        user: JWTAccessPayload,
+    ): Promise<ProductResponse> {
+        const product: Product = this.productRepository.create({
+            merchantID: user.id,
+            businessName: req.businessName,
+            brand: req.brand,
+            price: req.price,
+            desc: req.desc,
+            count: req.count,
+        });
         await this.productRepository.save(product);
         return {
             businessName: product.businessName,
@@ -58,9 +70,75 @@ export class MerchantService {
         };
     }
 
-    public async getProducts(merchantID: string): Promise<ProductsResponse> {
-        const products = await this.productRepository.find({
+    public async updateProduct(
+        req: UpdateProductRequest,
+        user: JWTAccessPayload,
+    ): Promise<ProductResponse> {
+        await this.productRepository.update(
+            {
+                merchantID: user.id,
+                businessName: req.businessName,
+                brand: req.brand,
+                price: req.price,
+                desc: req.desc,
+                count: req.count,
+            },
+            {
+                price: req.newPrice,
+                desc: req.newDesc,
+                count: req.newCount,
+            },
+        );
+
+        const product: Product | null = await this.productRepository.findOne({
+            where: {
+                merchantID: user.id,
+                businessName: req.businessName,
+                brand: req.brand,
+                price: req.newPrice,
+                desc: req.newDesc,
+                count: req.newCount,
+            },
+        });
+
+        return product ? product : new ProductResponse();
+    }
+
+    public async getProductsForMerchant(
+        merchantID: string,
+    ): Promise<ProductsResponse> {
+        const products: Product[] = await this.productRepository.find({
             where: { merchantID: merchantID },
+        });
+
+        console.log(`number of products in database: ${products.length}`);
+
+        const merchantProducts: ProductResponse[] = products.map(
+            (product: Product) => {
+                const res: ProductResponse = new ProductResponse();
+                res.businessName = product.businessName;
+                res.brand = product.brand;
+                res.price = product.price;
+                res.desc = product.desc;
+                res.count = product.count;
+                return res;
+            },
+        );
+
+        console.log(
+            `number of products in response: ${merchantProducts.length}`,
+        );
+
+        return {
+            products: merchantProducts,
+        };
+    }
+
+    public async getProductsForCustomer(
+        businessName: string,
+    ): Promise<ProductsResponse> {
+        const products = await this.productRepository.find({
+            where: { businessName: businessName },
         });
 
         const merchantProducts: ProductResponse[] = products.map(
@@ -76,7 +154,6 @@ export class MerchantService {
         );
 
         return {
-            merchantID: merchantID,
             products: merchantProducts,
         };
     }

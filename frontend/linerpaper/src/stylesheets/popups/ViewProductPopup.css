@@ -1,0 +1,147 @@
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.5);
+
+    padding: 2rem;
+}
+
+.modal {
+    flex: 0 0 90vw;
+    width: 90vw;
+    box-sizing: border-box;
+
+    max-height: 80vh;
+    padding: 2rem;
+
+    background: white;
+    border-radius: 1rem;
+
+    overflow-y: auto;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 280px);
+    gap: 16px;
+    justify-content: start;
+}
+
+.product-card {
+    width: 280px;
+    padding: 24px;
+    
+    background: #ffffff;
+    border: 2px solid #7c3aed;
+    border-radius: 20px;
+
+    /* Makes the card "pop" without a shadow */
+    transform: translateY(-6px);
+}
+
+.product-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    margin-bottom: 20px;
+}
+
+.product-card-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.product-settings-button {
+    position: absolute;
+    right: 0;
+
+    border: none;
+    background: transparent;
+
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.product-card-content {
+    width: 100%;
+
+    background: #f5f3ff;
+    border: 1px solid #c4b5fd;
+    border-radius: 14px;
+
+    overflow: hidden;
+}
+
+.product-image {
+    width: 160px;
+    height: 160px;
+
+    margin: 20px auto;
+
+    background: #e5e7eb;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+}
+
+.product-info-row {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+}
+
+.product-info {
+    padding: 0 18px 18px 18px;
+}
+
+.product-subtitle {
+    flex: 1;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    text-align: left;
+}
+
+.product-price {
+    flex: 1;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    text-align: center;
+}
+
+.product-quantity {
+    flex: 1;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    text-align: right;
+}
+
+.product-description {
+    margin: 12px 0 0 0;
+
+    font-size: 14px;
+    line-height: 1.4;
+
+    text-align: left;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+
+    overflow: hidden;
+}

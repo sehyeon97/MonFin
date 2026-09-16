@@ -9,9 +9,10 @@ import { Customer } from '../entity/customer.entity.user';
 import { CustomerAccountService } from '../services/customer-account.service';
 import { OrderHistoryService } from '../services/order-history.service';
 import { Order } from '../entity/customer.entity.order';
+import { JWTModule } from '../../auth/jwt.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Customer, Order])],
+    imports: [JWTModule, TypeOrmModule.forFeature([Customer, Order])],
     controllers: [CustomerController],
     providers: [CustomerAccountService, OrderHistoryService],
 })

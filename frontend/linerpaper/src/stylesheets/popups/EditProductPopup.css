@@ -1,0 +1,153 @@
+.settings-backdrop {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.5);
+
+    z-index: 1000;
+}
+
+.settings-modal {
+    width: 20%;
+    padding: 2rem;
+
+    background: white;
+    border-radius: 1rem;
+}
+
+.settings-modal h2 {
+    margin: 0 0 1.5rem 0;
+
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+
+    margin-bottom: 1.25rem;
+}
+
+.settings-row label {
+    width: 90px;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.settings-row input {
+    flex: 1;
+
+    padding: 0.6rem 0.75rem;
+
+    border: 1px solid #c4b5fd;
+    border-radius: 0.5rem;
+
+    font-size: 16px;
+}
+
+.quantity-buttons {
+    display: flex;
+    flex-direction: column;
+
+    margin-left: 8px;
+}
+
+.quantity-buttons button {
+    width: 28px;
+    height: 24px;
+
+    padding: 0;
+
+    border: 1px solid #c4b5fd;
+    background: #f5f3ff;
+
+    cursor: pointer;
+}
+
+.quantity-buttons button:first-child {
+    border-radius: 0.4rem 0.4rem 0 0;
+}
+
+.quantity-buttons button:last-child {
+    border-radius: 0 0 0.4rem 0.4rem;
+}
+
+.quantity-buttons button:hover {
+    background: #ddd6fe;
+}
+
+.quantity-buttons button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.settings-description {
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 0.5rem;
+}
+
+.settings-description label {
+    margin-bottom: 0.5rem;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.settings-description textarea {
+    width: 100%;
+    min-height: 120px;
+
+    padding: 0.75rem;
+
+    box-sizing: border-box;
+    resize: vertical;
+
+    border: 1px solid #c4b5fd;
+    border-radius: 0.5rem;
+
+    font-family: inherit;
+    font-size: 15px;
+}
+
+.settings-actions { 
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 1.5rem;
+}
+
+.settings-actions button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.settings-cancel-button {
+    border: 1px solid #d1d5db;
+    background: #f3f4f6;
+}
+
+.settings-cancel-button:hover {
+    background: #e5e7eb;
+}
+
+.settings-save-button {
+    border: 1px solid #7c3aed;
+    background: #7c3aed;
+    color: white;
+}
+
+.settings-save-button:hover {
+    background: #6d28d9;
+}

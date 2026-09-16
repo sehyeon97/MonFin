@@ -43,8 +43,15 @@ let MerchantService = class MerchantService {
         });
         return merchant ? merchant.id : '';
     }
-    async addProduct(req) {
-        const product = this.productRepository.create(req);
+    async addProduct(req, user) {
+        const product = this.productRepository.create({
+            merchantID: user.id,
+            businessName: req.businessName,
+            brand: req.brand,
+            price: req.price,
+            desc: req.desc,
+            count: req.count,
+        });
         await this.productRepository.save(product);
         return {
             businessName: product.businessName,
@@ -54,9 +61,53 @@ let MerchantService = class MerchantService {
             count: product.count,
         };
     }
-    async getProducts(merchantID) {
+    async updateProduct(req, user) {
+        await this.productRepository.update({
+            merchantID: user.id,
+            businessName: req.businessName,
+            brand: req.brand,
+            price: req.price,
+            desc: req.desc,
+            count: req.count,
+        }, {
+            price: req.newPrice,
+            desc: req.newDesc,
+            count: req.newCount,
+        });
+        const product = await this.productRepository.findOne({
+            where: {
+                merchantID: user.id,
+                businessName: req.businessName,
+                brand: req.brand,
+                price: req.newPrice,
+                desc: req.newDesc,
+                count: req.newCount,
+            },
+        });
+        return product ? product : new product_response_dto_1.ProductResponse();
+    }
+    async getProductsForMerchant(merchantID) {
         const products = await this.productRepository.find({
             where: { merchantID: merchantID },
+        });
+        console.log(`number of products in database: ${products.length}`);
+        const merchantProducts = products.map((product) => {
+            const res = new product_response_dto_1.ProductResponse();
+            res.businessName = product.businessName;
+            res.brand = product.brand;
+            res.price = product.price;
+            res.desc = product.desc;
+            res.count = product.count;
+            return res;
+        });
+        console.log(`number of products in response: ${merchantProducts.length}`);
+        return {
+            products: merchantProducts,
+        };
+    }
+    async getProductsForCustomer(businessName) {
+        const products = await this.productRepository.find({
+            where: { businessName: businessName },
         });
         const merchantProducts = products.map((product) => {
             const res = new product_response_dto_1.ProductResponse();
@@ -68,7 +119,6 @@ let MerchantService = class MerchantService {
             return res;
         });
         return {
-            merchantID: merchantID,
             products: merchantProducts,
         };
     }

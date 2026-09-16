@@ -1,6 +1,5 @@
 import type { ProductResponse } from "./ProductResponse";
 
-export interface ProductsResponse {
-  merchantID: string;
+export interface AllProductsResponse {
   products: ProductResponse[];
 }

@@ -1,0 +1,34 @@
+.add-product-modal-backdrop {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.add-product-modal {
+    width: 20%;
+    padding: 2rem;
+
+    background: white;
+    border-radius: 1rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 175px 200px;
+    gap: 10px;
+    justify-content: start;
+}
+
+.form-row label {
+    text-align: left;
+}
+
+.form-row button {
+    grid-column: 1 / -1;
+    justify-self: center;
+}

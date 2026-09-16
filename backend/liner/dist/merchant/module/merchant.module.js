@@ -13,12 +13,13 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const merchant_entity_1 = require("../entity/merchant.entity");
 const merchant_product_entity_1 = require("../entity/merchant.product.entity");
+const jwt_module_1 = require("../../auth/jwt.module");
 let MerchantModule = class MerchantModule {
 };
 exports.MerchantModule = MerchantModule;
 exports.MerchantModule = MerchantModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([merchant_entity_1.Merchant, merchant_product_entity_1.Product])],
+        imports: [jwt_module_1.JWTModule, typeorm_1.TypeOrmModule.forFeature([merchant_entity_1.Merchant, merchant_product_entity_1.Product])],
         controllers: [merchant_controller_1.MerchantController],
         providers: [merchant_service_1.MerchantService],
     })

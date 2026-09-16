@@ -37,10 +37,6 @@ export class AuthService {
     public async signJWT(req: LoginUserRequest): Promise<string> {
         let payload: JWTAccessPayload;
 
-        console.log('email: ' + req.email);
-        console.log('password: ' + req.password);
-        console.log('user role: ' + req.role);
-
         if (req.role === UserRoles.Customer) {
             const customer: Customer | null =
                 await this.findCustomerByEmailAndPassword(

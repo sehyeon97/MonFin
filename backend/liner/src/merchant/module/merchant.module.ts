@@ -8,9 +8,10 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Merchant } from '../entity/merchant.entity';
 import { Product } from '../entity/merchant.product.entity';
+import { JWTModule } from '../../auth/jwt.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Merchant, Product])],
+    imports: [JWTModule, TypeOrmModule.forFeature([Merchant, Product])],
     controllers: [MerchantController],
     providers: [MerchantService],
 })

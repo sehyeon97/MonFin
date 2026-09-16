@@ -31,9 +31,6 @@ let AuthService = class AuthService {
     }
     async signJWT(req) {
         let payload;
-        console.log('email: ' + req.email);
-        console.log('password: ' + req.password);
-        console.log('user role: ' + req.role);
         if (req.role === user_role_enum_1.UserRoles.Customer) {
             const customer = await this.findCustomerByEmailAndPassword(req.email, req.password);
             if (!customer) {
