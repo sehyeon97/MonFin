@@ -7,20 +7,47 @@ import { ViewSavedCardsPage } from './pages/user/ViewSavedCardsPage'
 import { HomeLayout } from './layouts/HomeLayout'
 import { useState } from 'react'
 import { type UserType, UserTypes } from './types/UserType'
+import ProtectedRoute from './components/auth/ProtectedRoute'
 
 function App() {
-  const [userType, setUserType] = useState<UserType>(UserTypes.Customer);
+  const [userType, setUserType] = useState<UserType>(() => {
+    return localStorage.getItem("userType") as UserType || UserTypes.Customer;
+  });
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPortal userType={userType} setUserType={setUserType} />}/>
+
         <Route element={<HomeLayout userType={userType} />}>
-          {userType === UserTypes.Customer && <Route path="/shopping" element={<CustomerHomePage />}/>}
-          {userType === UserTypes.Merchant && <Route path="/my-business" element={<MerchantHomePage />}/>}
+          <Route
+              path="/shopping"
+              element={
+                  <ProtectedRoute
+                      userType={userType}
+                      allowedUserType={UserTypes.Customer}
+                  >
+                      <CustomerHomePage />
+                  </ProtectedRoute>
+              }
+          />
+
+          <Route
+              path="/my-business"
+              element={
+                  <ProtectedRoute
+                      userType={userType}
+                      allowedUserType={UserTypes.Merchant}
+                  >
+                      <MerchantHomePage />
+                  </ProtectedRoute>
+              }
+          />
+
           <Route path="/save-card-information" element={<SaveCardPage />}/>
           <Route path="/view-saved-cards" element={<ViewSavedCardsPage />}/>
         </Route>
+
       </Routes>
     </BrowserRouter>
   )

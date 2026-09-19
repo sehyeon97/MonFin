@@ -52,7 +52,6 @@ const merchant_service_1 = require("../services/merchant.service");
 const product_request_dto_1 = require("../dto/requests/product.request.dto");
 const jwt_auth_guard_1 = require("../../auth/jwt-auth.guard");
 const jwtAuthGuardDto = __importStar(require("../../auth/jwt-auth-guard.dto"));
-const user_role_enum_1 = require("../../auth/user-role.enum");
 const update_product_request_dto_1 = require("../dto/requests/update-product-request.dto");
 let MerchantController = class MerchantController {
     merchantService;
@@ -68,17 +67,17 @@ let MerchantController = class MerchantController {
     async addProduct(req, productReq) {
         return await this.merchantService.addProduct(productReq, req.user);
     }
-    async getMerchantProducts(req, businessName) {
-        if (req.user.role === user_role_enum_1.UserRoles.Merchant) {
-            console.log('Getting merchant products for preview...');
-            const products = await this.merchantService.getProductsForMerchant(req.user.id);
-            console.log(`number of products: ${products.products.length}`);
-            return products;
-        }
-        return await this.merchantService.getProductsForCustomer(businessName);
+    async getMerchantProducts(req) {
+        console.log('Getting merchant products for preview...');
+        const products = await this.merchantService.getProductsForMerchant(req.user.id);
+        console.log(`number of products: ${products.products.length}`);
+        return products;
     }
     async updateProduct(req, updateRequest) {
         return await this.merchantService.updateProduct(updateRequest, req.user);
+    }
+    async getAllMerchantsAndTheirProductsForCustomer(businessName) {
+        return await this.merchantService.getProductsForCustomer(businessName);
     }
 };
 exports.MerchantController = MerchantController;
@@ -102,9 +101,8 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('view-products'),
     __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Query)('businessName')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], MerchantController.prototype, "getMerchantProducts", null);
 __decorate([
@@ -116,6 +114,13 @@ __decorate([
     __metadata("design:paramtypes", [Object, update_product_request_dto_1.UpdateProductRequest]),
     __metadata("design:returntype", Promise)
 ], MerchantController.prototype, "updateProduct", null);
+__decorate([
+    (0, common_1.Get)('products'),
+    __param(0, (0, common_1.Query)('businessName')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], MerchantController.prototype, "getAllMerchantsAndTheirProductsForCustomer", null);
 exports.MerchantController = MerchantController = __decorate([
     (0, common_1.Controller)('payment-api/merchants'),
     __metadata("design:paramtypes", [merchant_service_1.MerchantService])

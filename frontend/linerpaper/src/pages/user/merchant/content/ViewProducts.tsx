@@ -26,7 +26,7 @@ export function ViewProducts({ role, businessName, setShowPopup }: ViewProductsP
 
     useEffect(() => {
         async function getProductsForMerchant() {
-            const data: AllProductsResponse = await GetMerchantProducts(UserTypes.Merchant);
+            const data: AllProductsResponse = await GetMerchantProducts(UserTypes.Merchant, {});
             setProducts(data.products);
         }
 
@@ -81,7 +81,7 @@ export function ViewProducts({ role, businessName, setShowPopup }: ViewProductsP
                 )
             );
         }
-        
+
         setShowSettings(false);
     }
 
@@ -93,7 +93,6 @@ export function ViewProducts({ role, businessName, setShowPopup }: ViewProductsP
                         {products.map((product, index) => (
                             <ProductCard
                                 key={index}
-                                index={index}
                                 businessName={product.businessName}
                                 brand={product.brand}
                                 price={product.price}
@@ -103,6 +102,9 @@ export function ViewProducts({ role, businessName, setShowPopup }: ViewProductsP
                                 // Merchant Exclusive
                                 showSettingsIcon={true}
                                 onClickSettings={() => onClickSettings(index)}
+
+                                // Not Customer
+                                showPurchaseButton={false}
                             />
                         ))}
                     </div>

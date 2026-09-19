@@ -10,6 +10,7 @@ export declare class MerchantController {
     constructor(merchantService: MerchantService);
     registerMerchant(merchant: RegisterMerchantRequest): Promise<string>;
     addProduct(req: jwtAuthGuardDto.AuthenticatedRequest, productReq: ProductRequest): Promise<ProductResponse>;
-    getMerchantProducts(req: jwtAuthGuardDto.AuthenticatedRequest, businessName?: string): Promise<ProductsResponse>;
+    getMerchantProducts(req: jwtAuthGuardDto.AuthenticatedRequest): Promise<ProductsResponse>;
     updateProduct(req: jwtAuthGuardDto.AuthenticatedRequest, updateRequest: UpdateProductRequest): Promise<ProductResponse>;
+    getAllMerchantsAndTheirProductsForCustomer(businessName: string): Promise<ProductsResponse>;
 }

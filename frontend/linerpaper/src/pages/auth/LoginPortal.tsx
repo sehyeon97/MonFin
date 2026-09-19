@@ -16,7 +16,6 @@ type LoginPortalProps = {
 
 export function LoginPortal({ userType, setUserType }: LoginPortalProps) {
     const [mode, setMode] = useState("login");
-    // const [userType, setUserType] = useState(UserTypes.Customer);
     const [error, setError] = useState("");
 
     const navigate = useNavigate();
@@ -26,7 +25,11 @@ export function LoginPortal({ userType, setUserType }: LoginPortalProps) {
     }
 
     function toggleCheckbox(event: React.ChangeEvent<HTMLInputElement>) {
-        setUserType(event.target.checked ? UserTypes.Merchant : UserTypes.Customer);
+        const newUserType = event.target.checked
+            ? UserTypes.Merchant
+            : UserTypes.Customer;
+        setUserType(newUserType);
+        localStorage.setItem("userType", newUserType);
     }
 
     async function loginUser(request: LoginRequest) {

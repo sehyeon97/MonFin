@@ -1,23 +1,27 @@
-import type { AllProductsRequest } from "../../dto/merchant/AllProductsRequest";
 import type { AllProductsResponse } from "../../dto/merchant/AllProductsResponse";
 import { UserTypes, type UserType } from "../../types/UserType";
 import { Url } from "../Url";
 
+interface MerchantName {
+  businessName?: string;
+}
+
 export async function GetMerchantProducts(
   role: UserType,
-  req?: AllProductsRequest,
+  { businessName }: MerchantName,
 ): Promise<AllProductsResponse> {
-  const endpoint = `${Url.Base}${Url.Merchant}${Url.MerchantProductPage}`;
+  const merchantEndpoint = `${Url.Base}${Url.Merchant}${Url.MerchantProductPage}`;
+  const customerEndpoint = `${Url.Base}${Url.Merchant}${Url.CustomerViewMerchantProducts}`;
 
   let response: Response;
 
   if (role === UserTypes.Merchant) {
-    response = await fetch(endpoint, {
+    response = await fetch(merchantEndpoint, {
       method: "GET",
       credentials: "include",
     });
   } else {
-    response = await fetch(`${endpoint}?businessName=${req!.businessName}`, {
+    response = await fetch(`${customerEndpoint}?businessName=${businessName}`, {
       method: "GET",
       credentials: "include",
     });
@@ -25,6 +29,7 @@ export async function GetMerchantProducts(
 
   if (response.ok) {
     const data: AllProductsResponse = await response.json();
+    console.log("DATA FETCHED FOR CUSTOMER: ", data.products);
     return data;
   }
 

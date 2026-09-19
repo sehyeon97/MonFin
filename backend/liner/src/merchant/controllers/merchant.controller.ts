@@ -19,7 +19,6 @@ import { ProductResponse } from '../dto/responses/product.response.dto';
 import { Merchant } from '../entity/merchant.entity';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import * as jwtAuthGuardDto from '../../auth/jwt-auth-guard.dto';
-import { UserRoles } from '../../auth/user-role.enum';
 import { UpdateProductRequest } from '../dto/requests/update-product-request.dto';
 
 @Controller('payment-api/merchants')
@@ -45,22 +44,18 @@ export class MerchantController {
         return await this.merchantService.addProduct(productReq, req.user);
     }
 
+    // Merchant viewing their own product
     @UseGuards(JwtAuthGuard)
     @Get('view-products')
     public async getMerchantProducts(
         @Req() req: jwtAuthGuardDto.AuthenticatedRequest,
-        @Query('businessName') businessName?: string,
     ): Promise<ProductsResponse> {
-        // if merchant, body will not exist
-        if (req.user.role === UserRoles.Merchant) {
-            console.log('Getting merchant products for preview...');
-            const products = await this.merchantService.getProductsForMerchant(
-                req.user.id,
-            );
-            console.log(`number of products: ${products.products.length}`);
-            return products;
-        }
-        return await this.merchantService.getProductsForCustomer(businessName!);
+        console.log('Getting merchant products for preview...');
+        const products = await this.merchantService.getProductsForMerchant(
+            req.user.id,
+        );
+        console.log(`number of products: ${products.products.length}`);
+        return products;
     }
 
     @UseGuards(JwtAuthGuard)
@@ -73,5 +68,13 @@ export class MerchantController {
             updateRequest,
             req.user,
         );
+    }
+
+    // Customer viewing Merchant products
+    @Get('products')
+    public async getAllMerchantsAndTheirProductsForCustomer(
+        @Query('businessName') businessName: string,
+    ): Promise<ProductsResponse> {
+        return await this.merchantService.getProductsForCustomer(businessName);
     }
 }

@@ -11,4 +11,5 @@ export const Url = {
   MerchantProductPage: "/view-products",
   MerchantAddProduct: "/add-product",
   MerchantUpdateProduct: "/update-product",
+  CustomerViewMerchantProducts: "/products",
 };

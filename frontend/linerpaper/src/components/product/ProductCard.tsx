@@ -1,7 +1,6 @@
 import '../../stylesheets/popups/ViewProductPopup.css';
 
 type ProductCardProps = {
-    index: number;
     businessName: string;
     brand: string;
     price: number;
@@ -9,9 +8,15 @@ type ProductCardProps = {
     count: number;
     showSettingsIcon: boolean;
     onClickSettings?: (index: number) => void;
+    showPurchaseButton: boolean;
+    onProductClick?: () => void;
 }
 
-export function ProductCard({ index, businessName, brand, price, desc, count, showSettingsIcon, onClickSettings }: ProductCardProps) {
+export function ProductCard({ 
+    businessName, brand, price, desc, count,
+    showSettingsIcon, onClickSettings,
+    showPurchaseButton, onProductClick,
+ }: ProductCardProps) {
     return (
         <div className="product-card">
             <div className='product-card-header'>
@@ -19,7 +24,7 @@ export function ProductCard({ index, businessName, brand, price, desc, count, sh
 
                 {
                     showSettingsIcon &&
-                    <button className="product-settings-button" onClick={() => onClickSettings!(index)}>
+                    <button className="product-settings-button" onClick={() => onClickSettings}>
                         ⚙
                     </button>
                 }
@@ -35,6 +40,7 @@ export function ProductCard({ index, businessName, brand, price, desc, count, sh
                         <p className="product-quantity"> Quantity: {count}</p>
                     </div>
                     <p className="product-description">{desc}</p>
+                    {showPurchaseButton && <button onClick={() => onProductClick!()}>Purchase</button>}
                 </div>
             </div>
         </div>
