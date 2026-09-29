@@ -1,5 +1,5 @@
 import type { ProductRequest } from "../../dto/merchant/ProductRequest";
-import type { ProductResponse } from "../../dto/merchant/ProductResponse";
+import type { Product } from "../../dto/merchant/Product";
 import { Url } from "../Url";
 
 export async function AddProductForMerchant(req: ProductRequest) {
@@ -14,7 +14,7 @@ export async function AddProductForMerchant(req: ProductRequest) {
   });
 
   if (response.ok) {
-    const data: ProductResponse = await response.json();
+    const data: Product = await response.json();
     return data;
   }
 

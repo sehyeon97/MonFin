@@ -55,20 +55,21 @@ public class BankAccountService {
     public BasicCardInfoResponse addCardToAccount(
         UUID bankAccountID, String fullName,
         String cardType, String cardNetwork, String cardTier, boolean isDebit) {
+        
+        Optional<BankAccount> bankAccountData = bankRepository.findById(bankAccountID);
+        if (bankAccountData.isEmpty()) {
+            throw new RuntimeException("Bank account not found");
+        }
+        BankAccount bankAccount = bankAccountData.get();
+
         Card card = cardIssuanceService.issueCard(
-            fullName,
+            bankAccount.getFullName(),
             convertStrToCardType(cardType),
             convertStrToCardNetwork(cardNetwork),
             convertStrToCardTier(cardTier), isDebit
         );
         cardService.createCard(card);
 
-        Optional<BankAccount> bankAccountData = bankRepository.findById(bankAccountID);
-        if (bankAccountData.isEmpty()) {
-            throw new RuntimeException("Bank account not found");
-        }
-
-        BankAccount bankAccount = bankAccountData.get();
         bankAccount.addCard(card);
         return new BasicCardInfoResponse(
             card.getLastFour(),

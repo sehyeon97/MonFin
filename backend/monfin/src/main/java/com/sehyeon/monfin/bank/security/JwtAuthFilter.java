@@ -43,7 +43,15 @@ public class JwtAuthFilter extends OncePerRequestFilter { // means it runs once 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-                System.out.println("===== JWT FILTER =====");
+        
+        String path = request.getRequestURI();
+        if (request.getMethod().equals("OPTIONS")
+                || path.equals("/api/bank/payment/processor/credentials")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+        
         String accessToken = extractAccessToken(request);
 
         if (accessToken == null) {

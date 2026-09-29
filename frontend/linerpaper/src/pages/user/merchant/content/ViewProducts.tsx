@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { UserTypes, type UserType } from "../../../../types/UserType";
-import type { ProductResponse } from "../../../../dto/merchant/ProductResponse";
+import type { Product } from "../../../../dto/merchant/Product";
 import type { AllProductsResponse } from "../../../../dto/merchant/AllProductsResponse";
 import { GetMerchantProducts } from "../../../../api/merchant/GetMerchantProducts";
 import { ProductCard } from "../../../../components/product/ProductCard";
@@ -19,7 +19,7 @@ type ViewProductsProps = {
 // merchant uses access token cookie
 // customer uses businessName
 export function ViewProducts({ role, businessName, setShowPopup }: ViewProductsProps) {
-    const [products, setProducts] = useState<ProductResponse[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
 
     const [showSettings, setShowSettings] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -49,7 +49,7 @@ export function ViewProducts({ role, businessName, setShowPopup }: ViewProductsP
 
     // only change if any new value is different from old value
     async function onSaveEditProduct(price: number, desc: string, count: number) {
-        const product: ProductResponse = products[selectedIndex];
+        const product: Product = products[selectedIndex];
         console.log(`old price: ${product.price}`);
         console.log(`new price: ${price}`);
 

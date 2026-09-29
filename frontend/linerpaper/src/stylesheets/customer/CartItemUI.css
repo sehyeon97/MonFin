@@ -1,0 +1,11 @@
+.checkout-cart-item {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+
+    padding: 20px;
+    margin-bottom: 15px;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}

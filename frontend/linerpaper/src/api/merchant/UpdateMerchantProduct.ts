@@ -1,4 +1,4 @@
-import type { ProductResponse } from "../../dto/merchant/ProductResponse";
+import type { Product } from "../../dto/merchant/Product";
 import type { UpdateProductRequest } from "../../dto/merchant/UpdateProductRequest";
 import { Url } from "../Url";
 
@@ -15,7 +15,7 @@ export async function UpdateProductForMerchant(req: UpdateProductRequest) {
   });
 
   if (response.ok) {
-    const data: ProductResponse = await response.json();
+    const data: Product = await response.json();
     return data;
   }
 

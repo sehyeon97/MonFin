@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import type { AllProductsResponse } from "../../../../dto/merchant/AllProductsResponse";
 import { GetMerchantProducts } from "../../../../api/merchant/GetMerchantProducts";
 import { UserTypes } from "../../../../types/UserType";
-import type { ProductResponse } from "../../../../dto/merchant/ProductResponse";
+import type { Product } from "../../../../dto/merchant/Product";
 import { ProductCard } from "../../../../components/product/ProductCard";
 
 import '../../../../stylesheets/customer/Shopping.css';
 import '../../../../stylesheets/popups/CartOrCheckoutPopup.css';
+import { useCart } from "../../../../hooks/customer/useCart";
 
 export function ShopMerchantProducts() {
     // product changes on merchant selection
-    const [products, setProducts] = useState<ProductResponse[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
 
     // for now, select merchant/business from a list of buttons
     // in the future, implement search algorithm
@@ -20,6 +21,10 @@ export function ShopMerchantProducts() {
     const [showCartOrCheckoutPopup, setShowCartOrCheckoutPopup] = useState(false);
     // clicking checkout shows different popup content (payment method selection)
     const [showPaymentMethod, setShowPaymentMethod] = useState(false);
+
+    // for adding to cart
+    const [selectedProduct, setSelectedProduct] = useState<Product>();
+    const cart = useCart();
 
     // for search bar
 
@@ -38,8 +43,17 @@ export function ShopMerchantProducts() {
     }, [businessName]);
 
     // show default payment card and a dropdown selection to choose a card from their saved cards
-    function onClickPurchaseItem() {
+    function onClickPurchaseItem(product: Product) {
         setShowCartOrCheckoutPopup(true);
+        setSelectedProduct(product);
+    }
+
+    function onAddToCart() {
+        if (selectedProduct) {
+            cart.addCartItem(selectedProduct);
+        }
+        setShowCartOrCheckoutPopup(false);
+        setShowPaymentMethod(false);
     }
 
     return (
@@ -60,7 +74,7 @@ export function ShopMerchantProducts() {
                     count={product.count}
                     showSettingsIcon={false}
                     showPurchaseButton={true}
-                    onProductClick={() => onClickPurchaseItem()}
+                    onProductClick={() => onClickPurchaseItem(product)}
                 />
             ))}
 
@@ -73,7 +87,7 @@ export function ShopMerchantProducts() {
                     {showPaymentMethod && <h2>Select Payment Method</h2>}
 
                     {!showPaymentMethod && <div className="popup-row">
-                        <button>Add to Cart</button>
+                        <button onClick={() => onAddToCart()}>Add to Cart</button>
                         <button onClick={() => setShowPaymentMethod(true)}>Buy Now</button>
                     </div>}
 

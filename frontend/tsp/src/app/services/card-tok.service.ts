@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class CardTokenizationService {
-  private readonly tspUrl: string = '/api/bank/payment/processor/credentials';
+  private readonly tspUrl: string = 'http://localhost:8080/api/bank/payment/processor/credentials';
 
   constructor(private readonly http: HttpClient) {}
 

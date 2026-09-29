@@ -1,4 +1,4 @@
-export interface ProductResponse {
+export interface Product {
   businessName: string;
   brand: string;
   price: number;

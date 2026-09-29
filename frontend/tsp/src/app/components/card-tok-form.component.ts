@@ -46,7 +46,7 @@ export class CardTokenizationFormComponent {
         expMonth: Number(this.expMonth),
         expYear: Number(this.expYear),
       };
-      window.parent.postMessage(response, this.paymentFrontend);
+      window.parent.postMessage(dataToSend, this.paymentFrontend);
     });
   }
 }

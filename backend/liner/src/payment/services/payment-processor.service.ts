@@ -122,6 +122,8 @@ export class PaymentProcessorService {
         paymentMethod: AddPaymentMethodRequest,
         customerID: string,
     ): Promise<void> {
+        console.log('customerID: ', customerID);
+        console.log('paymentMethod: ', paymentMethod);
         const pm = this.cardVaultRepo.create({
             userID: customerID,
             cardToken: paymentMethod.cardToken,
@@ -130,9 +132,11 @@ export class PaymentProcessorService {
             network: paymentMethod.network,
             expMonth: paymentMethod.expMonth,
             expYear: paymentMethod.expYear,
+            lastUsedAt: new Date().toLocaleDateString(),
         });
-        pm.lastUsedAt = new Date().toLocaleDateString();
-        await this.cardVaultRepo.save(paymentMethod);
+        console.log('pm: ', pm);
+        const token = await this.cardVaultRepo.save(pm);
+        console.log('saved card token to payment processor backend: ', token);
     }
     ///////////////////////// ### *** CUSTOMER *** ### /////////////////////////
 

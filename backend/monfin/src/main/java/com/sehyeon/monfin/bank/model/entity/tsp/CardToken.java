@@ -20,7 +20,7 @@ public class CardToken {
     // foreign key
     // many tokens map to one card
     @ManyToOne
-    @JoinColumn(name = "id") // the card id
+    @JoinColumn(name = "card_id") // the card id
     private Card card; // the name is important bc of how it's used in card.java "mappedBy"
 
     protected CardToken() {}

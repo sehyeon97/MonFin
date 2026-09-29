@@ -21,6 +21,13 @@ export function CardDetailsForm() {
                 return;
             }
 
+            console.log("cardToken: ", event.data.cardToken);
+            console.log("lastFour: ", event.data.lastFour);
+            console.log("fullName: ", event.data.fullName);
+            console.log("network: ", event.data.network);
+            console.log("expMonth: ", event.data.expMonth);
+            console.log("expYear: ", event.data.expYear);
+
             // minus the tokenized and message from bank/tsp frontend
             const responseFromTSP: CardTokenizationResponse = {
                 cardToken: event.data.cardToken,
@@ -32,7 +39,9 @@ export function CardDetailsForm() {
             };
 
             // send the response as a request to payment processor backend
+            console.log("Saving card ...");
             await AddCustomerCard(responseFromTSP);
+            console.log("Card successfully saved!");
 
             // after a second of displaying message,
             // navigate user to their saved cards page
@@ -57,19 +66,20 @@ export function CardDetailsForm() {
     }, []);
 
     useEffect(() => {
-        function showSuccessMessage() {
-            if (haveAddedCard) {
-                // after a second of displaying message,
-                // navigate user to their saved cards page
-                setMessage(message);
-                setTimeout(() => {
-                    navigate("/view-saved-cards");
-                }, 1000);
-            }
+        if (!haveAddedCard) {
+            return;
         }
+        
+        // after a second of displaying message,
+        // navigate user to their saved cards page
+        const timeout = setTimeout(() => {
+            navigate("/view-saved-cards");
+        }, 1000);
 
-        showSuccessMessage();
-    }, [haveAddedCard, message, navigate]);
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [haveAddedCard, navigate]);
 
     return (
         <>

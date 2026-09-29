@@ -14,6 +14,11 @@ export const navLinks = (userType: UserType): NavLink[] => {
       label: "Shopping",
       path: "/shopping",
     });
+
+    links.push({
+      label: "Checkout",
+      path: "checkout",
+    });
   }
 
   if (userType === UserTypes.Merchant) {

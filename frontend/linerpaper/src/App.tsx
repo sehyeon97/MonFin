@@ -8,6 +8,7 @@ import { HomeLayout } from './layouts/HomeLayout'
 import { useState } from 'react'
 import { type UserType, UserTypes } from './types/UserType'
 import ProtectedRoute from './components/auth/ProtectedRoute'
+import { Checkout } from './pages/user/customer/content/Checkout'
 
 function App() {
   const [userType, setUserType] = useState<UserType>(() => {
@@ -21,27 +22,51 @@ function App() {
 
         <Route element={<HomeLayout userType={userType} />}>
           <Route
-              path="/shopping"
-              element={
-                  <ProtectedRoute
-                      userType={userType}
-                      allowedUserType={UserTypes.Customer}
-                  >
-                      <CustomerHomePage />
-                  </ProtectedRoute>
-              }
+            path="/shopping"
+            element={
+                <ProtectedRoute
+                    userType={userType}
+                    allowedUserType={UserTypes.Customer}
+                >
+                    <CustomerHomePage />
+                </ProtectedRoute>
+            }
           />
 
           <Route
-              path="/my-business"
-              element={
-                  <ProtectedRoute
-                      userType={userType}
-                      allowedUserType={UserTypes.Merchant}
-                  >
-                      <MerchantHomePage />
-                  </ProtectedRoute>
-              }
+            path='/checkout'
+            element={
+              <ProtectedRoute
+                userType={userType}
+                allowedUserType={UserTypes.Customer}
+              >
+                <Checkout />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/my-business"
+            element={
+                <ProtectedRoute
+                    userType={userType}
+                    allowedUserType={UserTypes.Merchant}
+                >
+                    <MerchantHomePage />
+                </ProtectedRoute>
+            }
+          />
+
+          <Route 
+            path=''
+            element={
+              <ProtectedRoute
+                userType={userType}
+                allowedUserType={UserTypes.Customer}
+              >
+                <Checkout />
+              </ProtectedRoute>
+            }
           />
 
           <Route path="/save-card-information" element={<SaveCardPage />}/>

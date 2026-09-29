@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import type { ProductResponse } from '../../../../dto/merchant/ProductResponse';
+import type { Product } from '../../../../dto/merchant/Product';
 
 import '../../../../stylesheets/popups/EditProductPopup.css';
 
 type EditProductProps = {
-    product: ProductResponse;
+    product: Product;
     onSave: (price: number, desc: string, count: number) => void;
     setShowPopup: (showPopup: boolean) => void;
 };

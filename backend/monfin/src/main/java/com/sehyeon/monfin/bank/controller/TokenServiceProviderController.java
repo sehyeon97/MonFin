@@ -1,5 +1,7 @@
 package com.sehyeon.monfin.bank.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,8 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/bank/payment/processor")
 public class TokenServiceProviderController {
 
+    private static final Logger logger = LoggerFactory.getLogger(TokenServiceProviderController.class);
+
     @Autowired
     private TokenServiceProvider tsp; // service
 
@@ -33,6 +37,7 @@ public class TokenServiceProviderController {
      */
     @PostMapping("/credentials")
     public ResponseEntity<CardTokenizationResponse> tokenizeCard(@Valid @RequestBody CardTokenizationRequest request) {
+        logger.info("Tokenization request received: {}", request);
         CardTokenizationResponse response = tsp.tokenizeCard(request);
         if (response.tokenized()) {
             return ResponseEntity.ok(response);

@@ -100,6 +100,8 @@ let PaymentProcessorService = class PaymentProcessorService {
         return arr;
     }
     async savePaymentMethod(paymentMethod, customerID) {
+        console.log('customerID: ', customerID);
+        console.log('paymentMethod: ', paymentMethod);
         const pm = this.cardVaultRepo.create({
             userID: customerID,
             cardToken: paymentMethod.cardToken,
@@ -108,9 +110,11 @@ let PaymentProcessorService = class PaymentProcessorService {
             network: paymentMethod.network,
             expMonth: paymentMethod.expMonth,
             expYear: paymentMethod.expYear,
+            lastUsedAt: new Date().toLocaleDateString(),
         });
-        pm.lastUsedAt = new Date().toLocaleDateString();
-        await this.cardVaultRepo.save(paymentMethod);
+        console.log('pm: ', pm);
+        const token = await this.cardVaultRepo.save(pm);
+        console.log('saved card token to payment processor backend: ', token);
     }
     async compileTransaction(req) {
         const combinedTransactions = await this.combineAllTransactions(req);

@@ -4,7 +4,7 @@ import "../../../../stylesheets/popups/AddProductPopup.css";
 
 import type { ProductRequest } from "../../../../dto/merchant/ProductRequest";
 import { AddProductForMerchant } from "../../../../api/merchant/AddMerchantProduct";
-import type { ProductResponse } from "../../../../dto/merchant/ProductResponse";
+import type { Product } from "../../../../dto/merchant/Product";
 
 type AddProductProps = {
     setShowPopup: (showPopup: boolean) => void;
@@ -31,7 +31,7 @@ export function AddProduct({ setShowPopup }: AddProductProps) {
             count: count,
         };
 
-        const addedProduct: ProductResponse | null = await AddProductForMerchant(productRequest);
+        const addedProduct: Product | null = await AddProductForMerchant(productRequest);
         if (!addedProduct) {
             setError("Could not add this product");
         }

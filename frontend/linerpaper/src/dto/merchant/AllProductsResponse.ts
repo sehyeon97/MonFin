@@ -1,5 +1,5 @@
-import type { ProductResponse } from "./ProductResponse";
+import type { Product } from "./Product";
 
 export interface AllProductsResponse {
-  products: ProductResponse[];
+  products: Product[];
 }

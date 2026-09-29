@@ -24,4 +24,24 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], AddPaymentMethodRequest.prototype, "cardToken", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AddPaymentMethodRequest.prototype, "lastFour", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AddPaymentMethodRequest.prototype, "fullName", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], AddPaymentMethodRequest.prototype, "network", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], AddPaymentMethodRequest.prototype, "expMonth", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], AddPaymentMethodRequest.prototype, "expYear", void 0);
 //# sourceMappingURL=customer-payment-method.request.dto.js.map
